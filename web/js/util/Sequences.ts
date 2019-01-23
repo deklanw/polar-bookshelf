@@ -1,6 +1,6 @@
 import util from 'util';
-import {Strings} from './Strings';
-import {ISODateTimeStrings} from '../metadata/ISODateTimeStrings';
+import { Strings } from './Strings';
+import { ISODateTimeStrings } from '../metadata/ISODateTimeStrings';
 
 /**
  * Creates human readable sequences that are opaque strings.  They only need to
@@ -9,13 +9,11 @@ import {ISODateTimeStrings} from '../metadata/ISODateTimeStrings';
  *
  */
 export class Sequences {
-
     public static MACHINE: number = Math.floor(999999999999 * Math.random());
 
     public static NONCE: number = 0;
 
     public static create(): Sequence {
-
         if (this.NONCE > 999999) {
             this.NONCE = 0;
         }
@@ -29,10 +27,7 @@ export class Sequences {
 
         // use a z prefix so it sorts last in string comparison.
         return 'z' + ISODateTimeStrings.create() + `+${nonce}-${machine}`;
-
     }
-
-
 }
 
 export type Sequence = string;

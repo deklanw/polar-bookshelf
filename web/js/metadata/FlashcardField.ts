@@ -1,11 +1,8 @@
-import {FlashcardFieldType} from "./FlashcardFieldType";
-import {Preconditions} from "../Preconditions";
-import {Objects} from "../util/Objects";
-
+import { FlashcardFieldType } from './FlashcardFieldType';
+import { Preconditions } from '../Preconditions';
+import { Objects } from '../util/Objects';
 
 export class FlashcardField {
-
-
     /**
      * The name of this field.
      */
@@ -28,22 +25,17 @@ export class FlashcardField {
      */
     private readonly required: boolean;
 
-
     constructor(opts: any) {
-
         opts = Objects.defaults(opts, {
-            description: "",
+            description: '',
             rememberLastInput: false,
-            required: false
-
+            required: false,
         });
 
-        this.name = Preconditions.assertNotNull(opts.name, "name");
-        this.type = Preconditions.assertNotNull(opts.type, "type");
+        this.name = Preconditions.assertNotNull(opts.name, 'name');
+        this.type = Preconditions.assertNotNull(opts.type, 'type');
         this.description = opts.description;
         this.rememberLastInput = opts.rememberLastInput;
         this.required = opts.required;
-
     }
-
-};
+}

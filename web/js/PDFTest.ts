@@ -1,26 +1,27 @@
-import {Files} from './util/Files';
+import { Files } from './util/Files';
 
 import url from 'url';
 
 import * as PDFJSDIST from 'pdfjs-dist';
-import {PDFJSStatic} from 'pdfjs-dist';
+import { PDFJSStatic } from 'pdfjs-dist';
 
-const pdfjs: PDFJSStatic = <any> PDFJSDIST;
+const pdfjs: PDFJSStatic = <any>PDFJSDIST;
 
 xdescribe('PDF', function() {
-
-    xit("basic", async function () {
-
-        const buffer = await Files.readFileAsync("/home/burton/Downloads/1010.3003v1.pdf")
-        const uint8 = toArray(buffer)
+    xit('basic', async function() {
+        const buffer = await Files.readFileAsync(
+            '/home/burton/Downloads/1010.3003v1.pdf'
+        );
+        const uint8 = toArray(buffer);
 
         // const url = "file:///home/burton/Downloads/1010.3003v1.pdf";
         // const url = "file:///home/burton/incremental-reading/A%20Crypto%20Incubator%20or%20Accelerator%20Can%20Make%20A%20Safe%20ICO%20_%20Crypto%20Briefing.pdf";
 
-        const filePath = "/home/burton/incremental-reading/.stash/The Toyota Way _ 14 Management Principles from the World's Greatest Manufac.pdf";
+        const filePath =
+            "/home/burton/incremental-reading/.stash/The Toyota Way _ 14 Management Principles from the World's Greatest Manufac.pdf";
 
-        if (! await Files.existsAsync(filePath)) {
-            throw new Error("File does not exist at path: " + filePath);
+        if (!(await Files.existsAsync(filePath))) {
+            throw new Error('File does not exist at path: ' + filePath);
         }
 
         const fileURL = url.format({
@@ -34,38 +35,42 @@ xdescribe('PDF', function() {
         // const doc = await pdfjs.getDocument(uint8!)
         const doc = await pdfjs.getDocument(fileURL);
 
-        const metadata = await doc.getMetadata()
+        const metadata = await doc.getMetadata();
 
-        if(metadata.metadata && metadata.metadata.get('dc:title')) {
-
+        if (metadata.metadata && metadata.metadata.get('dc:title')) {
             // FIXME: we have dc:language , dc:date, dc:publisher dc:creator dc:description
 
-            console.log("FIXME !!!");
+            console.log('FIXME !!!');
         }
 
         // metadata.metadata.parse();
 
-        console.log("metadata: ", metadata);
+        console.log('metadata: ', metadata);
 
         // doc.
-        console.log("numPages: " + doc.numPages);
-        console.log("fingerprint: " + doc.fingerprint);
+        console.log('numPages: ' + doc.numPages);
+        console.log('fingerprint: ' + doc.fingerprint);
 
-        //assert.ok(PDFJS.getDocument);
-
+        // assert.ok(PDFJS.getDocument);
     });
-
 });
 
-
 function toArray(buf: Buffer) {
-    if (!buf) return undefined;
-    if (buf.constructor.name === 'Uint8Array'
-        || buf.constructor === Uint8Array) {
+    if (!buf) {
+        return undefined;
+    }
+    if (
+        buf.constructor.name === 'Uint8Array' ||
+        buf.constructor === Uint8Array
+    ) {
         return buf;
     }
-    if (typeof buf === 'string') buf = Buffer.from(buf);
-    var a = new Uint8Array(buf.length);
-    for (var i = 0; i < buf.length; i++) a[i] = buf[i];
+    if (typeof buf === 'string') {
+        buf = Buffer.from(buf);
+    }
+    let a = new Uint8Array(buf.length);
+    for (let i = 0; i < buf.length; i++) {
+        a[i] = buf[i];
+    }
     return a;
-};
+}

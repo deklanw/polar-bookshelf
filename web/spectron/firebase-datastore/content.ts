@@ -1,48 +1,47 @@
-import {SpectronRenderer, SpectronRendererState} from '../../js/test/SpectronRenderer';
-import {Firebase} from '../../js/firebase/Firebase';
-import {FirebaseUIAuth} from '../../js/firebase/FirebaseUIAuth';
+import {
+    SpectronRenderer,
+    SpectronRendererState,
+} from '../../js/test/SpectronRenderer';
+import { Firebase } from '../../js/firebase/Firebase';
+import { FirebaseUIAuth } from '../../js/firebase/FirebaseUIAuth';
 import * as firebase from '../../js/firebase/lib/firebase';
-import {Elements} from '../../js/util/Elements';
-import {DiskDatastore} from '../../js/datastore/DiskDatastore';
-import {DefaultPersistenceLayer} from '../../js/datastore/DefaultPersistenceLayer';
-import {MockDocMetas} from '../../js/metadata/DocMetas';
-import {assert} from "chai";
-import {DatastoreTester} from '../../js/datastore/DatastoreTester';
-import {Firestore} from '../../js/firebase/Firestore';
-import {Hashcodes} from '../../js/Hashcodes';
-import {Promises} from '../../js/util/Promises';
-import {FirebaseDatastore} from '../../js/datastore/FirebaseDatastore';
-import {DocLoader} from '../../js/apps/main/ipc/DocLoader';
-import {FirebaseRunner} from '../../js/firebase/FirebaseRunner';
-import {DefaultDatastoreMutation} from '../../js/datastore/DatastoreMutation';
-import {DocInfo} from '../../js/metadata/DocInfo';
-import {Latch} from '../../js/util/Latch';
-import {PersistenceLayerWorkers} from '../../js/datastore/dispatcher/PersistenceLayerWorkers';
-import {PersistenceLayer} from '../../js/datastore/PersistenceLayer';
-import {Datastores} from '../../js/datastore/Datastores';
+import { Elements } from '../../js/util/Elements';
+import { DiskDatastore } from '../../js/datastore/DiskDatastore';
+import { DefaultPersistenceLayer } from '../../js/datastore/DefaultPersistenceLayer';
+import { MockDocMetas } from '../../js/metadata/DocMetas';
+import { assert } from 'chai';
+import { DatastoreTester } from '../../js/datastore/DatastoreTester';
+import { Firestore } from '../../js/firebase/Firestore';
+import { Hashcodes } from '../../js/Hashcodes';
+import { Promises } from '../../js/util/Promises';
+import { FirebaseDatastore } from '../../js/datastore/FirebaseDatastore';
+import { DocLoader } from '../../js/apps/main/ipc/DocLoader';
+import { FirebaseRunner } from '../../js/firebase/FirebaseRunner';
+import { DefaultDatastoreMutation } from '../../js/datastore/DatastoreMutation';
+import { DocInfo } from '../../js/metadata/DocInfo';
+import { Latch } from '../../js/util/Latch';
+import { PersistenceLayerWorkers } from '../../js/datastore/dispatcher/PersistenceLayerWorkers';
+import { PersistenceLayer } from '../../js/datastore/PersistenceLayer';
+import { Datastores } from '../../js/datastore/Datastores';
 import waitForExpect from 'wait-for-expect';
-import {BrowserWindowRegistry} from '../../js/electron/framework/BrowserWindowRegistry';
-import {Logger} from '../../js/logger/Logger';
+import { BrowserWindowRegistry } from '../../js/electron/framework/BrowserWindowRegistry';
+import { Logger } from '../../js/logger/Logger';
 
 const log = Logger.create();
 
 mocha.setup('bdd');
 mocha.timeout(10000);
 
-const fingerprint = "0x001";
+const fingerprint = '0x001';
 
-SpectronRenderer.run(async (state) => {
-
+SpectronRenderer.run(async state => {
     new FirebaseRunner(state).run(async () => {
-
         const firebaseDatastore = new FirebaseDatastore();
 
         await firebaseDatastore.init();
 
         describe('FirebaseDatastore tests', function() {
-
-            xit("Make sure we get events from the datastore", async function() {
-
+            xit('Make sure we get events from the datastore', async function() {
                 let datastore = new FirebaseDatastore();
 
                 const persistenceLayer = new DefaultPersistenceLayer(datastore);
@@ -50,7 +49,7 @@ SpectronRenderer.run(async (state) => {
                 await persistenceLayer.init();
 
                 await Datastores.purge(datastore, purgeEvent => {
-                    log.info("purgeEvent: ", purgeEvent);
+                    log.info('purgeEvent: ', purgeEvent);
                 });
 
                 await waitForExpect(async () => {
@@ -58,9 +57,14 @@ SpectronRenderer.run(async (state) => {
                     assert.equal(docMetaFiles.length, 0);
                 });
 
-                const docMeta = MockDocMetas.createWithinInitialPagemarks(fingerprint, 14);
+                const docMeta = MockDocMetas.createWithinInitialPagemarks(
+                    fingerprint,
+                    14
+                );
 
-                const datastoreMutation = new DefaultDatastoreMutation<DocInfo>();
+                const datastoreMutation = new DefaultDatastoreMutation<
+                    DocInfo
+                >();
 
                 const docReplicationEventListenerCalled: boolean = false;
 
@@ -68,7 +72,11 @@ SpectronRenderer.run(async (state) => {
                 //     docReplicationEventListenerCalled = true;
                 // });
 
-                await persistenceLayer.write(fingerprint, docMeta, datastoreMutation);
+                await persistenceLayer.write(
+                    fingerprint,
+                    docMeta,
+                    datastoreMutation
+                );
 
                 assert.isFalse(docReplicationEventListenerCalled);
 
@@ -133,13 +141,10 @@ SpectronRenderer.run(async (state) => {
                 await docReplicationLatch.get();
 
                 await datastore.stop();
-
             });
 
-            xit("Make sure we get replication events from a second datastore to the first", async function() {
-
+            xit('Make sure we get replication events from a second datastore to the first', async function() {
                 class ReplicationTester {
-
                     public datastore?: FirebaseDatastore;
 
                     public persistenceLayer?: PersistenceLayer;
@@ -148,37 +153,43 @@ SpectronRenderer.run(async (state) => {
 
                     public async init() {
                         this.datastore = new FirebaseDatastore();
-                        this.persistenceLayer = new DefaultPersistenceLayer(this.datastore);
+                        this.persistenceLayer = new DefaultPersistenceLayer(
+                            this.datastore
+                        );
                         await this.persistenceLayer.init();
                         return this;
                     }
 
                     public async setup() {
-
                         // this.datastore!.addDocMetaSynchronizationEventListener((docReplicationEvent) => {
                         //     this.hasDocReplicationEvent = true;
                         // });
 
                         return this;
-
                     }
 
                     public async write() {
+                        const docMeta = MockDocMetas.createWithinInitialPagemarks(
+                            fingerprint,
+                            14
+                        );
 
-                        const docMeta = MockDocMetas.createWithinInitialPagemarks(fingerprint, 14);
+                        await this.persistenceLayer!.write(
+                            fingerprint,
+                            docMeta
+                        );
 
-                        await this.persistenceLayer!.write(fingerprint, docMeta);
-
-                        await this.persistenceLayer!.delete({fingerprint, docInfo: docMeta.docInfo});
+                        await this.persistenceLayer!.delete({
+                            fingerprint,
+                            docInfo: docMeta.docInfo,
+                        });
 
                         return this;
-
                     }
 
                     public async stop() {
                         this.persistenceLayer!.stop();
                     }
-
                 }
 
                 const replicationTester0 = await new ReplicationTester().init();
@@ -189,19 +200,20 @@ SpectronRenderer.run(async (state) => {
 
                 await replicationTester1.write();
 
-                assert.ok(replicationTester0.hasDocReplicationEvent, "replicationTester0 failed");
-                assert.ok(!replicationTester1.hasDocReplicationEvent, "replicationTester1 failed");
+                assert.ok(
+                    replicationTester0.hasDocReplicationEvent,
+                    'replicationTester0 failed'
+                );
+                assert.ok(
+                    !replicationTester1.hasDocReplicationEvent,
+                    'replicationTester1 failed'
+                );
 
                 await replicationTester0.stop();
                 await replicationTester1.stop();
-
             });
-
-
         });
 
         DatastoreTester.test(async () => firebaseDatastore, false);
-
     });
-
 });

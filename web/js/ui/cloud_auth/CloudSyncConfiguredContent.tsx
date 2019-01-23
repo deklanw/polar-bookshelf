@@ -1,13 +1,11 @@
 import * as React from 'react';
-import {IStyleMap} from '../../react/IStyleMap';
-
+import { IStyleMap } from '../../react/IStyleMap';
 
 const Styles: IStyleMap = {
-
     button: {
         paddingTop: '4px',
         color: 'red !important',
-        fontSize: '15px'
+        fontSize: '15px',
 
         // minWidth: '350px',
         // width: '350px'
@@ -24,11 +22,11 @@ const Styles: IStyleMap = {
     overview: {
         fontSize: '18px',
         textAlign: 'justify',
-        margin: '25px'
+        margin: '25px',
     },
 
     features: {
-        marginLeft: '25px'
+        marginLeft: '25px',
     },
 
     price: {
@@ -41,40 +39,37 @@ const Styles: IStyleMap = {
         lineHeight: '1em',
     },
 
-
     price_overview: {
         fontSize: '14px',
     },
 
     content: {
-        maxWidth: '800px'
-    }
-
+        maxWidth: '800px',
+    },
 };
 
-export class CloudSyncConfiguredContent extends React.Component<IProps, IState> {
-
+export class CloudSyncConfiguredContent extends React.Component<
+    IProps,
+    IState
+> {
     constructor(props: IProps, context: any) {
         super(props, context);
-
     }
 
     public render() {
-
         return (
-
             <div style={Styles.content}>
-
                 <div className="text-center">
-
-                    <i className="fas fa-check-circle text-success" style={Styles.icon}></i>
+                    <i
+                        className="fas fa-check-circle text-success"
+                        style={Styles.icon}
+                    />
 
                     <h1>Cloud Sync Configured</h1>
-
                 </div>
 
                 <h2 className="intro" style={Styles.overview}>
-                    Polar Cloud Sync is now setup!  Your documents will now be
+                    Polar Cloud Sync is now setup! Your documents will now be
                     copied to the cloud in the background in realtime.
                 </h2>
 
@@ -85,23 +80,15 @@ export class CloudSyncConfiguredContent extends React.Component<IProps, IState> 
 
                 <p className="intro">
                     Please remember that Polar Sync is <b>not</b> a replacement
-                    for a good backup strategy!  If you delete your files in
+                    for a good backup strategy! If you delete your files in
                     Polar Sync they're gone forever - just as though you deleted
                     them locally.
                 </p>
-
             </div>
-
         );
     }
-
 }
 
-interface IProps {
-}
+interface IProps {}
 
-interface IState {
-
-}
-
-
+interface IState {}

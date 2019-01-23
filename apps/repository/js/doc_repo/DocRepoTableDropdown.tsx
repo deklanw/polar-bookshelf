@@ -1,29 +1,35 @@
 import * as React from 'react';
-import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle, PopoverBody} from 'reactstrap';
-import {Logger} from '../../../../web/js/logger/Logger';
-import {IStyleMap} from '../../../../web/js/react/IStyleMap';
-import {ListOptionType, ListSelector} from "../../../../web/js/ui/list_selector/ListSelector";
-import {LightboxPopover} from '../../../../web/js/ui/lightbox_popover/LightboxPopover';
-import {DocRepoTableColumns} from './DocRepoTableColumns';
+import {
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    PopoverBody,
+} from 'reactstrap';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { IStyleMap } from '../../../../web/js/react/IStyleMap';
+import {
+    ListOptionType,
+    ListSelector,
+} from '../../../../web/js/ui/list_selector/ListSelector';
+import { LightboxPopover } from '../../../../web/js/ui/lightbox_popover/LightboxPopover';
+import { DocRepoTableColumns } from './DocRepoTableColumns';
 
 const log = Logger.create();
 
 const Styles: IStyleMap = {
-
     DropdownMenu: {
         zIndex: 999,
-        fontSize: '14px'
+        fontSize: '14px',
     },
 
     LightboxPopover: {
         fontSize: '14px',
         // minWidth: '500px'
-    }
-
+    },
 };
 
 export class DocRepoTableDropdown extends React.Component<IProps, IState> {
-
     private open: boolean = false;
     private selected: SelectedOption = 'none';
 
@@ -40,74 +46,67 @@ export class DocRepoTableDropdown extends React.Component<IProps, IState> {
             open: this.open,
             selected: this.selected,
         };
-
     }
 
     public render() {
-
-        const columns = this.props.options || Object.values(new DocRepoTableColumns());
+        const columns =
+            this.props.options || Object.values(new DocRepoTableColumns());
 
         return (
-
             <div className="text-right">
-
-                <Dropdown id={this.props.id}
-                          isOpen={this.state.open}
-                          toggle={this.toggle}>
-
-                    <DropdownToggle color="light"
-                                    size="md"
-                                    className="table-dropdown-button btn text-muted p-1 m-0" id={this.props.id + '-dropdown-toggle'}>
-                        <i className="fas fa-ellipsis-h"></i>
+                <Dropdown
+                    id={this.props.id}
+                    isOpen={this.state.open}
+                    toggle={this.toggle}
+                >
+                    <DropdownToggle
+                        color="light"
+                        size="md"
+                        className="table-dropdown-button btn text-muted p-1 m-0"
+                        id={this.props.id + '-dropdown-toggle'}
+                    >
+                        <i className="fas fa-ellipsis-h" />
                     </DropdownToggle>
 
                     <DropdownMenu style={Styles.DropdownMenu} right>
-
-                        <DropdownItem onClick={() => this.select('change-columns')}>
+                        <DropdownItem
+                            onClick={() => this.select('change-columns')}
+                        >
                             Change Columns
                         </DropdownItem>
-
                     </DropdownMenu>
-
-
                 </Dropdown>
 
-                <LightboxPopover placement={'bottom'}
-                                 open={this.selected === 'change-columns'}
-                                 target={this.props.id + '-dropdown-toggle'}
-                                 className="p-0"
-                                 style={Styles.LightboxPopover}>
-
+                <LightboxPopover
+                    placement={'bottom'}
+                    open={this.selected === 'change-columns'}
+                    target={this.props.id + '-dropdown-toggle'}
+                    className="p-0"
+                    style={Styles.LightboxPopover}
+                >
                     <PopoverBody>
-
-                        <ListSelector options={columns}
-                                      id={this.props.id + 'list-options'}
-                                      title="Select columns to display in the table:"
-                                      onCancel={() => this.select('none')}
-                                      onSet={(options) => this.onSelectedColumns(options)}
-                                      onChange={(value) => console.log(value)}>
-
-                        </ListSelector>
-
+                        <ListSelector
+                            options={columns}
+                            id={this.props.id + 'list-options'}
+                            title="Select columns to display in the table:"
+                            onCancel={() => this.select('none')}
+                            onSet={options => this.onSelectedColumns(options)}
+                            onChange={value => console.log(value)}
+                        />
                     </PopoverBody>
-
                 </LightboxPopover>
-
             </div>
         );
-
     }
 
     private toggle() {
-
         if (this.selected !== 'none') {
             this.open = false;
         } else {
-            this.open = ! this.state.open;
+            this.open = !this.state.open;
         }
 
         this.refresh();
-
     }
 
     private select(selected: SelectedOption) {
@@ -116,26 +115,21 @@ export class DocRepoTableDropdown extends React.Component<IProps, IState> {
     }
 
     private refresh() {
-
         this.setState({
             open: this.open,
-            selected: this.selected
+            selected: this.selected,
         });
-
     }
 
     // this.onSetTitle = this.onSetTitle.bind(this);
 
     private onSelectedColumns(options: ListOptionType[]) {
-
         this.select('none');
 
         if (this.props.onSelectedColumns) {
             this.props.onSelectedColumns(options);
         }
-
     }
-
 }
 
 interface IProps {
@@ -145,10 +139,8 @@ interface IProps {
 }
 
 interface IState {
-
     open: boolean;
     selected: SelectedOption;
-
 }
 
 type SelectedOption = 'change-columns' | 'none';

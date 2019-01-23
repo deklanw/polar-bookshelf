@@ -1,12 +1,11 @@
-import {PHZReader} from './PHZReader';
-import {ResourceEntry} from './ResourceEntry';
-import {Logger} from '../logger/Logger';
-import {CompressedReader} from './CompressedReader';
+import { PHZReader } from './PHZReader';
+import { ResourceEntry } from './ResourceEntry';
+import { Logger } from '../logger/Logger';
+import { CompressedReader } from './CompressedReader';
 
 const log = Logger.create();
 
 export class CachingPHZReader implements CompressedReader {
-
     public path: string;
 
     /**
@@ -26,10 +25,8 @@ export class CachingPHZReader implements CompressedReader {
     public reopened: number = 0;
 
     constructor(path: string, timeout: number = 60000) {
-
         this.path = path;
         this.timeout = timeout;
-
     }
 
     /**
@@ -38,16 +35,12 @@ export class CachingPHZReader implements CompressedReader {
      * @return {Promise<void>}
      */
     public async init() {
-
         this.delegate = new PHZReader(this.path);
         await this.delegate!.init();
 
         setTimeout(async () => {
-
             await this.close();
-
         }, this.timeout);
-
     }
 
     public async getMetadata() {
@@ -73,27 +66,26 @@ export class CachingPHZReader implements CompressedReader {
         return await this.delegate!.getResource(resourceEntry);
     }
 
-    public async getResourceAsStream(resourceEntry: ResourceEntry): Promise<NodeJS.ReadableStream> {
+    public async getResourceAsStream(
+        resourceEntry: ResourceEntry
+    ): Promise<NodeJS.ReadableStream> {
         await this.openWhenNecessary();
         return await this.delegate!.getResourceAsStream(resourceEntry);
     }
 
-    async openWhenNecessary() {
-
-        if(this.delegate) {
+    public async openWhenNecessary() {
+        if (this.delegate) {
             // we are done.  There is already a delegate we can use.
             return;
         }
 
-        log.info("Caching PHZReader being re-opened: " + this.path);
+        log.info('Caching PHZReader being re-opened: ' + this.path);
         ++this.reopened;
 
         await this.init();
-
     }
 
     public async close() {
-
         // copy the delegate so that nothing can see this.delegate as being
         // non-null while we close else we would have a race.
         const delegate = this.delegate;
@@ -101,7 +93,5 @@ export class CachingPHZReader implements CompressedReader {
         this.delegate = undefined;
 
         await delegate!.close();
-
     }
-
 }

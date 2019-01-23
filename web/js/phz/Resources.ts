@@ -1,11 +1,7 @@
-import {ResourceEntry} from './ResourceEntry';
+import { ResourceEntry } from './ResourceEntry';
 
 export class Resources {
+    public entries: { [key: string]: ResourceEntry } = {};
 
-    public entries: {[key: string]: ResourceEntry} = {};
-
-    constructor() {
-
-    }
-
+    constructor() {}
 }

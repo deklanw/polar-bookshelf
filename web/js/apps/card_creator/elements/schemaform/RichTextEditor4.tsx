@@ -3,21 +3,20 @@
  */
 import ReactSummernote from './ReactSummernote';
 import React from 'react';
-import {TypedWidgetProps} from './TypedWidgetProps';
-import {Logger} from '../../../../logger/Logger';
-import {ReactSummernote4} from './ReactSummernote4';
-import {NULL_FUNCTION} from '../../../../util/Functions';
-import {RichTextMutator} from './RichTextMutator';
+import { TypedWidgetProps } from './TypedWidgetProps';
+import { Logger } from '../../../../logger/Logger';
+import { ReactSummernote4 } from './ReactSummernote4';
+import { NULL_FUNCTION } from '../../../../util/Functions';
+import { RichTextMutator } from './RichTextMutator';
 const log = Logger.create();
 
 /**
  * Rich text editor component based of ReactSummernote4
  */
-export class RichTextEditor4 extends React.Component<IProps, IState>  {
-
+export class RichTextEditor4 extends React.Component<IProps, IState> {
     private readonly typedWidgetProps: TypedWidgetProps;
 
-    private value: string = "";
+    private value: string = '';
 
     private id: string;
 
@@ -27,7 +26,7 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
         if (props.id) {
             this.id = props.id;
         } else {
-            throw new Error("No ID");
+            throw new Error('No ID');
         }
 
         this.typedWidgetProps = new TypedWidgetProps(props);
@@ -42,12 +41,10 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
         this.onImageUpload = this.onImageUpload.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onFocus = this.onFocus.bind(this);
-
     }
 
     // FIXME: there is an errorSchema here too which I might want to look at.
     private onChange(newValue: string) {
-
         // FIXME: summernote has isEmpty and some other methods I need to use
         // here.
 
@@ -60,7 +57,6 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
         if (this.props.onChange) {
             this.props.onChange(newValue);
         }
-
     }
 
     private onBlur() {
@@ -69,8 +65,6 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
         if (this.props.onBlur) {
             this.props.onBlur(this.id, this.value);
         }
-
-
     }
 
     private onFocus() {
@@ -79,7 +73,6 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
         if (this.props.onFocus) {
             this.props.onFocus(this.id, this.value);
         }
-
     }
 
     /**
@@ -88,7 +81,6 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
      * https://github.com/summernote/react-summernote/issues/38
      */
     public onImageUpload(images: any[], insertImage: Function) {
-
         log.debug('onImageUpload', images);
         /* FileList does not support ordinary array methods */
         for (let i = 0; i < images.length; i++) {
@@ -103,15 +95,14 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
 
             reader.readAsDataURL(images[i]);
         }
-
     }
 
     public render() {
-
         // https://github.com/summernote/react-summernote/issues/38
 
-        const onKeyDown: (event: KeyboardEvent) => void =
-            this.props.onKeyDown ? this.props.onKeyDown : NULL_FUNCTION;
+        const onKeyDown: (event: KeyboardEvent) => void = this.props.onKeyDown
+            ? this.props.onKeyDown
+            : NULL_FUNCTION;
 
         return (
             <ReactSummernote4
@@ -153,9 +144,8 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
                         // ['table', ['table']],
                         // ['insert', ['link', 'picture', 'video']],
                         ['insert', ['link', 'picture']],
-                        ['view', []]
-                    ]
-
+                        ['view', []],
+                    ],
                 }}
                 autofocus={this.props.autofocus}
                 onChange={this.onChange}
@@ -166,11 +156,8 @@ export class RichTextEditor4 extends React.Component<IProps, IState>  {
                 onImageUpload={this.onImageUpload}
                 onRichTextMutator={this.props.onRichTextMutator}
             />
-
         );
-
     }
-
 }
 
 interface IProps {
@@ -185,18 +172,11 @@ interface IProps {
     readonly onRichTextMutator?: (mutator: RichTextMutator) => void;
 }
 
-interface IState {
+interface IState {}
 
-}
-
-interface OnChangeCallback {
-    (newValue: string): void;
-}
+type OnChangeCallback = (newValue: string) => void;
 
 /**
  * Used for onFocus and onBlur
  */
-interface OnSelectionCallback {
-    (id: string, value: string): void;
-}
-
+type OnSelectionCallback = (id: string, value: string) => void;

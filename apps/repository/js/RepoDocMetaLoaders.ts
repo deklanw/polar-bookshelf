@@ -1,18 +1,18 @@
-import {Throttler} from '../../../web/js/datastore/Throttler';
-import {RepoDocMetaLoader} from './RepoDocMetaLoader';
-import {Releaseable} from '../../../web/js/reactor/EventListener';
+import { Throttler } from '../../../web/js/datastore/Throttler';
+import { RepoDocMetaLoader } from './RepoDocMetaLoader';
+import { Releaseable } from '../../../web/js/reactor/EventListener';
 
 export class RepoDocMetaLoaders {
-
     /**
      * Add an EventListener to the RepoDocMetaLoader that's throttled
      *
      * @param repoDocMetaLoader
      * @param callback
      */
-    public static addThrottlingEventListener(repoDocMetaLoader: RepoDocMetaLoader,
-                                             callback: () => void): Releaseable {
-
+    public static addThrottlingEventListener(
+        repoDocMetaLoader: RepoDocMetaLoader,
+        callback: () => void
+    ): Releaseable {
         // DO NOT refresh too often if we get lots of documents as this really
         // locks up the UI but we also need a reasonable timeout.
         //
@@ -40,11 +40,7 @@ export class RepoDocMetaLoaders {
         const refreshThrottler = new Throttler(() => callback(), throttlerOpts);
 
         return repoDocMetaLoader.addEventListener(event => {
-
             refreshThrottler.exec();
-
         });
-
     }
-
 }

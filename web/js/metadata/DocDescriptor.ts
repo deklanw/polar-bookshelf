@@ -3,7 +3,6 @@
  * to pass around the full document.
  */
 export class DocDescriptor {
-
     /**
      * The fingerprint representing the document we're working with.
      */
@@ -12,5 +11,4 @@ export class DocDescriptor {
     public constructor(obj: any) {
         this.fingerprint = obj.fingerprint;
     }
-
 }

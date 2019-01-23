@@ -1,9 +1,8 @@
-import {Browser} from '../Browser';
-import {AdBlockResult} from './AdBlocker';
+import { Browser } from '../Browser';
+import { AdBlockResult } from './AdBlocker';
 
 export interface Captured {
-
-    capturedDocuments: {[url: string]: CapturedDoc};
+    capturedDocuments: { [url: string]: CapturedDoc };
 
     /**
      * The type of this captured content.  Right now we only support PHZ but
@@ -29,11 +28,9 @@ export interface Captured {
      * result.  Older formats did not have this field though.
      */
     browser?: Browser;
-
 }
 
 export interface CapturedDoc {
-
     title: string;
     href: string;
     url: string;
@@ -59,17 +56,14 @@ export interface CapturedDoc {
      * The HTML content type from document.contentType
      */
     contentType?: string;
-
 }
 
 export interface ScrollBox {
-
     width: number;
     widthOverflow?: Overflow;
 
     height: number;
     heightOverflow?: Overflow;
-
 }
 
 export interface Mutations {

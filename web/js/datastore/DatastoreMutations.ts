@@ -1,67 +1,77 @@
-import {Latch} from '../util/Latch';
-import {DatastoreMutation, DefaultDatastoreMutation} from './DatastoreMutation';
-import {DatastoreConsistency} from './Datastore';
+import { Latch } from '../util/Latch';
+import {
+    DatastoreMutation,
+    DefaultDatastoreMutation,
+} from './DatastoreMutation';
+import { DatastoreConsistency } from './Datastore';
 
 export class DatastoreMutations {
-
     private readonly consistency: DatastoreConsistency;
 
     private constructor(consistency: DatastoreConsistency) {
         this.consistency = consistency;
     }
 
-    public static create(consistency: DatastoreConsistency): DatastoreMutations {
+    public static create(
+        consistency: DatastoreConsistency
+    ): DatastoreMutations {
         return new DatastoreMutations(consistency);
     }
 
-    public batched<T>(dm0: DatastoreMutation<T>, dm1: DatastoreMutation<T>, target: DatastoreMutation<T> ) {
-
-        this.batchPromises(dm0.written.get(), dm1.written.get(), target.written);
+    public batched<T>(
+        dm0: DatastoreMutation<T>,
+        dm1: DatastoreMutation<T>,
+        target: DatastoreMutation<T>
+    ) {
+        this.batchPromises(
+            dm0.written.get(),
+            dm1.written.get(),
+            target.written
+        );
 
         if (this.consistency === 'committed') {
-            this.batchPromises(dm0.committed.get(), dm1.committed.get(), target.committed);
+            this.batchPromises(
+                dm0.committed.get(),
+                dm1.committed.get(),
+                target.committed
+            );
         }
-
     }
 
-    public handle<V, T>(promise: Promise<V>, target: DatastoreMutation<T>, converter: (input: V) => T): void {
-
-        promise.then((result) => {
-
-            try {
-
-                target.written.resolve(converter(result));
-                target.committed.resolve(converter(result));
-
-            } catch (err) {
-                console.error("Unable to resolve: ", err);
-            }
-
-        }).catch(err => {
-
-            try {
-
-                target.written.reject(err);
-                target.committed.reject(err);
-
-            } catch (err) {
-                console.error("Unable to reject: ", err);
-            }
-
-        });
-
+    public handle<V, T>(
+        promise: Promise<V>,
+        target: DatastoreMutation<T>,
+        converter: (input: V) => T
+    ): void {
+        promise
+            .then(result => {
+                try {
+                    target.written.resolve(converter(result));
+                    target.committed.resolve(converter(result));
+                } catch (err) {
+                    console.error('Unable to resolve: ', err);
+                }
+            })
+            .catch(err => {
+                try {
+                    target.written.reject(err);
+                    target.committed.reject(err);
+                } catch (err) {
+                    console.error('Unable to reject: ', err);
+                }
+            });
     }
 
     /**
      * Pipe the resolve and reject status of the latches to the target.
      */
-    public pipe<T, V>(source: DatastoreMutation<T>,
-                      target: DatastoreMutation<V>,
-                      converter: (input: T) => V): void {
-
+    public pipe<T, V>(
+        source: DatastoreMutation<T>,
+        target: DatastoreMutation<V>,
+        converter: (input: T) => V
+    ): void {
         this.pipeLatch(source.written, target.written, converter);
         this.pipeLatch(source.committed, target.committed, converter);
-
     }
 
     /**
@@ -87,62 +97,67 @@ export class DatastoreMutations {
      * @param remoteSync
      * @param localSync
      */
-    public async executeBatchedWrite<T>(datastoreMutation: DatastoreMutation<T>,
-                                        remoteSync: (remoteCoordinator: DatastoreMutation<T>) => Promise<void>,
-                                        localSync: (localCoordinator: DatastoreMutation<T>) => Promise<void>,
-                                        remoteCoordinator: DatastoreMutation<T> = new DefaultDatastoreMutation(),
-                                        localCoordinator: DatastoreMutation<T> = new DefaultDatastoreMutation()): Promise<void> {
-
+    public async executeBatchedWrite<T>(
+        datastoreMutation: DatastoreMutation<T>,
+        remoteSync: (remoteCoordinator: DatastoreMutation<T>) => Promise<void>,
+        localSync: (localCoordinator: DatastoreMutation<T>) => Promise<void>,
+        remoteCoordinator: DatastoreMutation<
+            T
+        > = new DefaultDatastoreMutation(),
+        localCoordinator: DatastoreMutation<T> = new DefaultDatastoreMutation()
+    ): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            remoteSync(remoteCoordinator).catch(err => reject(err));
 
-            remoteSync(remoteCoordinator)
-                .catch((err) => reject(err));
-
-            remoteCoordinator.written.get()
+            remoteCoordinator.written
+                .get()
                 .then(() => {
-
-                    localSync(localCoordinator)
-                        .catch(err => reject(err));
-
+                    localSync(localCoordinator).catch(err => reject(err));
                 })
-                .catch((err) => reject(err));
+                .catch(err => reject(err));
 
-            this.batched(remoteCoordinator, localCoordinator, datastoreMutation);
+            this.batched(
+                remoteCoordinator,
+                localCoordinator,
+                datastoreMutation
+            );
 
             // only return once the remote and local promises / operations have
             // been completed...
 
             if (this.consistency === 'committed') {
-                datastoreMutation.committed.get()
+                datastoreMutation.committed
+                    .get()
                     .then(() => resolve())
-                    .catch((err) => reject(err));
+                    .catch(err => reject(err));
             }
-
         });
-
     }
 
-
-    private pipeLatch<T, V>(source: Latch<T>,
-                            target: Latch<V>,
-                            converter: (input: T) => V): void {
-
-        source.get()
+    private pipeLatch<T, V>(
+        source: Latch<T>,
+        target: Latch<V>,
+        converter: (input: T) => V
+    ): void {
+        source
+            .get()
             .then((value: T) => target.resolve(converter(value)))
             .catch(err => target.reject(err));
-
     }
 
-    private batchPromises<T>(promise0: Promise<T>, promise1: Promise<T>, latch: Latch<T>): void {
-
+    private batchPromises<T>(
+        promise0: Promise<T>,
+        promise1: Promise<T>,
+        latch: Latch<T>
+    ): void {
         const batch = Promise.all([promise0, promise1]);
 
-        batch.then((result) => {
-            latch.resolve(result[0]);
-        }).catch(err => {
-            latch.reject(err);
-        });
-
+        batch
+            .then(result => {
+                latch.resolve(result[0]);
+            })
+            .catch(err => {
+                latch.reject(err);
+            });
     }
-
 }

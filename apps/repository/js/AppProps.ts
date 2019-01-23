@@ -1,4 +1,4 @@
-import {ListenablePersistenceLayer} from '../../../web/js/datastore/ListenablePersistenceLayer';
+import { ListenablePersistenceLayer } from '../../../web/js/datastore/ListenablePersistenceLayer';
 
 /**
  * Create a new PeristenceLayer. Note that this must NOT be initialized becuase

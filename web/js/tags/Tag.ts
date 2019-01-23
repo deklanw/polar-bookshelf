@@ -1,6 +1,4 @@
-
 export interface Tag {
-
     /**
      * The actual id for the tag which is unique across all tags.
      */
@@ -16,6 +14,4 @@ export interface Tag {
      * not be shown in the UI as they would just clutter the UI.
      */
     readonly hidden?: boolean;
-
 }
-

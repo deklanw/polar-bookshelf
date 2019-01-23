@@ -1,5 +1,3 @@
-import {Progress} from "../../util/ProgressTracker";
+import { Progress } from '../../util/ProgressTracker';
 
-export interface ProgressMessage extends Progress {
-
-}
+export interface ProgressMessage extends Progress {}

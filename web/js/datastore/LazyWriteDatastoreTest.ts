@@ -1,14 +1,12 @@
-import {assert} from 'chai';
-import {LazyWriteDatastore} from './LazyWriteDatastore';
-import {MemoryDatastore} from './MemoryDatastore';
-import {MockDocMetas} from '../metadata/DocMetas';
-import {TestingTime} from '../test/TestingTime';
-import {DocMetaFileRefs} from './DocMetaRef';
+import { assert } from 'chai';
+import { LazyWriteDatastore } from './LazyWriteDatastore';
+import { MemoryDatastore } from './MemoryDatastore';
+import { MockDocMetas } from '../metadata/DocMetas';
+import { TestingTime } from '../test/TestingTime';
+import { DocMetaFileRefs } from './DocMetaRef';
 
 describe('LazyWriteDatastore', function() {
-
     it('Basic', async function() {
-
         TestingTime.freeze();
 
         const memoryDatastore = new MemoryDatastore();
@@ -29,12 +27,9 @@ describe('LazyWriteDatastore', function() {
 
         await lazyWriteDatastore.writeDocMeta(docMeta);
         assert.equal(lazyWriteDatastore.nrWrites, 2);
-
     });
 
-
     it('delete', async function() {
-
         TestingTime.freeze();
 
         const memoryDatastore = new MemoryDatastore();
@@ -46,11 +41,11 @@ describe('LazyWriteDatastore', function() {
         await lazyWriteDatastore.writeDocMeta(docMeta);
         assert.equal(lazyWriteDatastore.nrWrites, 1);
 
-        await lazyWriteDatastore.delete(DocMetaFileRefs.createFromDocMeta(docMeta));
+        await lazyWriteDatastore.delete(
+            DocMetaFileRefs.createFromDocMeta(docMeta)
+        );
 
         await lazyWriteDatastore.writeDocMeta(docMeta);
         assert.equal(lazyWriteDatastore.nrWrites, 2);
-
     });
-
 });

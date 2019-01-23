@@ -1,4 +1,4 @@
-import {IDocInfo} from '../../metadata/DocInfo';
+import { IDocInfo } from '../../metadata/DocInfo';
 
 export interface DocInfoAdvertisement {
     readonly docInfo: IDocInfo;
@@ -7,4 +7,6 @@ export interface DocInfoAdvertisement {
 
 export type AdvertisementType = 'created' | 'updated' | 'deleted';
 
-export type DocInfoAdvertisementListener = (docInfoAdvertisement: DocInfoAdvertisement) => void;
+export type DocInfoAdvertisementListener = (
+    docInfoAdvertisement: DocInfoAdvertisement
+) => void;

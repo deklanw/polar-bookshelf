@@ -1,20 +1,20 @@
-import {IXYRect} from '../util/rects/IXYRect';
-import {IXYRects} from '../util/rects/IXYRects';
-import {CapturedScreenshot} from './CapturedScreenshot';
-import {ScreenshotRequest} from './ScreenshotRequest';
-import {ClientRects} from '../util/rects/ClientRects';
-import {Logger} from '../logger/Logger';
-import {ElectronIPCPipe} from '../ipc/handler/ElectronIPCPipe';
-import {ElectronRendererPipe} from '../ipc/pipes/ElectronRendererPipe';
-import {IPCClient} from '../ipc/handler/IPCClient';
-import {Screenshot} from '../metadata/Screenshot';
-import {Screenshots} from '../metadata/Screenshots';
-import {ImageType} from '../metadata/ImageType';
+import { IXYRect } from '../util/rects/IXYRect';
+import { IXYRects } from '../util/rects/IXYRects';
+import { CapturedScreenshot } from './CapturedScreenshot';
+import { ScreenshotRequest } from './ScreenshotRequest';
+import { ClientRects } from '../util/rects/ClientRects';
+import { Logger } from '../logger/Logger';
+import { ElectronIPCPipe } from '../ipc/handler/ElectronIPCPipe';
+import { ElectronRendererPipe } from '../ipc/pipes/ElectronRendererPipe';
+import { IPCClient } from '../ipc/handler/IPCClient';
+import { Screenshot } from '../metadata/Screenshot';
+import { Screenshots } from '../metadata/Screenshots';
+import { ImageType } from '../metadata/ImageType';
 
 const log = Logger.create();
 
-let ipcPipe = new ElectronIPCPipe(new ElectronRendererPipe());
-let ipcClient = new IPCClient(ipcPipe);
+const ipcPipe = new ElectronIPCPipe(new ElectronRendererPipe());
+const ipcClient = new IPCClient(ipcPipe);
 
 /**
  * Create a screenshot of the display.
@@ -22,7 +22,6 @@ let ipcClient = new IPCClient(ipcPipe);
  * @ElectronRendererContext
  */
 export class CapturedScreenshots {
-
     /**
      * Create a screenshot and return a NativeImage of the result.
      *
@@ -34,52 +33,54 @@ export class CapturedScreenshots {
      *         with scaleFactor as an option.
      *
      */
-    static async capture(target: IXYRect | HTMLElement | ClientRect): Promise<CapturedScreenshot> {
-
+    public static async capture(
+        target: IXYRect | HTMLElement | ClientRect
+    ): Promise<CapturedScreenshot> {
         let rect: IXYRect;
 
-        if(target instanceof HTMLElement) {
+        if (target instanceof HTMLElement) {
+            log.info(
+                'Using HTML element to build rect from bounding client rect.'
+            );
 
-            log.info("Using HTML element to build rect from bounding client rect.");
-
-            rect = IXYRects.createFromClientRect(target.getBoundingClientRect());
-
+            rect = IXYRects.createFromClientRect(
+                target.getBoundingClientRect()
+            );
         } else if (ClientRects.instanceOf(target)) {
-
             rect = {
                 x: target.left,
                 y: target.top,
                 width: target.width,
-                height: target.height
+                height: target.height,
             };
 
-            log.info("Using client rect: ", rect);
-
+            log.info('Using client rect: ', rect);
         } else if (IXYRects.instanceOf(target)) {
-            log.info("Using IXYRect");
+            log.info('Using IXYRect');
             rect = target;
         } else {
-            throw new Error("Unknown target type.");
+            throw new Error('Unknown target type.');
         }
 
-        let screenshotRequest = <ScreenshotRequest> {
-            rect
+        const screenshotRequest = <ScreenshotRequest>{
+            rect,
         };
 
-        log.info("Sending screenshot request: ", screenshotRequest);
+        log.info('Sending screenshot request: ', screenshotRequest);
 
-        return await ipcClient.call<ScreenshotRequest, CapturedScreenshot>('/screenshots/create-screenshot', screenshotRequest);
-
+        return await ipcClient.call<ScreenshotRequest, CapturedScreenshot>(
+            '/screenshots/create-screenshot',
+            screenshotRequest
+        );
     }
 
-    public static toScreenshot(capturedScreenshot: CapturedScreenshot): Screenshot {
-
+    public static toScreenshot(
+        capturedScreenshot: CapturedScreenshot
+    ): Screenshot {
         return Screenshots.create(capturedScreenshot.dataURL, {
             width: capturedScreenshot.dimensions.width,
             height: capturedScreenshot.dimensions.height,
-            type: ImageType.PNG
+            type: ImageType.PNG,
         });
-
     }
-
 }

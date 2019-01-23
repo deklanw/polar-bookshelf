@@ -1,9 +1,7 @@
-const {SerializedObject} = require("./SerializedObject.js");
+const { SerializedObject } = require('./SerializedObject.js');
 
 export class TextRect extends SerializedObject {
-
     constructor(val: any) {
-
         super(val);
 
         // the actual text in this rect.
@@ -13,7 +11,5 @@ export class TextRect extends SerializedObject {
         this.rect = null;
 
         this.init(val);
-
     }
-
 }

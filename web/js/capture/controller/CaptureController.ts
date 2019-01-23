@@ -1,21 +1,20 @@
-import {ResourcePaths} from "../../electron/webresource/ResourcePaths";
-import {PHZLoader} from '../../apps/main/loaders/PHZLoader';
-import {ipcMain} from 'electron';
-import {Preconditions} from '../../Preconditions';
-import {Logger} from '../../logger/Logger';
+import { ResourcePaths } from '../../electron/webresource/ResourcePaths';
+import { PHZLoader } from '../../apps/main/loaders/PHZLoader';
+import { ipcMain } from 'electron';
+import { Preconditions } from '../../Preconditions';
+import { Logger } from '../../logger/Logger';
 import BrowserRegistry from '../BrowserRegistry';
-import {BrowserProfiles} from '../BrowserProfiles';
-import {Capture} from '../Capture';
-import {PendingWebRequestsEvent} from '../../webrequests/PendingWebRequestsListener';
-import {CaptureOpts} from '../CaptureOpts';
-import {StartCaptureMessage} from './CaptureClient';
-import {Directories} from '../../datastore/Directories';
-import {CacheRegistry} from '../../backend/proxyserver/CacheRegistry';
+import { BrowserProfiles } from '../BrowserProfiles';
+import { Capture } from '../Capture';
+import { PendingWebRequestsEvent } from '../../webrequests/PendingWebRequestsListener';
+import { CaptureOpts } from '../CaptureOpts';
+import { StartCaptureMessage } from './CaptureClient';
+import { Directories } from '../../datastore/Directories';
+import { CacheRegistry } from '../../backend/proxyserver/CacheRegistry';
 
 const log = Logger.create();
 
 export class CaptureController {
-
     private readonly directories: Directories = new Directories();
 
     private readonly cacheRegistry: CacheRegistry;
@@ -23,25 +22,23 @@ export class CaptureController {
     private readonly phzLoader: PHZLoader;
 
     constructor(cacheRegistry: CacheRegistry) {
-
         this.cacheRegistry = cacheRegistry;
 
-        this.phzLoader = new PHZLoader({cacheRegistry: this.cacheRegistry});
-
+        this.phzLoader = new PHZLoader({ cacheRegistry: this.cacheRegistry });
     }
 
     /**
      * Start the service to receive and handle IPC messages.
      */
     public start() {
-
-        ipcMain.on('capture-controller-start-capture', (event: Electron.Event, message: StartCaptureMessage) => {
-
-            this.startCapture(event.sender, message.url)
-                .catch( err => log.error("Could not start capture: ", err));
-
-        });
-
+        ipcMain.on(
+            'capture-controller-start-capture',
+            (event: Electron.Event, message: StartCaptureMessage) => {
+                this.startCapture(event.sender, message.url).catch(err =>
+                    log.error('Could not start capture: ', err)
+                );
+            }
+        );
     }
 
     /**
@@ -51,8 +48,10 @@ export class CaptureController {
      *
      * @param url {string}
      */
-    protected async startCapture(webContents: Electron.WebContents, url: string) {
-
+    protected async startCapture(
+        webContents: Electron.WebContents,
+        url: string
+    ) {
         webContents = await this.loadApp(webContents, url);
 
         const captureResult = await this.runCapture(webContents, url);
@@ -64,7 +63,6 @@ export class CaptureController {
         // now load the phz in the target window
 
         await this.loadPHZ(webContents, captureResult.path);
-
     }
 
     /**
@@ -74,25 +72,26 @@ export class CaptureController {
      * @param url {string}
      *
      */
-    private async loadApp(webContents: Electron.WebContents, url: string): Promise<Electron.WebContents> {
-
+    private async loadApp(
+        webContents: Electron.WebContents,
+        url: string
+    ): Promise<Electron.WebContents> {
         return new Promise<Electron.WebContents>(resolve => {
+            log.debug('Starting capture for URL: ' + url);
 
-            log.debug("Starting capture for URL: " + url);
-
-            const appPath = ResourcePaths.absoluteFromRelativePath('./apps/capture/progress/index.html');
+            const appPath = ResourcePaths.absoluteFromRelativePath(
+                './apps/capture/progress/index.html'
+            );
             const appURL = 'file://' + appPath;
 
-            webContents.once("did-finish-load", () => {
+            webContents.once('did-finish-load', () => {
                 resolve(webContents);
             });
 
-            log.debug("Loading app: ", appURL);
+            log.debug('Loading app: ', appURL);
 
             webContents.loadURL(appURL);
-
         });
-
     }
 
     /**
@@ -104,14 +103,14 @@ export class CaptureController {
      *
      */
     private async runCapture(webContents: Electron.WebContents, url: string) {
+        Preconditions.assertNotNull(webContents, 'webContents');
 
-        Preconditions.assertNotNull(webContents, "webContents");
-
-        const progressForwarder = new ProgressForwarder({webContents});
+        const progressForwarder = new ProgressForwarder({ webContents });
 
         const captureOpts: CaptureOpts = {
-            pendingWebRequestsCallback: (event) => progressForwarder.pendingWebRequestsCallback(event),
-            amp: true
+            pendingWebRequestsCallback: event =>
+                progressForwarder.pendingWebRequestsCallback(event),
+            amp: true,
         };
 
         const browser = BrowserRegistry.DEFAULT;
@@ -120,19 +119,21 @@ export class CaptureController {
         // TODO: this should be 'default' not 'hidden'
 
         // browser = Browsers.toProfile(browser, "default");
-        const browserProfile = BrowserProfiles.toBrowserProfile(browser, "WEBVIEW");
+        const browserProfile = BrowserProfiles.toBrowserProfile(
+            browser,
+            'WEBVIEW'
+        );
 
-        browserProfile.navigation.navigated.dispatchEvent({link: url});
+        browserProfile.navigation.navigated.dispatchEvent({ link: url });
         browserProfile.navigation.captured.dispatchEvent({});
 
         const capture = new Capture(browserProfile, captureOpts);
 
         const captureResult = await capture.start();
 
-        log.info("captureResult: ", captureResult);
+        log.info('captureResult: ', captureResult);
 
         return captureResult;
-
     }
 
     /**
@@ -141,34 +142,24 @@ export class CaptureController {
      * @param path {string} The path to our phz file.
      */
     private async loadPHZ(webContents: Electron.WebContents, path: string) {
-
         const loadedFile = await this.phzLoader.registerForLoad(path);
 
         log.debug(`Loading PHZ URL via: `, loadedFile.webResource);
 
         loadedFile.webResource.loadWebContents(webContents);
-
     }
-
 }
 
-
 class ProgressForwarder {
-
     private readonly webContents: Electron.WebContents;
 
     constructor(opts: any) {
-
         this.webContents = opts.webContents;
 
-        Preconditions.assertNotNull(this.webContents, "webContents");
-
+        Preconditions.assertNotNull(this.webContents, 'webContents');
     }
 
     public pendingWebRequestsCallback(event: PendingWebRequestsEvent) {
-
-        this.webContents.send("capture-progress-update", event);
-
+        this.webContents.send('capture-progress-update', event);
     }
-
 }

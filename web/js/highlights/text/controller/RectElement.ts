@@ -2,7 +2,6 @@
  * A rect and element pair.
  */
 export class RectElement {
-
     public readonly rect: any;
 
     public readonly element: HTMLElement;
@@ -11,5 +10,4 @@ export class RectElement {
         this.rect = rect;
         this.element = element;
     }
-
 }

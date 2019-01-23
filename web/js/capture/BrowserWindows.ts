@@ -1,23 +1,22 @@
-
 // Investigate this as a way to adjust the screen size automatically:
 
 // useContentSize Boolean (optional) - The width and height would be used as web
 // page's size, which means the actual window's size will include window frame's
 // size and be slightly larger. Default is false.
 
-import {ResourcePaths} from '../electron/webresource/ResourcePaths';
-import {Logger} from '../logger/Logger';
-import {BrowserProfile} from './BrowserProfile';
+import { ResourcePaths } from '../electron/webresource/ResourcePaths';
+import { Logger } from '../logger/Logger';
+import { BrowserProfile } from './BrowserProfile';
 import BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
 import BrowserWindow = Electron.BrowserWindow;
 
 const log = Logger.create();
 
 export class BrowserWindows {
-
-    public static toBrowserWindowOptions(browserProfile: BrowserProfile): BrowserWindowConstructorOptions {
-
-        const partition = "part-" + Date.now();
+    public static toBrowserWindowOptions(
+        browserProfile: BrowserProfile
+    ): BrowserWindowConstructorOptions {
+        const partition = 'part-' + Date.now();
 
         return {
             minWidth: browserProfile.deviceEmulation.screenSize.width,
@@ -32,7 +31,6 @@ export class BrowserWindows {
             enableLargerThanScreen: true,
 
             webPreferences: {
-
                 // the path to our content capture bundle needs to be absolute
                 // for some strange reason and this is required by Electron.
                 // preload,
@@ -60,24 +58,18 @@ export class BrowserWindows {
                  * Use a session per capture so that webRequests between capture
                  * instances aren't shared.
                  */
-                partition
-
-            }
-
+                partition,
+            },
         };
-
     }
 
-    public static async onceReadyToShow(window: BrowserWindow): Promise<BrowserWindow> {
-
+    public static async onceReadyToShow(
+        window: BrowserWindow
+    ): Promise<BrowserWindow> {
         return new Promise<BrowserWindow>(resolve => {
-
             window.once('ready-to-show', () => {
                 return resolve(window);
             });
-
         });
-
     }
-
 }

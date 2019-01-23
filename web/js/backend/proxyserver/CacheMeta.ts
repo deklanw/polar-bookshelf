@@ -1,10 +1,9 @@
 /**
  * Metadata about an object registered in the cache.
  */
-import {CachedRequest} from './CachedRequest';
+import { CachedRequest } from './CachedRequest';
 
 export class CacheMeta {
-
     public url: string;
     public requestConfig: CachedRequest;
 
@@ -14,5 +13,4 @@ export class CacheMeta {
         this.url = url;
         this.requestConfig = requestConfig;
     }
-
 }

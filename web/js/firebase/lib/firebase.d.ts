@@ -59,7 +59,7 @@ declare namespace firebase {
         linkWithRedirect(provider: firebase.auth.AuthProvider): Promise<void>;
         metadata: firebase.auth.UserMetadata;
         phoneNumber: string | null;
-        providerData: (firebase.UserInfo | null)[];
+        providerData: Array<firebase.UserInfo | null>;
         reauthenticateAndRetrieveDataWithCredential(
             credential: firebase.auth.AuthCredential
         ): Promise<firebase.auth.UserCredential>;
@@ -140,12 +140,10 @@ declare namespace firebase.functions {
     export interface HttpsCallableResult {
         readonly data: any;
     }
-    export interface HttpsCallable {
-        (data?: any): Promise<HttpsCallableResult>;
-    }
+    export type HttpsCallable = (data?: any) => Promise<HttpsCallableResult>;
     export class Functions {
         private constructor();
-        httpsCallable(name: string): HttpsCallable;
+        public httpsCallable(name: string): HttpsCallable;
     }
     export type ErrorStatus =
         | 'ok'
@@ -180,7 +178,7 @@ declare namespace firebase.auth {
         operation: string;
     }
 
-    type ActionCodeSettings = {
+    interface ActionCodeSettings {
         android?: {
             installApp?: boolean;
             minimumVersion?: string;
@@ -189,14 +187,14 @@ declare namespace firebase.auth {
         handleCodeInApp?: boolean;
         iOS?: { bundleId: string };
         url: string;
-    };
+    }
 
-    type AdditionalUserInfo = {
+    interface AdditionalUserInfo {
         isNewUser: boolean;
         profile: Object | null;
         providerId: string;
         username?: string | null;
-    };
+    }
 
     interface ApplicationVerifier {
         type: string;
@@ -221,8 +219,8 @@ declare namespace firebase.auth {
             password: string
         ): Promise<firebase.auth.UserCredential>;
         currentUser: firebase.User | null;
-        fetchProvidersForEmail(email: string): Promise<Array<string>>;
-        fetchSignInMethodsForEmail(email: string): Promise<Array<string>>;
+        fetchProvidersForEmail(email: string): Promise<string[]>;
+        fetchSignInMethodsForEmail(email: string): Promise<string[]>;
         isSignInWithEmailLink(emailLink: string): boolean;
         getRedirectResult(): Promise<firebase.auth.UserCredential>;
         languageCode: string | null;
@@ -249,16 +247,22 @@ declare namespace firebase.auth {
             email: string,
             actionCodeSettings?: firebase.auth.ActionCodeSettings | null
         ): Promise<void>;
-        setPersistence(persistence: firebase.auth.Auth.Persistence): Promise<void>;
+        setPersistence(
+            persistence: firebase.auth.Auth.Persistence
+        ): Promise<void>;
         signInAndRetrieveDataWithCredential(
             credential: firebase.auth.AuthCredential
         ): Promise<firebase.auth.UserCredential>;
         signInAnonymously(): Promise<firebase.auth.UserCredential>;
-        signInAnonymouslyAndRetrieveData(): Promise<firebase.auth.UserCredential>;
+        signInAnonymouslyAndRetrieveData(): Promise<
+            firebase.auth.UserCredential
+        >;
         signInWithCredential(
             credential: firebase.auth.AuthCredential
         ): Promise<firebase.User>;
-        signInWithCustomToken(token: string): Promise<firebase.auth.UserCredential>;
+        signInWithCustomToken(
+            token: string
+        ): Promise<firebase.auth.UserCredential>;
         signInAndRetrieveDataWithCustomToken(
             token: string
         ): Promise<firebase.auth.UserCredential>;
@@ -298,25 +302,27 @@ declare namespace firebase.auth {
     }
 
     interface ConfirmationResult {
-        confirm(verificationCode: string): Promise<firebase.auth.UserCredential>;
+        confirm(
+            verificationCode: string
+        ): Promise<firebase.auth.UserCredential>;
         verificationId: string;
     }
 
     class EmailAuthProvider extends EmailAuthProvider_Instance {
-        static PROVIDER_ID: string;
-        static EMAIL_PASSWORD_SIGN_IN_METHOD: string;
-        static EMAIL_LINK_SIGN_IN_METHOD: string;
-        static credential(
+        public static PROVIDER_ID: string;
+        public static EMAIL_PASSWORD_SIGN_IN_METHOD: string;
+        public static EMAIL_LINK_SIGN_IN_METHOD: string;
+        public static credential(
             email: string,
             password: string
         ): firebase.auth.AuthCredential;
-        static credentialWithLink(
+        public static credentialWithLink(
             email: string,
             emailLink: string
         ): firebase.auth.AuthCredential;
     }
     class EmailAuthProvider_Instance implements firebase.auth.AuthProvider {
-        providerId: string;
+        public providerId: string;
     }
 
     interface Error {
@@ -325,43 +331,43 @@ declare namespace firebase.auth {
     }
 
     class FacebookAuthProvider extends FacebookAuthProvider_Instance {
-        static PROVIDER_ID: string;
-        static FACEBOOK_SIGN_IN_METHOD: string;
-        static credential(token: string): firebase.auth.AuthCredential;
+        public static PROVIDER_ID: string;
+        public static FACEBOOK_SIGN_IN_METHOD: string;
+        public static credential(token: string): firebase.auth.AuthCredential;
     }
     class FacebookAuthProvider_Instance implements firebase.auth.AuthProvider {
-        addScope(scope: string): firebase.auth.AuthProvider;
-        providerId: string;
-        setCustomParameters(
+        public addScope(scope: string): firebase.auth.AuthProvider;
+        public providerId: string;
+        public setCustomParameters(
             customOAuthParameters: Object
         ): firebase.auth.AuthProvider;
     }
 
     class GithubAuthProvider extends GithubAuthProvider_Instance {
-        static PROVIDER_ID: string;
-        static GITHUB_SIGN_IN_METHOD: string;
-        static credential(token: string): firebase.auth.AuthCredential;
+        public static PROVIDER_ID: string;
+        public static GITHUB_SIGN_IN_METHOD: string;
+        public static credential(token: string): firebase.auth.AuthCredential;
     }
     class GithubAuthProvider_Instance implements firebase.auth.AuthProvider {
-        addScope(scope: string): firebase.auth.AuthProvider;
-        providerId: string;
-        setCustomParameters(
+        public addScope(scope: string): firebase.auth.AuthProvider;
+        public providerId: string;
+        public setCustomParameters(
             customOAuthParameters: Object
         ): firebase.auth.AuthProvider;
     }
 
     class GoogleAuthProvider extends GoogleAuthProvider_Instance {
-        static PROVIDER_ID: string;
-        static GOOGLE_SIGN_IN_METHOD: string;
-        static credential(
+        public static PROVIDER_ID: string;
+        public static GOOGLE_SIGN_IN_METHOD: string;
+        public static credential(
             idToken?: string | null,
             accessToken?: string | null
         ): firebase.auth.AuthCredential;
     }
     class GoogleAuthProvider_Instance implements firebase.auth.AuthProvider {
-        addScope(scope: string): firebase.auth.AuthProvider;
-        providerId: string;
-        setCustomParameters(
+        public addScope(scope: string): firebase.auth.AuthProvider;
+        public providerId: string;
+        public setCustomParameters(
             customOAuthParameters: Object
         ): firebase.auth.AuthProvider;
     }
@@ -378,17 +384,17 @@ declare namespace firebase.auth {
     }
 
     class PhoneAuthProvider extends PhoneAuthProvider_Instance {
-        static PROVIDER_ID: string;
-        static PHONE_SIGN_IN_METHOD: string;
-        static credential(
+        public static PROVIDER_ID: string;
+        public static PHONE_SIGN_IN_METHOD: string;
+        public static credential(
             verificationId: string,
             verificationCode: string
         ): firebase.auth.AuthCredential;
     }
     class PhoneAuthProvider_Instance implements firebase.auth.AuthProvider {
         constructor(auth?: firebase.auth.Auth | null);
-        providerId: string;
-        verifyPhoneNumber(
+        public providerId: string;
+        public verifyPhoneNumber(
             phoneNumber: string,
             applicationVerifier: firebase.auth.ApplicationVerifier
         ): Promise<string>;
@@ -402,33 +408,33 @@ declare namespace firebase.auth {
             parameters?: Object | null,
             app?: firebase.app.App | null
         );
-        clear(): void;
-        render(): Promise<number>;
-        type: string;
-        verify(): Promise<string>;
+        public clear(): void;
+        public render(): Promise<number>;
+        public type: string;
+        public verify(): Promise<string>;
     }
 
     class TwitterAuthProvider extends TwitterAuthProvider_Instance {
-        static PROVIDER_ID: string;
-        static TWITTER_SIGN_IN_METHOD: string;
-        static credential(
+        public static PROVIDER_ID: string;
+        public static TWITTER_SIGN_IN_METHOD: string;
+        public static credential(
             token: string,
             secret: string
         ): firebase.auth.AuthCredential;
     }
     class TwitterAuthProvider_Instance implements firebase.auth.AuthProvider {
-        providerId: string;
-        setCustomParameters(
+        public providerId: string;
+        public setCustomParameters(
             customOAuthParameters: Object
         ): firebase.auth.AuthProvider;
     }
 
-    type UserCredential = {
+    interface UserCredential {
         additionalUserInfo?: firebase.auth.AdditionalUserInfo | null;
         credential: firebase.auth.AuthCredential | null;
         operationType?: string | null;
         user: firebase.User | null;
-    };
+    }
 
     interface UserMetadata {
         creationTime?: string;
@@ -480,7 +486,10 @@ declare namespace firebase.database {
             priority: number | string | null,
             onComplete?: (a: Error | null) => any
         ): Promise<any>;
-        update(values: Object, onComplete?: (a: Error | null) => any): Promise<any>;
+        update(
+            values: Object,
+            onComplete?: (a: Error | null) => any
+        ): Promise<any>;
     }
 
     type EventType =
@@ -504,18 +513,27 @@ declare namespace firebase.database {
         limitToLast(limit: number): firebase.database.Query;
         off(
             eventType?: EventType,
-            callback?: (a: firebase.database.DataSnapshot, b?: string | null) => any,
+            callback?: (
+                a: firebase.database.DataSnapshot,
+                b?: string | null
+            ) => any,
             context?: Object | null
         ): any;
         on(
             eventType: EventType,
-            callback: (a: firebase.database.DataSnapshot | null, b?: string) => any,
+            callback: (
+                a: firebase.database.DataSnapshot | null,
+                b?: string
+            ) => any,
             cancelCallbackOrContext?: Object | null,
             context?: Object | null
         ): (a: firebase.database.DataSnapshot | null, b?: string) => any;
         once(
             eventType: EventType,
-            successCallback?: (a: firebase.database.DataSnapshot, b?: string) => any,
+            successCallback?: (
+                a: firebase.database.DataSnapshot,
+                b?: string
+            ) => any,
             failureCallbackOrContext?: Object | null,
             context?: Object | null
         ): Promise<DataSnapshot>;
@@ -562,7 +580,10 @@ declare namespace firebase.database {
             ) => any,
             applyLocally?: boolean
         ): Promise<any>;
-        update(values: Object, onComplete?: (a: Error | null) => any): Promise<any>;
+        update(
+            values: Object,
+            onComplete?: (a: Error | null) => any
+        ): Promise<any>;
     }
 
     interface ThenableReference
@@ -643,7 +664,9 @@ declare namespace firebase.storage {
         root: firebase.storage.Reference;
         storage: firebase.storage.Storage;
         toString(): string;
-        updateMetadata(metadata: firebase.storage.SettableMetadata): Promise<any>;
+        updateMetadata(
+            metadata: firebase.storage.SettableMetadata
+        ): Promise<any>;
     }
 
     interface SettableMetadata {
@@ -698,7 +721,10 @@ declare namespace firebase.storage {
         catch(onRejected: (a: Error) => any): Promise<any>;
         on(
             event: firebase.storage.TaskEvent,
-            nextOrObserver?: firebase.Observer<any> | null | ((a: Object) => any),
+            nextOrObserver?:
+                | firebase.Observer<any>
+                | null
+                | ((a: Object) => any),
             error?: ((a: Error) => any) | null,
             complete?: (firebase.Unsubscribe) | null
         ): Function;
@@ -706,7 +732,9 @@ declare namespace firebase.storage {
         resume(): boolean;
         snapshot: firebase.storage.UploadTaskSnapshot;
         then(
-            onFulfilled?: ((a: firebase.storage.UploadTaskSnapshot) => any) | null,
+            onFulfilled?:
+                | ((a: firebase.storage.UploadTaskSnapshot) => any)
+                | null,
             onRejected?: ((a: Error) => any) | null
         ): Promise<any>;
     }
@@ -732,14 +760,18 @@ declare namespace firebase.firestore {
      * Document data (for use with `DocumentReference.set()`) consists of fields
      * mapped to values.
      */
-    export type DocumentData = { [field: string]: any };
+    export interface DocumentData {
+        [field: string]: any;
+    }
 
     /**
      * Update data (for use with `DocumentReference.update()`) consists of field
      * paths (e.g. 'foo' or 'foo.baz') mapped to values. Fields that contain dots
      * reference nested fields within the document.
      */
-    export type UpdateData = { [fieldPath: string]: any };
+    export interface UpdateData {
+        [fieldPath: string]: any;
+    }
 
     /** Settings used to configure a `Firestore` instance. */
     export interface Settings {
@@ -775,19 +807,19 @@ declare namespace firebase.firestore {
      * Firestore persistence.
      */
     export interface PersistenceSettings {
-      /**
-       * Whether to synchronize the in-memory state of multiple tabs. Setting this
-       * to 'true' in all open tabs enables shared access to local persistence,
-       * shared execution of queries and latency-compensated local document updates
-       * across all connected instances.
-       *
-       * To enable this mode, `experimentalTabSynchronization:true` needs to be set
-       * globally in all active tabs. If omitted or set to 'false',
-       * `enablePersistence()` will fail in all but the first tab.
-       *
-       * NOTE: This mode is not yet recommended for production use.
-       */
-      experimentalTabSynchronization?: boolean;
+        /**
+         * Whether to synchronize the in-memory state of multiple tabs. Setting this
+         * to 'true' in all open tabs enables shared access to local persistence,
+         * shared execution of queries and latency-compensated local document updates
+         * across all connected instances.
+         *
+         * To enable this mode, `experimentalTabSynchronization:true` needs to be set
+         * globally in all active tabs. If omitted or set to 'false',
+         * `enablePersistence()` will fail in all but the first tab.
+         *
+         * NOTE: This mode is not yet recommended for production use.
+         */
+        experimentalTabSynchronization?: boolean;
     }
 
     export type LogLevel = 'debug' | 'error' | 'silent';
@@ -806,7 +838,7 @@ declare namespace firebase.firestore {
          *
          * @param settings The settings to use.
          */
-        settings(settings: Settings): void;
+        public settings(settings: Settings): void;
 
         // TODO(multitab): Uncomment when multi-tab is released publicly.
         /**
@@ -829,7 +861,7 @@ declare namespace firebase.firestore {
          * @return A promise that represents successfully enabling persistent
          * storage.
          */
-        enablePersistence(settings?: PersistenceSettings): Promise<void>;
+        public enablePersistence(settings?: PersistenceSettings): Promise<void>;
 
         /**
          * Gets a `CollectionReference` instance that refers to the collection at
@@ -838,7 +870,7 @@ declare namespace firebase.firestore {
          * @param collectionPath A slash-separated path to a collection.
          * @return The `CollectionReference` instance.
          */
-        collection(collectionPath: string): CollectionReference;
+        public collection(collectionPath: string): CollectionReference;
 
         /**
          * Gets a `DocumentReference` instance that refers to the document at the
@@ -847,7 +879,7 @@ declare namespace firebase.firestore {
          * @param documentPath A slash-separated path to a document.
          * @return The `DocumentReference` instance.
          */
-        doc(documentPath: string): DocumentReference;
+        public doc(documentPath: string): DocumentReference;
 
         /**
          * Executes the given updateFunction and then attempts to commit the
@@ -863,7 +895,7 @@ declare namespace firebase.firestore {
          * transaction failed, a rejected Promise with the corresponding failure
          * error will be returned.
          */
-        runTransaction<T>(
+        public runTransaction<T>(
             updateFunction: (transaction: Transaction) => Promise<T>
         ): Promise<T>;
 
@@ -871,12 +903,12 @@ declare namespace firebase.firestore {
          * Creates a write batch, used for performing multiple writes as a single
          * atomic operation.
          */
-        batch(): WriteBatch;
+        public batch(): WriteBatch;
 
         /**
          * The `FirebaseApp` associated with this `Firestore` instance.
          */
-        app: firebase.app.App;
+        public app: firebase.app.App;
 
         /**
          * Re-enables use of the network for this Firestore instance after a prior
@@ -884,7 +916,7 @@ declare namespace firebase.firestore {
          *
          * @return A promise that is resolved once the network has been enabled.
          */
-        enableNetwork(): Promise<void>;
+        public enableNetwork(): Promise<void>;
 
         /**
          * Disables network usage for this instance. It can be re-enabled via
@@ -894,9 +926,9 @@ declare namespace firebase.firestore {
          *
          * @return A promise that is resolved once the network has been disabled.
          */
-        disableNetwork(): Promise<void>;
+        public disableNetwork(): Promise<void>;
 
-        INTERNAL: { delete: () => Promise<void> };
+        public INTERNAL: { delete: () => Promise<void> };
     }
 
     /**
@@ -915,8 +947,8 @@ declare namespace firebase.firestore {
          */
         constructor(latitude: number, longitude: number);
 
-        readonly latitude: number;
-        readonly longitude: number;
+        public readonly latitude: number;
+        public readonly longitude: number;
 
         /**
          * Returns true if this `GeoPoint` is equal to the provided one.
@@ -924,7 +956,7 @@ declare namespace firebase.firestore {
          * @param other The `GeoPoint` to compare against.
          * @return true if this `GeoPoint` is equal to the provided one.
          */
-        isEqual(other: GeoPoint): boolean;
+        public isEqual(other: GeoPoint): boolean;
     }
 
     /**
@@ -944,7 +976,7 @@ declare namespace firebase.firestore {
          *
          * @return a new timestamp representing the current date.
          */
-        static now(): Timestamp;
+        public static now(): Timestamp;
 
         /**
          * Creates a new timestamp from the given date.
@@ -953,7 +985,7 @@ declare namespace firebase.firestore {
          * @return A new `Timestamp` representing the same point in time as the given
          *     date.
          */
-        static fromDate(date: Date): Timestamp;
+        public static fromDate(date: Date): Timestamp;
 
         /**
          * Creates a new timestamp from the given number of milliseconds.
@@ -963,7 +995,7 @@ declare namespace firebase.firestore {
          * @return A new `Timestamp` representing the same point in time as the given
          *     number of milliseconds.
          */
-        static fromMillis(milliseconds: number): Timestamp;
+        public static fromMillis(milliseconds: number): Timestamp;
 
         /**
          * Creates a new timestamp.
@@ -978,8 +1010,8 @@ declare namespace firebase.firestore {
          */
         constructor(seconds: number, nanoseconds: number);
 
-        readonly seconds: number;
-        readonly nanoseconds: number;
+        public readonly seconds: number;
+        public readonly nanoseconds: number;
 
         /**
          * Returns a new `Date` corresponding to this timestamp. This may lose
@@ -988,7 +1020,7 @@ declare namespace firebase.firestore {
          * @return JavaScript `Date` object representing the same point in time as
          *     this `Timestamp`, with millisecond precision.
          */
-        toDate(): Date;
+        public toDate(): Date;
 
         /**
          * Returns the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
@@ -996,7 +1028,7 @@ declare namespace firebase.firestore {
          * @return The point in time corresponding to this timestamp, represented as
          *     the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
          */
-        toMillis(): number;
+        public toMillis(): number;
 
         /**
          * Returns true if this `Timestamp` is equal to the provided one.
@@ -1004,7 +1036,7 @@ declare namespace firebase.firestore {
          * @param other The `Timestamp` to compare against.
          * @return true if this `Timestamp` is equal to the provided one.
          */
-        isEqual(other: Timestamp): boolean;
+        public isEqual(other: Timestamp): boolean;
     }
 
     /**
@@ -1017,12 +1049,12 @@ declare namespace firebase.firestore {
          * Creates a new Blob from the given Base64 string, converting it to
          * bytes.
          */
-        static fromBase64String(base64: string): Blob;
+        public static fromBase64String(base64: string): Blob;
 
         /**
          * Creates a new Blob from the given Uint8Array.
          */
-        static fromUint8Array(array: Uint8Array): Blob;
+        public static fromUint8Array(array: Uint8Array): Blob;
 
         /**
          * Returns the bytes of this Blob as a Base64-encoded string.
@@ -1040,7 +1072,7 @@ declare namespace firebase.firestore {
          * @param other The `Blob` to compare against.
          * @return true if this `Blob` is equal to the provided one.
          */
-        isEqual(other: Blob): boolean;
+        public isEqual(other: Blob): boolean;
     }
 
     /**
@@ -1058,7 +1090,7 @@ declare namespace firebase.firestore {
          * @param documentRef A reference to the document to be read.
          * @return A DocumentSnapshot for the read data.
          */
-        get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
+        public get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
 
         /**
          * Writes to the document referred to by the provided `DocumentReference`.
@@ -1070,7 +1102,7 @@ declare namespace firebase.firestore {
          * @param options An object to configure the set behavior.
          * @return This `Transaction` instance. Used for chaining method calls.
          */
-        set(
+        public set(
             documentRef: DocumentReference,
             data: DocumentData,
             options?: SetOptions
@@ -1087,7 +1119,10 @@ declare namespace firebase.firestore {
          * within the document.
          * @return This `Transaction` instance. Used for chaining method calls.
          */
-        update(documentRef: DocumentReference, data: UpdateData): Transaction;
+        public update(
+            documentRef: DocumentReference,
+            data: UpdateData
+        ): Transaction;
 
         /**
          * Updates fields in the document referred to by the provided
@@ -1104,7 +1139,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved once the data has been successfully written
          * to the backend (Note that it won't resolve while you're offline).
          */
-        update(
+        public update(
             documentRef: DocumentReference,
             field: string | FieldPath,
             value: any,
@@ -1117,7 +1152,7 @@ declare namespace firebase.firestore {
          * @param documentRef A reference to the document to be deleted.
          * @return This `Transaction` instance. Used for chaining method calls.
          */
-        delete(documentRef: DocumentReference): Transaction;
+        public delete(documentRef: DocumentReference): Transaction;
     }
 
     /**
@@ -1144,7 +1179,7 @@ declare namespace firebase.firestore {
          * @param options An object to configure the set behavior.
          * @return This `WriteBatch` instance. Used for chaining method calls.
          */
-        set(
+        public set(
             documentRef: DocumentReference,
             data: DocumentData,
             options?: SetOptions
@@ -1161,7 +1196,10 @@ declare namespace firebase.firestore {
          * within the document.
          * @return This `WriteBatch` instance. Used for chaining method calls.
          */
-        update(documentRef: DocumentReference, data: UpdateData): WriteBatch;
+        public update(
+            documentRef: DocumentReference,
+            data: UpdateData
+        ): WriteBatch;
 
         /**
          * Updates fields in the document referred to by this `DocumentReference`.
@@ -1177,7 +1215,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved once the data has been successfully written
          * to the backend (Note that it won't resolve while you're offline).
          */
-        update(
+        public update(
             documentRef: DocumentReference,
             field: string | FieldPath,
             value: any,
@@ -1190,7 +1228,7 @@ declare namespace firebase.firestore {
          * @param documentRef A reference to the document to be deleted.
          * @return This `WriteBatch` instance. Used for chaining method calls.
          */
-        delete(documentRef: DocumentReference): WriteBatch;
+        public delete(documentRef: DocumentReference): WriteBatch;
 
         /**
          * Commits all of the writes in this write batch as a single atomic unit.
@@ -1199,7 +1237,7 @@ declare namespace firebase.firestore {
          * successfully written to the backend as an atomic unit. Note that it won't
          * resolve while you're offline.
          */
-        commit(): Promise<void>;
+        public commit(): Promise<void>;
     }
 
     /**
@@ -1234,7 +1272,7 @@ declare namespace firebase.firestore {
          * paths. Any field path that is not specified is ignored and remains
          * untouched.
          */
-        readonly mergeFields?: (string | FieldPath)[];
+        readonly mergeFields?: Array<string | FieldPath>;
     }
 
     /**
@@ -1278,24 +1316,24 @@ declare namespace firebase.firestore {
         private constructor();
 
         /** The identifier of the document within its collection. */
-        readonly id: string;
+        public readonly id: string;
 
         /**
          * The `Firestore` for the Firestore database (useful for performing
          * transactions, etc.).
          */
-        readonly firestore: Firestore;
+        public readonly firestore: Firestore;
 
         /**
          * A reference to the Collection to which this DocumentReference belongs.
          */
-        readonly parent: CollectionReference;
+        public readonly parent: CollectionReference;
 
         /**
          * A string representing the path of the referenced document (relative
          * to the root of the database).
          */
-        readonly path: string;
+        public readonly path: string;
 
         /**
          * Gets a `CollectionReference` instance that refers to the collection at
@@ -1304,7 +1342,7 @@ declare namespace firebase.firestore {
          * @param collectionPath A slash-separated path to a collection.
          * @return The `CollectionReference` instance.
          */
-        collection(collectionPath: string): CollectionReference;
+        public collection(collectionPath: string): CollectionReference;
 
         /**
          * Returns true if this `DocumentReference` is equal to the provided one.
@@ -1312,7 +1350,7 @@ declare namespace firebase.firestore {
          * @param other The `DocumentReference` to compare against.
          * @return true if this `DocumentReference` is equal to the provided one.
          */
-        isEqual(other: DocumentReference): boolean;
+        public isEqual(other: DocumentReference): boolean;
 
         /**
          * Writes to the document referred to by this `DocumentReference`. If the
@@ -1324,7 +1362,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved once the data has been successfully written
          * to the backend (Note that it won't resolve while you're offline).
          */
-        set(data: DocumentData, options?: SetOptions): Promise<void>;
+        public set(data: DocumentData, options?: SetOptions): Promise<void>;
 
         /**
          * Updates fields in the document referred to by this `DocumentReference`.
@@ -1336,7 +1374,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved once the data has been successfully written
          * to the backend (Note that it won't resolve while you're offline).
          */
-        update(data: UpdateData): Promise<void>;
+        public update(data: UpdateData): Promise<void>;
 
         /**
          * Updates fields in the document referred to by this `DocumentReference`.
@@ -1351,7 +1389,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved once the data has been successfully written
          * to the backend (Note that it won't resolve while you're offline).
          */
-        update(
+        public update(
             field: string | FieldPath,
             value: any,
             ...moreFieldsAndValues: any[]
@@ -1364,7 +1402,7 @@ declare namespace firebase.firestore {
          * deleted from the backend (Note that it won't resolve while you're
          * offline).
          */
-        delete(): Promise<void>;
+        public delete(): Promise<void>;
 
         /**
          * Reads the document referred to by this `DocumentReference`.
@@ -1378,7 +1416,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved with a DocumentSnapshot containing the
          * current document contents.
          */
-        get(options?: GetOptions): Promise<DocumentSnapshot>;
+        public get(options?: GetOptions): Promise<DocumentSnapshot>;
 
         /**
          * Attaches a listener for DocumentSnapshot events. You may either pass
@@ -1397,12 +1435,12 @@ declare namespace firebase.firestore {
          * @return An unsubscribe function that can be called to cancel
          * the snapshot listener.
          */
-        onSnapshot(observer: {
+        public onSnapshot(observer: {
             next?: (snapshot: DocumentSnapshot) => void;
             error?: (error: FirestoreError) => void;
             complete?: () => void;
         }): () => void;
-        onSnapshot(
+        public onSnapshot(
             options: SnapshotListenOptions,
             observer: {
                 next?: (snapshot: DocumentSnapshot) => void;
@@ -1410,12 +1448,12 @@ declare namespace firebase.firestore {
                 complete?: () => void;
             }
         ): () => void;
-        onSnapshot(
+        public onSnapshot(
             onNext: (snapshot: DocumentSnapshot) => void,
             onError?: (error: Error) => void,
             onCompletion?: () => void
         ): () => void;
-        onSnapshot(
+        public onSnapshot(
             options: SnapshotListenOptions,
             onNext: (snapshot: DocumentSnapshot) => void,
             onError?: (error: Error) => void,
@@ -1489,18 +1527,18 @@ declare namespace firebase.firestore {
         protected constructor();
 
         /** True if the document exists. */
-        readonly exists: boolean;
+        public readonly exists: boolean;
         /** A `DocumentReference` to the document location. */
-        readonly ref: DocumentReference;
+        public readonly ref: DocumentReference;
         /**
          * The ID of the document for which this `DocumentSnapshot` contains data.
          */
-        readonly id: string;
+        public readonly id: string;
         /**
          * Metadata about this snapshot, concerning its source and if it has local
          * modifications.
          */
-        readonly metadata: SnapshotMetadata;
+        public readonly metadata: SnapshotMetadata;
 
         /**
          * Retrieves all fields in the document as an Object. Returns 'undefined' if
@@ -1516,7 +1554,7 @@ declare namespace firebase.firestore {
          * @return An Object containing all fields in the document or 'undefined' if
          * the document doesn't exist.
          */
-        data(options?: SnapshotOptions): DocumentData | undefined;
+        public data(options?: SnapshotOptions): DocumentData | undefined;
 
         /**
          * Retrieves the field specified by `fieldPath`. Returns 'undefined' if the
@@ -1533,7 +1571,10 @@ declare namespace firebase.firestore {
          * @return The data at the specified field location or undefined if no such
          * field exists in the document.
          */
-        get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
+        public get(
+            fieldPath: string | FieldPath,
+            options?: SnapshotOptions
+        ): any;
 
         /**
          * Returns true if this `DocumentSnapshot` is equal to the provided one.
@@ -1541,7 +1582,7 @@ declare namespace firebase.firestore {
          * @param other The `DocumentSnapshot` to compare against.
          * @return true if this `DocumentSnapshot` is equal to the provided one.
          */
-        isEqual(other: DocumentSnapshot): boolean;
+        public isEqual(other: DocumentSnapshot): boolean;
     }
 
     /**
@@ -1571,7 +1612,7 @@ declare namespace firebase.firestore {
          * not yet been set to their final value).
          * @return An Object containing all fields in the document.
          */
-        data(options?: SnapshotOptions): DocumentData;
+        public data(options?: SnapshotOptions): DocumentData;
     }
 
     /**
@@ -1584,7 +1625,13 @@ declare namespace firebase.firestore {
      * Filter conditions in a `Query.where()` clause are specified using the
      * strings '<', '<=', '==', '>=', '>', and 'array-contains'.
      */
-    export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
+    export type WhereFilterOp =
+        | '<'
+        | '<='
+        | '=='
+        | '>='
+        | '>'
+        | 'array-contains';
 
     /**
      * A `Query` refers to a Query which you can read or listen to. You can also
@@ -1597,7 +1644,7 @@ declare namespace firebase.firestore {
          * The `Firestore` for the Firestore database (useful for performing
          * transactions, etc.).
          */
-        readonly firestore: Firestore;
+        public readonly firestore: Firestore;
 
         /**
          * Creates and returns a new Query with the additional filter that documents
@@ -1609,7 +1656,7 @@ declare namespace firebase.firestore {
          * @param value The value for comparison
          * @return The created Query.
          */
-        where(
+        public where(
             fieldPath: string | FieldPath,
             opStr: WhereFilterOp,
             value: any
@@ -1624,7 +1671,7 @@ declare namespace firebase.firestore {
          * not specified, order will be ascending.
          * @return The created Query.
          */
-        orderBy(
+        public orderBy(
             fieldPath: string | FieldPath,
             directionStr?: OrderByDirection
         ): Query;
@@ -1636,7 +1683,7 @@ declare namespace firebase.firestore {
          * @param limit The maximum number of items to return.
          * @return The created Query.
          */
-        limit(limit: number): Query;
+        public limit(limit: number): Query;
 
         /**
          * Creates and returns a new Query that starts at the provided document
@@ -1647,7 +1694,7 @@ declare namespace firebase.firestore {
          * @param snapshot The snapshot of the document to start at.
          * @return The created Query.
          */
-        startAt(snapshot: DocumentSnapshot): Query;
+        public startAt(snapshot: DocumentSnapshot): Query;
 
         /**
          * Creates and returns a new Query that starts at the provided fields
@@ -1658,7 +1705,7 @@ declare namespace firebase.firestore {
          * of the query's order by.
          * @return The created Query.
          */
-        startAt(...fieldValues: any[]): Query;
+        public startAt(...fieldValues: any[]): Query;
 
         /**
          * Creates and returns a new Query that starts after the provided document
@@ -1669,7 +1716,7 @@ declare namespace firebase.firestore {
          * @param snapshot The snapshot of the document to start after.
          * @return The created Query.
          */
-        startAfter(snapshot: DocumentSnapshot): Query;
+        public startAfter(snapshot: DocumentSnapshot): Query;
 
         /**
          * Creates and returns a new Query that starts after the provided fields
@@ -1680,7 +1727,7 @@ declare namespace firebase.firestore {
          * of the query's order by.
          * @return The created Query.
          */
-        startAfter(...fieldValues: any[]): Query;
+        public startAfter(...fieldValues: any[]): Query;
 
         /**
          * Creates and returns a new Query that ends before the provided document
@@ -1691,7 +1738,7 @@ declare namespace firebase.firestore {
          * @param snapshot The snapshot of the document to end before.
          * @return The created Query.
          */
-        endBefore(snapshot: DocumentSnapshot): Query;
+        public endBefore(snapshot: DocumentSnapshot): Query;
 
         /**
          * Creates and returns a new Query that ends before the provided fields
@@ -1702,7 +1749,7 @@ declare namespace firebase.firestore {
          * of the query's order by.
          * @return The created Query.
          */
-        endBefore(...fieldValues: any[]): Query;
+        public endBefore(...fieldValues: any[]): Query;
 
         /**
          * Creates and returns a new Query that ends at the provided document
@@ -1713,7 +1760,7 @@ declare namespace firebase.firestore {
          * @param snapshot The snapshot of the document to end at.
          * @return The created Query.
          */
-        endAt(snapshot: DocumentSnapshot): Query;
+        public endAt(snapshot: DocumentSnapshot): Query;
 
         /**
          * Creates and returns a new Query that ends at the provided fields
@@ -1724,7 +1771,7 @@ declare namespace firebase.firestore {
          * of the query's order by.
          * @return The created Query.
          */
-        endAt(...fieldValues: any[]): Query;
+        public endAt(...fieldValues: any[]): Query;
 
         /**
          * Returns true if this `Query` is equal to the provided one.
@@ -1732,7 +1779,7 @@ declare namespace firebase.firestore {
          * @param other The `Query` to compare against.
          * @return true if this `Query` is equal to the provided one.
          */
-        isEqual(other: Query): boolean;
+        public isEqual(other: Query): boolean;
 
         /**
          * Executes the query and returns the results as a QuerySnapshot.
@@ -1745,7 +1792,7 @@ declare namespace firebase.firestore {
          * @param options An object to configure the get behavior.
          * @return A Promise that will be resolved with the results of the Query.
          */
-        get(options?: GetOptions): Promise<QuerySnapshot>;
+        public get(options?: GetOptions): Promise<QuerySnapshot>;
 
         /**
          * Attaches a listener for QuerySnapshot events. You may either pass
@@ -1764,12 +1811,12 @@ declare namespace firebase.firestore {
          * @return An unsubscribe function that can be called to cancel
          * the snapshot listener.
          */
-        onSnapshot(observer: {
+        public onSnapshot(observer: {
             next?: (snapshot: QuerySnapshot) => void;
             error?: (error: Error) => void;
             complete?: () => void;
         }): () => void;
-        onSnapshot(
+        public onSnapshot(
             options: SnapshotListenOptions,
             observer: {
                 next?: (snapshot: QuerySnapshot) => void;
@@ -1777,12 +1824,12 @@ declare namespace firebase.firestore {
                 complete?: () => void;
             }
         ): () => void;
-        onSnapshot(
+        public onSnapshot(
             onNext: (snapshot: QuerySnapshot) => void,
             onError?: (error: Error) => void,
             onCompletion?: () => void
         ): () => void;
-        onSnapshot(
+        public onSnapshot(
             options: SnapshotListenOptions,
             onNext: (snapshot: QuerySnapshot) => void,
             onError?: (error: Error) => void,
@@ -1804,21 +1851,21 @@ declare namespace firebase.firestore {
          * The query on which you called `get` or `onSnapshot` in order to get this
          * `QuerySnapshot`.
          */
-        readonly query: Query;
+        public readonly query: Query;
         /**
          * Metadata about this snapshot, concerning its source and if it has local
          * modifications.
          */
-        readonly metadata: SnapshotMetadata;
+        public readonly metadata: SnapshotMetadata;
 
         /** An array of all the documents in the QuerySnapshot. */
-        readonly docs: QueryDocumentSnapshot[];
+        public readonly docs: QueryDocumentSnapshot[];
 
         /** The number of documents in the QuerySnapshot. */
-        readonly size: number;
+        public readonly size: number;
 
         /** True if there are no documents in the QuerySnapshot. */
-        readonly empty: boolean;
+        public readonly empty: boolean;
 
         /**
          * Returns an array of the documents changes since the last snapshot. If this
@@ -1828,7 +1875,7 @@ declare namespace firebase.firestore {
          * changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger
          * snapshot events.
          */
-        docChanges(options?: SnapshotListenOptions): DocumentChange[];
+        public docChanges(options?: SnapshotListenOptions): DocumentChange[];
 
         /**
          * Enumerates all of the documents in the QuerySnapshot.
@@ -1837,7 +1884,7 @@ declare namespace firebase.firestore {
          * each document in the snapshot.
          * @param thisArg The `this` binding for the callback.
          */
-        forEach(
+        public forEach(
             callback: (result: QueryDocumentSnapshot) => void,
             thisArg?: any
         ): void;
@@ -1848,7 +1895,7 @@ declare namespace firebase.firestore {
          * @param other The `QuerySnapshot` to compare against.
          * @return true if this `QuerySnapshot` is equal to the provided one.
          */
-        isEqual(other: QuerySnapshot): boolean;
+        public isEqual(other: QuerySnapshot): boolean;
     }
 
     /**
@@ -1892,19 +1939,19 @@ declare namespace firebase.firestore {
         private constructor();
 
         /** The identifier of the collection. */
-        readonly id: string;
+        public readonly id: string;
 
         /**
          * A reference to the containing Document if this is a subcollection, else
          * null.
          */
-        readonly parent: DocumentReference | null;
+        public readonly parent: DocumentReference | null;
 
         /**
          * A string representing the path of the referenced collection (relative
          * to the root of the database).
          */
-        readonly path: string;
+        public readonly path: string;
 
         /**
          * Get a `DocumentReference` for the document within the collection at the
@@ -1914,7 +1961,7 @@ declare namespace firebase.firestore {
          * @param documentPath A slash-separated path to a document.
          * @return The `DocumentReference` instance.
          */
-        doc(documentPath?: string): DocumentReference;
+        public doc(documentPath?: string): DocumentReference;
 
         /**
          * Add a new document to this collection with the specified data, assigning
@@ -1924,7 +1971,7 @@ declare namespace firebase.firestore {
          * @return A Promise resolved with a `DocumentReference` pointing to the
          * newly created document after it has been written to the backend.
          */
-        add(data: DocumentData): Promise<DocumentReference>;
+        public add(data: DocumentData): Promise<DocumentReference>;
 
         /**
          * Returns true if this `CollectionReference` is equal to the provided one.
@@ -1932,7 +1979,7 @@ declare namespace firebase.firestore {
          * @param other The `CollectionReference` to compare against.
          * @return true if this `CollectionReference` is equal to the provided one.
          */
-        isEqual(other: CollectionReference): boolean;
+        public isEqual(other: CollectionReference): boolean;
     }
 
     /**
@@ -1946,12 +1993,12 @@ declare namespace firebase.firestore {
          * Returns a sentinel used with set() or update() to include a
          * server-generated timestamp in the written data.
          */
-        static serverTimestamp(): FieldValue;
+        public static serverTimestamp(): FieldValue;
 
         /**
          * Returns a sentinel for use with update() to mark a field for deletion.
          */
-        static delete(): FieldValue;
+        public static delete(): FieldValue;
 
         /**
          * Returns a special value that can be used with set() or update() that tells
@@ -1964,7 +2011,7 @@ declare namespace firebase.firestore {
          * @param elements The elements to union into the array.
          * @return The FieldValue sentinel for use in a call to set() or update().
          */
-        static arrayUnion(...elements: any[]): FieldValue;
+        public static arrayUnion(...elements: any[]): FieldValue;
 
         /**
          * Returns a special value that can be used with set() or update() that tells
@@ -1976,7 +2023,7 @@ declare namespace firebase.firestore {
          * @param elements The elements to remove from the array.
          * @return The FieldValue sentinel for use in a call to set() or update().
          */
-        static arrayRemove(...elements: any[]): FieldValue;
+        public static arrayRemove(...elements: any[]): FieldValue;
 
         /**
          * Returns true if this `FieldValue` is equal to the provided one.
@@ -1984,7 +2031,7 @@ declare namespace firebase.firestore {
          * @param other The `FieldValue` to compare against.
          * @return true if this `FieldValue` is equal to the provided one.
          */
-        isEqual(other: FieldValue): boolean;
+        public isEqual(other: FieldValue): boolean;
     }
 
     /**
@@ -2005,7 +2052,7 @@ declare namespace firebase.firestore {
          * Returns a special sentinel FieldPath to refer to the ID of a document.
          * It can be used in queries to sort or filter by the document ID.
          */
-        static documentId(): FieldPath;
+        public static documentId(): FieldPath;
 
         /**
          * Returns true if this `FieldPath` is equal to the provided one.
@@ -2013,7 +2060,7 @@ declare namespace firebase.firestore {
          * @param other The `FieldPath` to compare against.
          * @return true if this `FieldPath` is equal to the provided one.
          */
-        isEqual(other: FieldPath): boolean;
+        public isEqual(other: FieldPath): boolean;
     }
 
     /**
@@ -2074,7 +2121,7 @@ declare namespace firebase.firestore {
         | 'unauthenticated';
 
     /** An error returned by a Firestore operation. */
-        // TODO(b/63008957): FirestoreError should extend firebase.FirebaseError
+    // TODO(b/63008957): FirestoreError should extend firebase.FirebaseError
     export interface FirestoreError {
         code: FirestoreErrorCode;
         message: string;

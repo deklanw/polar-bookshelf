@@ -2,7 +2,6 @@
  * Purge old log files.
  */
 export class LogPurger {
-
     private readonly epoch: Date;
 
     /**
@@ -25,17 +24,10 @@ export class LogPurger {
      * are no longer needed.
      */
     public static computePurgable(paths: string[]): string[] {
-
-        let result: string[] = [];
-
-
+        const result: string[] = [];
 
         return result;
-
     }
-
 }
 
-export interface Purged {
-
-}
+export interface Purged {}

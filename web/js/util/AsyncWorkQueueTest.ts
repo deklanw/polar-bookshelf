@@ -1,17 +1,15 @@
-import {assert} from 'chai';
-import {ProgressCalculator} from './ProgressCalculator';
-import {ResolvablePromise} from './ResolvablePromise';
-import {assertJSON} from '../test/Assertions';
-import {Latch} from './Latch';
+import { assert } from 'chai';
+import { ProgressCalculator } from './ProgressCalculator';
+import { ResolvablePromise } from './ResolvablePromise';
+import { assertJSON } from '../test/Assertions';
+import { Latch } from './Latch';
 import waitForExpect from 'wait-for-expect';
-import {PolarDataDir} from '../test/PolarDataDir';
-import {FilePaths} from './FilePaths';
-import {Files} from './Files';
-import {AsyncFunction, AsyncWorkQueue} from './AsyncWorkQueue';
+import { PolarDataDir } from '../test/PolarDataDir';
+import { FilePaths } from './FilePaths';
+import { Files } from './Files';
+import { AsyncFunction, AsyncWorkQueue } from './AsyncWorkQueue';
 
-interface Widget {
-
-}
+interface Widget {}
 
 let mockValue: number = 0;
 
@@ -20,7 +18,6 @@ export async function mockAsyncFunction() {
 }
 
 describe('AsyncWorkQueue', function() {
-
     let inputs: AsyncFunction[] = [];
 
     beforeEach(function() {
@@ -28,9 +25,7 @@ describe('AsyncWorkQueue', function() {
         inputs = [];
     });
 
-
-    it("Chained work", async function() {
-
+    it('Chained work', async function() {
         const work: AsyncFunction[] = [];
 
         async function firstJob() {
@@ -47,38 +42,36 @@ describe('AsyncWorkQueue', function() {
         await asyncWorkQueue.execute();
 
         assertJSON(inputs.sort(), []);
-
     });
 
-
-    it("With no work", async function() {
-
+    it('With no work', async function() {
         const work: AsyncFunction[] = [];
 
         const asyncWorkQueue = new AsyncWorkQueue(work);
         await asyncWorkQueue.execute();
 
         assertJSON(inputs.sort(), []);
-
     });
 
-    it("With work smaller than concurrency.", async function() {
+    it('With work smaller than concurrency.', async function() {
         const work: AsyncFunction[] = [mockAsyncFunction, mockAsyncFunction];
         const asyncWorkQueue = new AsyncWorkQueue(work, 10);
         await asyncWorkQueue.execute();
         assertJSON(work.sort(), []);
     });
 
-    it("With work larger than concurrency.", async function() {
-        const work: AsyncFunction[] = [mockAsyncFunction, mockAsyncFunction, mockAsyncFunction];
+    it('With work larger than concurrency.', async function() {
+        const work: AsyncFunction[] = [
+            mockAsyncFunction,
+            mockAsyncFunction,
+            mockAsyncFunction,
+        ];
         const asyncWorkQueue = new AsyncWorkQueue(work, 2);
         await asyncWorkQueue.execute();
         assertJSON(work.sort(), []);
     });
 
-
-    it("Expand with additional work", async function() {
-
+    it('Expand with additional work', async function() {
         // test that we can add more work once we've started...
 
         const work: AsyncFunction[] = [];
@@ -95,11 +88,9 @@ describe('AsyncWorkQueue', function() {
         assertJSON(work.sort(), []);
 
         assert.equal(asyncWorkQueue.getCompleted(), 3);
-
     });
 
     it("Verify that 'executing' lowers", async function() {
-
         const latches: Array<Latch<boolean>> = [];
 
         latches.push(new Latch());
@@ -137,12 +128,9 @@ describe('AsyncWorkQueue', function() {
         });
 
         await executionPromise;
-
     });
 
-
     it("Verify that 'executing' increases when the work expands", async function() {
-
         const latches: Array<Latch<boolean>> = [];
 
         latches.push(new Latch());
@@ -185,7 +173,6 @@ describe('AsyncWorkQueue', function() {
             assert.equal(asyncWorkQueue.getExecuting(), 1);
         });
 
-
         latches[2].resolve(true);
 
         await waitForExpect(async () => {
@@ -202,12 +189,9 @@ describe('AsyncWorkQueue', function() {
         });
 
         await executionPromise;
-
     });
 
-
-    it("With verified concurrency", async function() {
-
+    it('With verified concurrency', async function() {
         const latches: Array<Latch<boolean>> = [];
 
         latches.push(new Latch());
@@ -229,8 +213,18 @@ describe('AsyncWorkQueue', function() {
             return true;
         }
 
-        const work = [verifyConcurrency, verifyConcurrency, verifyConcurrency, verifyConcurrency, verifyConcurrency,
-                      verifyConcurrency, verifyConcurrency, verifyConcurrency, verifyConcurrency, verifyConcurrency];
+        const work = [
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+            verifyConcurrency,
+        ];
 
         const asyncWorkQueue = new AsyncWorkQueue(work, 10);
         const executionPromise = asyncWorkQueue.execute();
@@ -245,8 +239,5 @@ describe('AsyncWorkQueue', function() {
         }
 
         await executionPromise;
-
     });
-
 });
-

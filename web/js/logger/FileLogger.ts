@@ -1,12 +1,11 @@
 /**
  * A basic append-only file logger.
  */
-import {ILogger} from './ILogger';
-import {Files} from '../util/Files';
+import { ILogger } from './ILogger';
+import { Files } from '../util/Files';
 import * as util from 'util';
 
 export class FileLogger implements ILogger {
-
     public readonly name: string;
 
     private path: string;
@@ -44,7 +43,6 @@ export class FileLogger implements ILogger {
     }
 
     public async sync() {
-
         return Files.fsyncAsync(this.fd);
     }
 
@@ -53,7 +51,6 @@ export class FileLogger implements ILogger {
     }
 
     private append(level: string, msg: string, ...args: any[]) {
-
         const line = FileLogger.format(level, msg, ...args);
 
         Files.appendFileAsync(this.fd, line)
@@ -61,8 +58,9 @@ export class FileLogger implements ILogger {
             // future but for now I disabled it due to an issue with fsync not
             // working as expected.
             // .then(async () => await this.sync())
-            .catch((err) => console.error("Could not write to file logger: ", err));
-
+            .catch(err =>
+                console.error('Could not write to file logger: ', err)
+            );
     }
 
     public static async create(path: string) {
@@ -71,45 +69,36 @@ export class FileLogger implements ILogger {
     }
 
     protected static format(level: string, msg: string, ...args: any[]) {
-
         const timestamp = new Date().toISOString();
 
         let line = `[${timestamp}] [${level}] ${msg}`;
 
         if (args.length > 0) {
-
             args.forEach(arg => {
-
-                if ( ! line.endsWith(' ')) {
+                if (!line.endsWith(' ')) {
                     line += ' ';
                 }
 
                 if (arg instanceof Error) {
-
                     const err = arg;
 
                     line += '\n' + err.stack;
-
-                } else if (typeof arg === 'string' ||
-                           typeof arg === 'boolean' ||
-                           typeof arg === 'number') {
-
+                } else if (
+                    typeof arg === 'string' ||
+                    typeof arg === 'boolean' ||
+                    typeof arg === 'number'
+                ) {
                     line += arg.toString();
-
                 } else {
                     // convert the object to a string. Do not use JSON.stringify
                     // as it doesn't handle circular references.
                     line += util.inspect(arg, false, undefined, false);
                 }
-
             });
-
         }
 
         line += '\n';
 
         return line;
-
     }
-
 }

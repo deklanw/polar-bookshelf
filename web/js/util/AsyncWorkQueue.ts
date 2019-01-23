@@ -1,6 +1,6 @@
-import {Latch} from './Latch';
-import {executeTasks} from 'electron-updater/out/differentialDownloader/multipleRangeDownloader';
-import {Logger} from '../logger/Logger';
+import { Latch } from './Latch';
+import { executeTasks } from 'electron-updater/out/differentialDownloader/multipleRangeDownloader';
+import { Logger } from '../logger/Logger';
 
 const log = Logger.create();
 
@@ -18,7 +18,6 @@ const log = Logger.create();
  *
  */
 export class AsyncWorkQueue {
-
     public readonly concurrency: number;
 
     private readonly work: AsyncFunction[];
@@ -43,32 +42,26 @@ export class AsyncWorkQueue {
     }
 
     public execute(): Promise<boolean> {
-
         this.handleTaskCreation();
 
         return this.completion.get();
-
     }
 
     /**
      * Allows us to enqueue more work in this AsyncWorkQueue but we can depend
      * on the result without starting the task.
      */
-    public enqueue<T>(asyncTask: TypedAsyncFunction<T> ): Latch<T> {
-
+    public enqueue<T>(asyncTask: TypedAsyncFunction<T>): Latch<T> {
         const latch: Latch<T> = new Latch();
 
         const wrapperTask = async () => {
-
             const result = await asyncTask();
             latch.resolve(result);
-
         };
 
         this.work.push(wrapperTask);
 
         return latch;
-
     }
 
     /**
@@ -83,11 +76,9 @@ export class AsyncWorkQueue {
     }
 
     private handleTaskCreation() {
-
         const newTaskCount = this.concurrency - this.executing;
 
         for (let idx = 0; idx < newTaskCount; ++idx) {
-
             // each time we enter handleTaskCreation we need to determine if we
             // need to create more than one task because near shutdown it's
             // possible for the last task to re-enque N jobs which will all
@@ -95,7 +86,7 @@ export class AsyncWorkQueue {
 
             const task = this.work.shift();
 
-            if (! task) {
+            if (!task) {
                 break;
             }
 
@@ -106,15 +97,13 @@ export class AsyncWorkQueue {
                     this.handleNextTask();
                 })
                 .catch(err => {
-                    log.error("Unable to handle task: ", err);
+                    log.error('Unable to handle task: ', err);
                     // your code should do its own error handling....
                     this.handleNextTask();
                 });
-
         }
 
         if (this.work.length === 0 && this.executing === 0) {
-
             // terminate if we are the last executing task AND there is no more
             // work.
 
@@ -124,9 +113,7 @@ export class AsyncWorkQueue {
             }
 
             return;
-
         }
-
     }
 
     private handleNextTask() {
@@ -134,7 +121,6 @@ export class AsyncWorkQueue {
         --this.executing;
         this.handleTaskCreation();
     }
-
 }
 
 export type AsyncFunction = () => Promise<any>;

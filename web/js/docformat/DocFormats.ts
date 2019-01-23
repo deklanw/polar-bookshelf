@@ -1,23 +1,20 @@
-
 /**
  *
  */
 export class DocFormats {
-
     /**
      * Get the doc format we're using (html, pdf, etc). Otherwise return null.
      * @return {*}
      */
-    static getFormat(): string | null {
+    public static getFormat(): string | null {
+        const polarDocFormat = document.querySelector(
+            "meta[name='polar-doc-format']"
+        );
 
-        let polarDocFormat = document.querySelector("meta[name='polar-doc-format']");
-
-        if(polarDocFormat) {
-            return polarDocFormat.getAttribute("content");
+        if (polarDocFormat) {
+            return polarDocFormat.getAttribute('content');
         }
 
         return null;
-
     }
-
 }

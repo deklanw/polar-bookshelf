@@ -1,4 +1,4 @@
-const jquery = require("jquery");
+const jquery = require('jquery');
 
 declare var global: any;
 global.$ = global.jQuery = jquery;

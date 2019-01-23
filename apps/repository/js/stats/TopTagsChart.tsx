@@ -1,49 +1,42 @@
 import * as React from 'react';
-import {Logger} from '../../../../web/js/logger/Logger';
-import {Statistics} from '../../../../web/js/metadata/Statistics';
-import {IDocInfo} from '../../../../web/js/metadata/DocInfo';
-import {ResponsivePie} from '@nivo/pie';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { Statistics } from '../../../../web/js/metadata/Statistics';
+import { IDocInfo } from '../../../../web/js/metadata/DocInfo';
+import { ResponsivePie } from '@nivo/pie';
 import StatTitle from './StatTitle';
 
 const log = Logger.create();
 
 export default class TopTagsChart extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
 
-        this.state = {
-        };
-
+        this.state = {};
     }
 
     public render() {
-
         const topTags = Statistics.computeTopTags(this.props.docInfos, 10);
 
         const data = topTags.map(current => {
             return {
                 id: current.key,
                 label: current.key,
-                value: current.value
+                value: current.value,
             };
         });
 
         return (
-
             <div className="p-1">
-
                 <StatTitle>Top Tags</StatTitle>
 
-                <div style={{height: '600px', width: '100%'}}>
-
+                <div style={{ height: '600px', width: '100%' }}>
                     <ResponsivePie
                         data={data}
                         margin={{
-                            "top": 40,
-                            "right": 80,
-                            "bottom": 80,
-                            "left": 80
+                            top: 40,
+                            right: 80,
+                            bottom: 80,
+                            left: 80,
                         }}
                         innerRadius={0.5}
                         padAngle={0.7}
@@ -65,21 +58,15 @@ export default class TopTagsChart extends React.Component<IProps, IState> {
                         animate={true}
                         motionStiffness={90}
                         motionDamping={15}
-
                     />
                 </div>
             </div>
-
         );
     }
-
 }
 
 export interface IProps {
     readonly docInfos: ReadonlyArray<IDocInfo>;
 }
 
-export interface IState {
-
-}
-
+export interface IState {}

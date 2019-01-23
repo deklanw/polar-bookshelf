@@ -1,14 +1,14 @@
-import {SpectronRenderer} from '../../../js/test/SpectronRenderer';
-import {Files} from '../../../js/util/Files';
+import { SpectronRenderer } from '../../../js/test/SpectronRenderer';
+import { Files } from '../../../js/util/Files';
 
 SpectronRenderer.run(async () => {
-    console.log("Running within SpectronRenderer now.");
+    console.log('Running within SpectronRenderer now.');
 
-    if(typeof require === 'function') {
-        if(await Files.existsAsync("/home/burton/.polar")) {
-            console.log("dir exists!");
+    if (typeof require === 'function') {
+        if (await Files.existsAsync('/home/burton/.polar')) {
+            console.log('dir exists!');
         }
     } else {
-        console.warn("No node integration");
+        console.warn('No node integration');
     }
 });

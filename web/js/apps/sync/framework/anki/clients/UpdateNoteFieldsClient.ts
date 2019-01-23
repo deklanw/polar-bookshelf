@@ -1,5 +1,5 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import * as TypeMoq from "typemoq";
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import * as TypeMoq from 'typemoq';
 
 /**
  *
@@ -28,21 +28,18 @@ import * as TypeMoq from "typemoq";
  *}
  */
 export class UpdateNoteFieldsClient implements IUpdateNoteFieldsClient {
-
     public async execute(updateNote: UpdateNote): Promise<void> {
-
         const body = {
-            action: "updateNoteFields",
+            action: 'updateNoteFields',
             version: 6,
             params: {
-                note: updateNote
-            }
+                note: updateNote,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
         await AnkiConnectFetch.fetch(init);
-
     }
 
     /**
@@ -50,21 +47,18 @@ export class UpdateNoteFieldsClient implements IUpdateNoteFieldsClient {
      */
     public static createMock() {
         const client = TypeMoq.Mock.ofType<IUpdateNoteFieldsClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve());
         return client.object;
     }
-
 }
 
 export interface IUpdateNoteFieldsClient {
-
     execute(updateNote: UpdateNote): Promise<void>;
-
 }
 
 export interface UpdateNote {
-
     readonly id: number;
-    readonly fields: {[name: string]: string};
-
+    readonly fields: { [name: string]: string };
 }

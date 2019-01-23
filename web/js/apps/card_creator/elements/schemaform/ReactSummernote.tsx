@@ -10,7 +10,6 @@ import ReactDOM from 'react-dom';
 const randomUid = () => Math.floor(Math.random() * 100000);
 
 class ReactSummernote extends Component {
-
     private readonly uid: string;
 
     private editor: any;
@@ -19,7 +18,7 @@ class ReactSummernote extends Component {
 
     private notePlaceholder: any;
 
-    readonly props : any;
+    public readonly props: any;
 
     // ReactSummernote.propTypes = {
     //     value: PropTypes.string,
@@ -67,16 +66,15 @@ class ReactSummernote extends Component {
         this.insertImage = this.insertImage.bind(this);
         this.insertNode = this.insertNode.bind(this);
         this.insertText = this.insertText.bind(this);
-
     }
 
-    componentDidMount() {
+    public componentDidMount() {
         const options = this.props.options || {};
         const codeview = this.props.codeview;
         // const codeviewCommand = codeview ? 'codeview.activate' : 'codeview.deactivate';
         options.callbacks = this.callbacks;
 
-        let domNode = ReactDOM.findDOMNode(this) as HTMLElement;
+        const domNode = ReactDOM.findDOMNode(this) as HTMLElement;
 
         this.editor = $(domNode).find(`#${this.uid}`);
 
@@ -90,19 +88,25 @@ class ReactSummernote extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps: any) {
-
+    public componentWillReceiveProps(nextProps: any) {
         const { props } = this;
 
         const codeview = nextProps.codeview;
-        const codeviewCommand = codeview ? 'codeview.activate' : 'codeview.deactivate';
+        const codeviewCommand = codeview
+            ? 'codeview.activate'
+            : 'codeview.deactivate';
 
-
-        if (typeof nextProps.value === 'string' && props.value !== nextProps.value) {
+        if (
+            typeof nextProps.value === 'string' &&
+            props.value !== nextProps.value
+        ) {
             this.replace(nextProps.value);
         }
 
-        if (typeof nextProps.disabled === 'boolean' && props.disabled !== nextProps.disabled) {
+        if (
+            typeof nextProps.disabled === 'boolean' &&
+            props.disabled !== nextProps.disabled
+        ) {
             this.toggleState(nextProps.disabled);
         }
         if (codeview !== props.codeview) {
@@ -110,18 +114,17 @@ class ReactSummernote extends Component {
         }
     }
 
-    shouldComponentUpdate() {
+    public shouldComponentUpdate() {
         return false;
     }
 
-    componentWillUnmount() {
+    public componentWillUnmount() {
         if (this.editor.summernote) {
             this.editor.summernote('destroy');
         }
     }
 
-    onInit() {
-
+    public onInit() {
         const { disabled, onInit } = this.props;
 
         const $container = this.editor.parent();
@@ -144,13 +147,12 @@ class ReactSummernote extends Component {
                 enable: this.enable,
                 insertImage: this.insertImage,
                 insertNode: this.insertNode,
-                insertText: this.insertText
+                insertText: this.insertText,
             });
         }
     }
 
-    onImageUpload(images: any) {
-
+    public onImageUpload(images: any) {
         const { onImageUpload } = this.props;
 
         if (typeof onImageUpload === 'function') {
@@ -158,19 +160,19 @@ class ReactSummernote extends Component {
         }
     }
 
-    focus() {
+    public focus() {
         this.editor.summernote('focus');
     }
 
-    isEmpty() {
+    public isEmpty() {
         return this.editor.summernote('isEmpty');
     }
 
-    reset() {
+    public reset() {
         this.editor.summernote('reset');
     }
 
-    replace(content: any) {
+    public replace(content: any) {
         const { noteEditable, notePlaceholder } = this;
         const prevContent = noteEditable.html();
         const contentLength = content.length;
@@ -186,15 +188,15 @@ class ReactSummernote extends Component {
         }
     }
 
-    disable() {
+    public disable() {
         this.editor.summernote('disable');
     }
 
-    enable() {
+    public enable() {
         this.editor.summernote('enable');
     }
 
-    toggleState(disabled: boolean) {
+    public toggleState(disabled: boolean) {
         if (disabled) {
             this.disable();
         } else {
@@ -202,15 +204,15 @@ class ReactSummernote extends Component {
         }
     }
 
-    insertImage(url: any, filenameOrCallback: any) {
+    public insertImage(url: any, filenameOrCallback: any) {
         this.editor.summernote('insertImage', url, filenameOrCallback);
     }
 
-    insertNode(node: Node) {
+    public insertNode(node: Node) {
         this.editor.summernote('insertNode', node);
     }
 
-    insertText(text: Node) {
+    public insertText(text: Node) {
         this.editor.summernote('insertText', text);
     }
 
@@ -226,11 +228,11 @@ class ReactSummernote extends Component {
             onKeydown: props.onKeyDown,
             onPaste: props.onPaste,
             onChange: props.onChange,
-            onImageUpload: this.onImageUpload
+            onImageUpload: this.onImageUpload,
         };
     }
 
-    render() {
+    public render() {
         const { value, defaultValue, className } = this.props;
         const html = value || defaultValue;
 
@@ -240,7 +242,6 @@ class ReactSummernote extends Component {
             </div>
         );
     }
-
 }
 
 export default ReactSummernote;

@@ -1,13 +1,12 @@
-import {Exporter, Writable} from "./Exporters";
-import {AnnotationHolder} from "../AnnotationHolder";
-import {TextHighlight} from "../TextHighlight";
-import {AreaHighlight} from '../AreaHighlight';
-import {Comment} from '../Comment';
-import {Flashcard} from '../Flashcard';
-import {AnnotationType} from '../AnnotationType';
+import { Exporter, Writable } from './Exporters';
+import { AnnotationHolder } from '../AnnotationHolder';
+import { TextHighlight } from '../TextHighlight';
+import { AreaHighlight } from '../AreaHighlight';
+import { Comment } from '../Comment';
+import { Flashcard } from '../Flashcard';
+import { AnnotationType } from '../AnnotationType';
 
 export abstract class AbstractExporter implements Exporter {
-
     public abstract readonly id: string;
 
     protected writer?: Writable;
@@ -17,46 +16,55 @@ export abstract class AbstractExporter implements Exporter {
     }
 
     public async write(exportable: AnnotationHolder): Promise<void> {
-
         switch (exportable.type) {
-
             case AnnotationType.TEXT_HIGHLIGHT:
-                this.writeTextHighlight(<TextHighlight> exportable.annotation, exportable);
+                this.writeTextHighlight(
+                    <TextHighlight>exportable.annotation,
+                    exportable
+                );
                 break;
 
-
             case AnnotationType.AREA_HIGHLIGHT:
-                this.writeAreaHighlight(<AreaHighlight> exportable.annotation, exportable);
+                this.writeAreaHighlight(
+                    <AreaHighlight>exportable.annotation,
+                    exportable
+                );
                 break;
 
             case AnnotationType.COMMENT:
-                this.writeComment(<Comment> exportable.annotation, exportable);
+                this.writeComment(<Comment>exportable.annotation, exportable);
                 break;
 
             case AnnotationType.FLASHCARD:
-                this.writeFlashcard(<Flashcard> exportable.annotation, exportable);
+                this.writeFlashcard(
+                    <Flashcard>exportable.annotation,
+                    exportable
+                );
                 break;
-
         }
-
     }
 
-    protected abstract writeTextHighlight(textHighlight: TextHighlight,
-                                          exportable: AnnotationHolder): Promise<void>;
+    protected abstract writeTextHighlight(
+        textHighlight: TextHighlight,
+        exportable: AnnotationHolder
+    ): Promise<void>;
 
-    protected abstract writeAreaHighlight(areaHighlight: AreaHighlight,
-                                          exportable: AnnotationHolder): Promise<void>;
+    protected abstract writeAreaHighlight(
+        areaHighlight: AreaHighlight,
+        exportable: AnnotationHolder
+    ): Promise<void>;
 
-    protected abstract writeComment(comment: Comment,
-                                    exportable: AnnotationHolder): Promise<void>;
+    protected abstract writeComment(
+        comment: Comment,
+        exportable: AnnotationHolder
+    ): Promise<void>;
 
-    protected abstract writeFlashcard(flashcard: Flashcard,
-                                      exportable: AnnotationHolder): Promise<void>;
+    protected abstract writeFlashcard(
+        flashcard: Flashcard,
+        exportable: AnnotationHolder
+    ): Promise<void>;
 
     public async close(err?: Error): Promise<void> {
-
         // noop
-
     }
-
 }

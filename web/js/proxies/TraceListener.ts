@@ -5,14 +5,12 @@
  *
  * @constructor
  */
-import {TraceEvent} from './TraceEvent';
+import { TraceEvent } from './TraceEvent';
 
 export abstract class TraceListener {
-
     /**
      * Listen to a mutation and we're given a list of names and types.
      * @param traceEvent a TraceEvent that we're watching.
      */
     public abstract onMutation(traceEvent: TraceEvent): void;
-
 }

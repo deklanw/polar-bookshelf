@@ -1,11 +1,11 @@
-import {Preconditions} from '../Preconditions';
-import {Optional} from './ts/Optional';
-import {DocID} from '../tags/related/RelatedTags';
+import { Preconditions } from '../Preconditions';
+import { Optional } from './ts/Optional';
+import { DocID } from '../tags/related/RelatedTags';
 
 export class Dictionaries {
-
-    public static values<T>(dict: {[key: string]: T} | undefined | null): T[] {
-
+    public static values<T>(
+        dict: { [key: string]: T } | undefined | null
+    ): T[] {
         const result: T[] = [];
 
         if (!dict) {
@@ -14,7 +14,6 @@ export class Dictionaries {
         }
 
         return Object.values(dict);
-
     }
 
     /**
@@ -23,20 +22,19 @@ export class Dictionaries {
      * @param dict
      * @param callback
      */
-    public static forDict<T>(dict: {[key: string]: T}, callback: ForDictCallbackFunction<T> ) {
-
-        Preconditions.assertNotNull(dict, "dict");
-        Preconditions.assertNotNull(callback, "callback");
+    public static forDict<T>(
+        dict: { [key: string]: T },
+        callback: ForDictCallbackFunction<T>
+    ) {
+        Preconditions.assertNotNull(dict, 'dict');
+        Preconditions.assertNotNull(callback, 'callback');
 
         for (const key in dict) {
-
             if (dict.hasOwnProperty(key)) {
                 const value = dict[key];
                 callback(key, value);
             }
-
         }
-
     }
 
     /**
@@ -49,25 +47,25 @@ export class Dictionaries {
      *
      */
     public static sorted(dict: any): any {
-
         if (dict === undefined || dict === null) {
             // nothing to do here.
             return dict;
         }
 
-        if (! (typeof dict === 'object')) {
+        if (!(typeof dict === 'object')) {
             // if we're not a dictionary we're done
             return dict;
         }
 
         const result: any = {};
 
-        Object.keys(dict).sort().forEach(key => {
-            result[key] = this.sorted(dict[key]);
-        });
+        Object.keys(dict)
+            .sort()
+            .forEach(key => {
+                result[key] = this.sorted(dict[key]);
+            });
 
         return result;
-
     }
 
     /**
@@ -77,19 +75,18 @@ export class Dictionaries {
      *
      * @param dict
      */
-    static onlyDefinedProperties(dict: any): any {
-
-        if(dict === undefined || dict === null) {
+    public static onlyDefinedProperties(dict: any): any {
+        if (dict === undefined || dict === null) {
             // nothing to do here.
             return dict;
         }
 
-        if(! (typeof dict === 'object')) {
+        if (!(typeof dict === 'object')) {
             // if we're not a dictionary we're done
             return dict;
         }
 
-        let result: any = {};
+        const result: any = {};
 
         for (const key of Object.keys(dict).sort()) {
             const value = dict[key];
@@ -102,9 +99,7 @@ export class Dictionaries {
         }
 
         return result;
-
     }
-
 
     /**
      * Create a deep copy of the given dictionary.
@@ -112,7 +107,6 @@ export class Dictionaries {
      * @param dict
      */
     public static copyOf(dict: any): any {
-
         if (dict === undefined || dict === null) {
             // nothing to do here.
             return dict;
@@ -130,14 +124,15 @@ export class Dictionaries {
         });
 
         return result;
-
     }
 
     /**
      * Easily convert an array to a dict.
      */
-    public static toDict<V>(values: V[], converter: (value: V) => string): {[key: string]: V} {
-
+    public static toDict<V>(
+        values: V[],
+        converter: (value: V) => string
+    ): { [key: string]: V } {
         const result: { [key: string]: V } = {};
 
         values.forEach(value => {
@@ -145,21 +140,17 @@ export class Dictionaries {
         });
 
         return result;
-
     }
 
-    public static countOf<V>(dict: {[key: string]: V} | null | undefined) {
-
+    public static countOf<V>(dict: { [key: string]: V } | null | undefined) {
         return Optional.of(dict)
             .map(current => Object.keys(current).length)
             .getOrElse(0);
-
     }
 
-    public static size<V>(dict: {[key: string]: V}) {
+    public static size<V>(dict: { [key: string]: V }) {
         return Object.keys(dict).length;
     }
-
 
     /**
      * If the specified key is not already associated with a value (or is mapped
@@ -167,16 +158,16 @@ export class Dictionaries {
      * mapping function and enters it into this map unless undefined or null.
      *
      */
-    public static computeIfAbsent<V>(dict: {[key: string]: V},
-                                     key: string,
-                                     mappingFunction: (newKey: string) => V): V {
-
+    public static computeIfAbsent<V>(
+        dict: { [key: string]: V },
+        key: string,
+        mappingFunction: (newKey: string) => V
+    ): V {
         const currentValue = dict[key];
 
         if (currentValue) {
             return currentValue;
         } else {
-
             const newValue = mappingFunction(key);
 
             if (newValue) {
@@ -186,24 +177,17 @@ export class Dictionaries {
             // note that we return the newValue EITHER way which could be null
             // or undefined here just like in a normal map.
             return newValue;
-
         }
-
     }
 
-    public static putAll<V>(source: {[key: string]: V},
-                            target: {[key: string]: V} = {}) {
-
+    public static putAll<V>(
+        source: { [key: string]: V },
+        target: { [key: string]: V } = {}
+    ) {
         for (const key of Object.keys(source)) {
             target[key] = source[key];
         }
-
     }
-
 }
 
-
-interface ForDictCallbackFunction<T> {
-    (key: string, value: T): void;
-}
-
+type ForDictCallbackFunction<T> = (key: string, value: T) => void;

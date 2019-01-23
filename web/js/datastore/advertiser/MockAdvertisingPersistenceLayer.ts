@@ -1,7 +1,7 @@
-import {PersistenceLayer} from '../PersistenceLayer';
-import {ListenablePersistenceLayer} from '../ListenablePersistenceLayer';
-import {AbstractAdvertisingPersistenceLayer} from './AbstractAdvertisingPersistenceLayer';
-import {PersistenceLayerEvent} from '../PersistenceLayerEvent';
+import { PersistenceLayer } from '../PersistenceLayer';
+import { ListenablePersistenceLayer } from '../ListenablePersistenceLayer';
+import { AbstractAdvertisingPersistenceLayer } from './AbstractAdvertisingPersistenceLayer';
+import { PersistenceLayerEvent } from '../PersistenceLayerEvent';
 
 /**
  * A PersistenceLayer that allows the user to receive advertisements regarding
@@ -10,10 +10,12 @@ import {PersistenceLayerEvent} from '../PersistenceLayerEvent';
 export class MockAdvertisingPersistenceLayer
     extends AbstractAdvertisingPersistenceLayer
     implements ListenablePersistenceLayer {
-
     private readonly noDispatchEvent: boolean;
 
-    constructor(persistenceLayer: PersistenceLayer, noDispatchEvent: boolean = false) {
+    constructor(
+        persistenceLayer: PersistenceLayer,
+        noDispatchEvent: boolean = false
+    ) {
         super(persistenceLayer);
         this.noDispatchEvent = noDispatchEvent;
     }
@@ -27,7 +29,6 @@ export class MockAdvertisingPersistenceLayer
     }
 
     public broadcastEvent(event: PersistenceLayerEvent): void {
-
         if (this.noDispatchEvent) {
             return;
         }
@@ -39,5 +40,4 @@ export class MockAdvertisingPersistenceLayer
         // to be safe by default but add another mode if necessary.
         this.dispatchEvent(event);
     }
-
 }

@@ -1,7 +1,6 @@
-import {Component} from 'react';
+import { Component } from 'react';
 
 export class Container {
-
     /**
      * The ID for this container.
      */
@@ -20,19 +19,16 @@ export class Container {
     public components: Component[] = [];
 
     constructor(opts: any = {}) {
-
         this.id = opts.id;
         this.element = opts.element;
         this.components = opts.components || [];
-
     }
 
-    addComponent(component: Component) {
+    public addComponent(component: Component) {
         this.components.push(component);
     }
 
-    getComponents() {
+    public getComponents() {
         return this.components;
     }
-
 }

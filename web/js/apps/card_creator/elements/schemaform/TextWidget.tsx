@@ -3,12 +3,11 @@
  */
 import ReactSummernote from './ReactSummernote';
 import React from 'react';
-import {TypedWidgetProps} from './TypedWidgetProps';
-import {Logger} from '../../../../logger/Logger';
+import { TypedWidgetProps } from './TypedWidgetProps';
+import { Logger } from '../../../../logger/Logger';
 const log = Logger.create();
 
-export class TextWidget extends React.Component  {
-
+export class TextWidget extends React.Component {
     private readonly onChangeCallback: OnChangeCallback;
 
     private readonly onBlurCallback: OnSelectionCallback;
@@ -16,17 +15,17 @@ export class TextWidget extends React.Component  {
 
     private readonly typedWidgetProps: TypedWidgetProps;
 
-    private value: string = "";
+    private value: string = '';
 
     private id: string;
 
     constructor(props: any = {}) {
         super(props);
 
-        if(props.id) {
+        if (props.id) {
             this.id = props.id;
         } else {
-            throw new Error("No ID");
+            throw new Error('No ID');
         }
 
         this.onChangeCallback = props.onChange;
@@ -35,7 +34,7 @@ export class TextWidget extends React.Component  {
 
         this.typedWidgetProps = new TypedWidgetProps(props);
 
-        if( this.typedWidgetProps.value) {
+        if (this.typedWidgetProps.value) {
             this.value = this.typedWidgetProps.value;
         }
 
@@ -45,12 +44,10 @@ export class TextWidget extends React.Component  {
         this.onImageUpload = this.onImageUpload.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onFocus = this.onFocus.bind(this);
-
     }
 
     // FIXME: there is an errorSchema here too which I might want to look at.
-    onChange(newValue: any) {
-
+    public onChange(newValue: any) {
         // FIXME: summernote has isEmpty and some other methods I need to use
         // here.
 
@@ -61,18 +58,16 @@ export class TextWidget extends React.Component  {
         this.value = newValue;
 
         this.onChangeCallback(newValue);
-
     }
 
-    onBlur() {
-        log.info("onBlur");
-        this.onBlurCallback(this.id, this.value)
-
+    public onBlur() {
+        log.info('onBlur');
+        this.onBlurCallback(this.id, this.value);
     }
 
-    onFocus() {
-        log.info("onFocus");
-        this.onFocusCallback(this.id, this.value)
+    public onFocus() {
+        log.info('onFocus');
+        this.onFocusCallback(this.id, this.value);
     }
 
     /**
@@ -80,8 +75,7 @@ export class TextWidget extends React.Component  {
      *
      * https://github.com/summernote/react-summernote/issues/38
      */
-    onImageUpload(images: any[], insertImage: Function) {
-
+    public onImageUpload(images: any[], insertImage: Function) {
         log.debug('onImageUpload', images);
         /* FileList does not support ordinary array methods */
         for (let i = 0; i < images.length; i++) {
@@ -96,11 +90,9 @@ export class TextWidget extends React.Component  {
 
             reader.readAsDataURL(images[i]);
         }
+    }
 
-    };
-
-    render() {
-
+    public render() {
         // https://github.com/summernote/react-summernote/issues/38
 
         return (
@@ -130,14 +122,24 @@ export class TextWidget extends React.Component  {
 
                     toolbar: [
                         ['style', ['style']],
-                        ['font', ['bold', 'italic', 'underline', 'clear', 'color', 'superscript', 'subscript']],
+                        [
+                            'font',
+                            [
+                                'bold',
+                                'italic',
+                                'underline',
+                                'clear',
+                                'color',
+                                'superscript',
+                                'subscript',
+                            ],
+                        ],
                         // ['fontname', ['fontname']],
                         ['para', ['ul', 'ol', 'paragraph']],
                         ['table', ['table']],
                         ['insert', ['link', 'picture', 'video']],
-                        ['view', []]
-                    ]
-
+                        ['view', []],
+                    ],
                 }}
                 onChange={this.onChange}
                 onBlur={this.onBlur}
@@ -147,16 +149,11 @@ export class TextWidget extends React.Component  {
             />
         );
     }
-
 }
 
-interface OnChangeCallback {
-    (newValue: string): void;
-}
+type OnChangeCallback = (newValue: string) => void;
 
 /**
  * Used for onFocus and onBlur
  */
-interface OnSelectionCallback {
-    (id: string, value: string): void;
-}
+type OnSelectionCallback = (id: string, value: string) => void;

@@ -1,24 +1,22 @@
-import {AnkiSyncEngine} from './framework/anki/AnkiSyncEngine';
-import {DocMetaSet} from '../../metadata/DocMetaSet';
-import {SyncProgressListener} from './framework/SyncProgressListener';
-import {Logger} from '../../logger/Logger';
-import {DefaultPersistenceLayer} from '../../datastore/DefaultPersistenceLayer';
-import {DiskDatastore} from '../../datastore/DiskDatastore';
-import {ProgressLog} from '../../ui/progress_log/ProgressLog';
+import { AnkiSyncEngine } from './framework/anki/AnkiSyncEngine';
+import { DocMetaSet } from '../../metadata/DocMetaSet';
+import { SyncProgressListener } from './framework/SyncProgressListener';
+import { Logger } from '../../logger/Logger';
+import { DefaultPersistenceLayer } from '../../datastore/DefaultPersistenceLayer';
+import { DiskDatastore } from '../../datastore/DiskDatastore';
+import { ProgressLog } from '../../ui/progress_log/ProgressLog';
 
 const log = Logger.create();
 
 export class SyncApp {
-
     private progressLog: ProgressLog = new ProgressLog();
 
     public async start() {
-
         const url = new URL(window.location.href);
 
-        let fingerprint = url.searchParams.get("fingerprint");
+        let fingerprint = url.searchParams.get('fingerprint');
 
-        if (! fingerprint) {
+        if (!fingerprint) {
             // TODO: for now just sync the default / example document for testing
             fingerprint = '110dd61fd57444010b1ab5ff38782f0f';
         }
@@ -35,16 +33,16 @@ export class SyncApp {
 
         const docMeta = await persistenceLayer.getDocMeta(fingerprint);
 
-        if (! docMeta) {
-            throw new Error("No DocMeta for fingerprint: " + fingerprint);
+        if (!docMeta) {
+            throw new Error('No DocMeta for fingerprint: ' + fingerprint);
         }
 
-        log.info("Syncing document with title: ", docMeta.docInfo.title);
+        log.info('Syncing document with title: ', docMeta.docInfo.title);
 
         const docMetaSet = new DocMetaSet(docMeta);
 
         const syncProgressListener: SyncProgressListener = syncProgress => {
-            log.info("Sync progress: ", syncProgress);
+            log.info('Sync progress: ', syncProgress);
 
             let message: string | undefined;
 
@@ -54,9 +52,8 @@ export class SyncApp {
 
             this.progressLog.update({
                 percentage: syncProgress.percentage,
-                message
+                message,
             });
-
         };
 
         // const pendingSyncJob = ankiSyncEngine.sync(docMetaSet, syncProgressListener);
@@ -64,7 +61,5 @@ export class SyncApp {
         // await pendingSyncJob.start();
         //
         // this.progressLog.update({ percentage: 100, message: 'Sync complete' });
-
     }
-
 }

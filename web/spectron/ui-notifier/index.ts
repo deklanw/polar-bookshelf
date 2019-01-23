@@ -1,12 +1,12 @@
-import {assert} from 'chai';
-import {SpectronMain2} from '../../js/test/SpectronMain2';
-import {MainIPCEvent} from '../../js/electron/framework/IPCMainPromises';
-import {WebContentsNotifier} from '../../js/electron/web_contents_notifier/WebContentsNotifier';
+import { assert } from 'chai';
+import { SpectronMain2 } from '../../js/test/SpectronMain2';
+import { MainIPCEvent } from '../../js/electron/framework/IPCMainPromises';
+import { WebContentsNotifier } from '../../js/electron/web_contents_notifier/WebContentsNotifier';
 
 SpectronMain2.create().run(async state => {
-
-    const helloPromise: Promise<MainIPCEvent<string>>
-        = WebContentsNotifier.once(state.window.webContents, 'hello');
+    const helloPromise: Promise<
+        MainIPCEvent<string>
+    > = WebContentsNotifier.once(state.window.webContents, 'hello');
 
     state.window.loadURL(`file://${__dirname}/app.html`);
 
@@ -15,5 +15,4 @@ SpectronMain2.create().run(async state => {
     assert.equal(mainIPCEvent.message, 'world');
 
     await state.testResultWriter.write(true);
-
 });

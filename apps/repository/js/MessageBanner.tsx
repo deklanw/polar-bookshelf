@@ -1,56 +1,44 @@
 import * as React from 'react';
 import Alert from 'reactstrap/lib/Alert';
-import {Arrays} from '../../../web/js/util/Arrays';
-import {RendererAnalytics} from '../../../web/js/ga/RendererAnalytics';
+import { Arrays } from '../../../web/js/util/Arrays';
+import { RendererAnalytics } from '../../../web/js/ga/RendererAnalytics';
 
 // <i className="fab fa-github"></i>
 
 // noinspection TsLint
 export class MessageBanner extends React.Component<IProps, IState> {
-
     private message?: Message;
 
     constructor(props: IProps, context: any) {
         super(props, context);
 
         this.state = {
-            visible: true
+            visible: true,
         };
 
         this.onDismiss = this.onDismiss.bind(this);
         this.onClick = this.onClick.bind(this);
-
-
     }
 
     public render() {
-
         return (
-
             <div>
-
-                <Alert color="info"
-                       isOpen={this.state.visible}
-                       toggle={this.onDismiss}
-                       fade={false}
-                       onClick={() => this.onClick(this.message!)}
-                       className="mt-1 mb-1 pl-1 pr-1">
-
+                <Alert
+                    color="info"
+                    isOpen={this.state.visible}
+                    toggle={this.onDismiss}
+                    fade={false}
+                    onClick={() => this.onClick(this.message!)}
+                    className="mt-1 mb-1 pl-1 pr-1"
+                >
                     {this.message!.element}
-
                 </Alert>
-
             </div>
-
         );
-
     }
 
-
     public componentWillMount(): void {
-
         this.message = Arrays.shuffle(...MESSAGES)[0];
-
     }
 
     private onDismiss() {
@@ -58,29 +46,26 @@ export class MessageBanner extends React.Component<IProps, IState> {
     }
 
     private onClick(message: Message) {
-        RendererAnalytics.event({category: 'message-banner-click', action: message.id});
+        RendererAnalytics.event({
+            category: 'message-banner-click',
+            action: message.id,
+        });
     }
-
 }
 
 interface IState {
     visible: boolean;
 }
 
-export interface IProps {
-
-}
+export interface IProps {}
 
 interface Message {
-
     id: string;
     element: JSX.Element;
-
 }
 
 // noinspection TsLint
 const MESSAGES: Message[] = [
-
     // TODO: put links to help and other technical docs.
     // TODO: Make some of these poll options I think.
 
@@ -94,12 +79,27 @@ const MESSAGES: Message[] = [
     // },
     {
         id: 'free-polar-cloud-storage',
-        element: <div>You can get a <b>free month of POLAR Cloud Storage</b> by inviting your colleagues. Go to <b><i>"Cloud Sync | Invite Users"</i></b></div>
+        element: (
+            <div>
+                You can get a <b>free month of POLAR Cloud Storage</b> by
+                inviting your colleagues. Go to{' '}
+                <b>
+                    <i>"Cloud Sync | Invite Users"</i>
+                </b>
+            </div>
+        ),
     },
 
     {
         id: 'join-discord',
-        element: <div><b>Want to discuss POLAR with other users? </b><a href="https://discord.gg/GT8MhA6">Join our live Discord chat group!</a></div>
+        element: (
+            <div>
+                <b>Want to discuss POLAR with other users? </b>
+                <a href="https://discord.gg/GT8MhA6">
+                    Join our live Discord chat group!
+                </a>
+            </div>
+        ),
     },
     // {
     //     id: 'opencollective-donate',
@@ -107,18 +107,39 @@ const MESSAGES: Message[] = [
     // },
     {
         id: 'polar-feedback-2018-12',
-        element: <div>Could you take 1 minute and <a href="https://kevinburton1.typeform.com/to/u1zNWG">complete a survey</a> about your usage of Polar?</div>
+        element: (
+            <div>
+                Could you take 1 minute and{' '}
+                <a href="https://kevinburton1.typeform.com/to/u1zNWG">
+                    complete a survey
+                </a>{' '}
+                about your usage of Polar?
+            </div>
+        ),
     },
     {
         id: 'chrome-extension',
-        element: <div>Make sure you have our <a href="https://chrome.google.com/webstore/detail/save-to-polar/jkfdkjomocoaljglgddnmhcbolldcafd/">Chrome Extension</a> to <b>capture web pages directly from your browser!</b></div>
+        element: (
+            <div>
+                Make sure you have our{' '}
+                <a href="https://chrome.google.com/webstore/detail/save-to-polar/jkfdkjomocoaljglgddnmhcbolldcafd/">
+                    Chrome Extension
+                </a>{' '}
+                to <b>capture web pages directly from your browser!</b>
+            </div>
+        ),
     },
 
     {
         id: 'polar-updates',
-        element: <div><b>Polar is updated often</b> - at least twice a month and usually once a week.  <b>Always make sure you're on the latest version.</b></div>
+        element: (
+            <div>
+                <b>Polar is updated often</b> - at least twice a month and
+                usually once a week.{' '}
+                <b>Always make sure you're on the latest version.</b>
+            </div>
+        ),
     },
-
 
     // {
     //     id: 'opencollective-donate-button',
@@ -151,6 +172,4 @@ const MESSAGES: Message[] = [
     //
     //     </div>
     // }
-
 ];
-

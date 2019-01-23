@@ -1,4 +1,4 @@
-import {ToasterMessageType, ToasterOptions} from "./Toaster";
+import { ToasterMessageType, ToasterOptions } from './Toaster';
 
 export interface ToasterMessage {
     readonly type: ToasterMessageType;

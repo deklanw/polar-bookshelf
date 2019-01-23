@@ -1,21 +1,20 @@
-import {SpectronRenderer} from '../../js/test/SpectronRenderer';
-import {Logger} from '../../js/logger/Logger';
-import {MockDocMetas} from '../../js/metadata/DocMetas';
-import {AdvertisingPersistenceLayer} from '../../js/datastore/advertiser/AdvertisingPersistenceLayer';
-import {MemoryDatastore} from '../../js/datastore/MemoryDatastore';
-import {DefaultPersistenceLayer} from '../../js/datastore/DefaultPersistenceLayer';
-import {assertJSON} from '../../js/test/Assertions';
-import {TestingTime} from '../../js/test/TestingTime';
-import {Dictionaries} from '../../js/util/Dictionaries';
-import {canonicalize} from './testing';
+import { SpectronRenderer } from '../../js/test/SpectronRenderer';
+import { Logger } from '../../js/logger/Logger';
+import { MockDocMetas } from '../../js/metadata/DocMetas';
+import { AdvertisingPersistenceLayer } from '../../js/datastore/advertiser/AdvertisingPersistenceLayer';
+import { MemoryDatastore } from '../../js/datastore/MemoryDatastore';
+import { DefaultPersistenceLayer } from '../../js/datastore/DefaultPersistenceLayer';
+import { assertJSON } from '../../js/test/Assertions';
+import { TestingTime } from '../../js/test/TestingTime';
+import { Dictionaries } from '../../js/util/Dictionaries';
+import { canonicalize } from './testing';
 
 const log = Logger.create();
 
 TestingTime.freeze();
 
 SpectronRenderer.run(async () => {
-
-    log.info("Sending advertisement now.");
+    log.info('Sending advertisement now.');
 
     const docMeta = MockDocMetas.createWithinInitialPagemarks('0x0001', 1);
 
@@ -23,26 +22,27 @@ SpectronRenderer.run(async () => {
 
     const persistenceLayer = new DefaultPersistenceLayer(memoryDatastore);
 
-    const advertisingPersistenceLayer = new AdvertisingPersistenceLayer(persistenceLayer);
+    const advertisingPersistenceLayer = new AdvertisingPersistenceLayer(
+        persistenceLayer
+    );
 
     await advertisingPersistenceLayer.init();
 
     const expected = {
-        "progress": 100,
-        "pagemarkType": "SINGLE_COLUMN",
-        "properties": {},
-        "tags": {},
-        "archived": false,
-        "flagged": false,
-        "nrPages": 1,
-        "fingerprint": "0x0001",
-        "added": "2012-03-02T11:38:49.321Z"
+        progress: 100,
+        pagemarkType: 'SINGLE_COLUMN',
+        properties: {},
+        tags: {},
+        archived: false,
+        flagged: false,
+        nrPages: 1,
+        fingerprint: '0x0001',
+        added: '2012-03-02T11:38:49.321Z',
     };
 
     assertJSON(canonicalize(docMeta.docInfo), canonicalize(expected));
 
     await advertisingPersistenceLayer.writeDocMeta(docMeta);
 
-    console.log("Sender SUCCESSFUL");
-
+    console.log('Sender SUCCESSFUL');
 });

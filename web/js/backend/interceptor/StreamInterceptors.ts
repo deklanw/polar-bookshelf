@@ -1,22 +1,24 @@
-import {net} from "electron";
-import {Logger} from '../../logger/Logger';
-import {Duplex, PassThrough, Readable, Stream} from 'stream';
+import { net } from 'electron';
+import { Logger } from '../../logger/Logger';
+import { Duplex, PassThrough, Readable, Stream } from 'stream';
 import InterceptStreamProtocolRequest = Electron.InterceptStreamProtocolRequest;
 import StreamProtocolResponse = Electron.StreamProtocolResponse;
 import * as fs from 'fs';
-import {Files} from '../../util/Files';
+import { Files } from '../../util/Files';
 
 const log = Logger.create();
 
 export class StreamInterceptors {
-
-    public static mockInterceptor(request: InterceptStreamProtocolRequest, callback: StreamProtocolCallback) {
-        callback( <any> {
+    public static mockInterceptor(
+        request: InterceptStreamProtocolRequest,
+        callback: StreamProtocolCallback
+    ) {
+        callback(<any>{
             statusCode: 200,
             headers: {
-             'content-type': 'text/html'
+                'content-type': 'text/html',
             },
-            data: createStream('HTTP 200 OK\r\n<h5>Response</h5>')
+            data: createStream('HTTP 200 OK\r\n<h5>Response</h5>'),
         });
     }
 
@@ -29,16 +31,16 @@ export class StreamInterceptors {
      * @param delegate
      */
     public static withSetTimeout(delegate: () => void) {
-
         setTimeout(() => {
             delegate();
         }, 0);
-
     }
 
-    public static handleWithNetRequest(request: InterceptStreamProtocolRequest, callback: StreamProtocolCallback) {
-
-        log.debug("Handling request: ", request.url);
+    public static handleWithNetRequest(
+        request: InterceptStreamProtocolRequest,
+        callback: StreamProtocolCallback
+    ) {
+        log.debug('Handling request: ', request.url);
 
         const options = {
             method: request.method,
@@ -47,9 +49,9 @@ export class StreamInterceptors {
 
         const responseStream = new PassThrough();
 
-        const netRequest = net.request(options)
-            .on('response', async (response) => {
-
+        const netRequest = net
+            .request(options)
+            .on('response', async response => {
                 response
                     .on('data', chunk => {
                         responseStream.push(chunk);
@@ -77,69 +79,57 @@ export class StreamInterceptors {
                 const streamProtocolResponse: CorrectStreamProtocolResponse = {
                     headers,
                     data: responseStream,
-                    statusCode: response.statusCode
+                    statusCode: response.statusCode,
                 };
 
                 callback(streamProtocolResponse);
-
             })
             .on('abort', () => {
                 log.error(`Request abort: ${request.url}`);
                 callback(undefined); // TODO test this.
             })
-            .on('error', (error) => {
+            .on('error', error => {
                 log.error(`Request error: ${request.url}`, error);
                 callback(undefined); // TODO test this.
-
             });
 
         for (const header of Object.keys(request.headers)) {
-            log.debug("Setting request header: ", header);
-            const headerValue = (<any> request.headers)[header];
-            netRequest.setHeader(header, headerValue );
-        };
+            log.debug('Setting request header: ', header);
+            const headerValue = (<any>request.headers)[header];
+            netRequest.setHeader(header, headerValue);
+        }
 
         if (request.uploadData) {
-
             // We have to call netRequest.write on all the request.uploadData.
 
             log.debug(`Writing data to request with method ${request.method}`);
 
             request.uploadData.forEach(current => {
-
                 // TODO: we need to handle `blobUUID` and `file` which is valid
                 // input.
 
                 if (current.file) {
-
                     Files.readFileAsync(current.file)
                         .then(buffer => netRequest.write(buffer))
-                        .catch(err => log.error("Could not upload: ", err));
-
+                        .catch(err => log.error('Could not upload: ', err));
                 } else if (current.blobUUID) {
-
                     // FIXME: I think we have to use the blob: URL handler to fetch
                     // this data just like we would any normal URL then write the
                     // data to the connection. which is ugly.
 
-                    throw new Error("Do not currently handle blobs");
-
+                    throw new Error('Do not currently handle blobs');
                 } else {
                     netRequest.write(this.assertChunk(current.bytes));
                 }
-
             });
 
             // throw new TypeError('First argument must be a string or Buffer.')
-
         }
 
         netRequest.end();
-
     }
 
     private static assertChunk(chunk: Buffer): Buffer {
-
         if (chunk === undefined) {
             // TODO: we are getting this in
             throw new TypeError('Must not be undefined.');
@@ -153,23 +143,23 @@ export class StreamInterceptors {
         const chunkIsBuffer = chunk instanceof Buffer;
 
         if (!chunkIsString && !chunkIsBuffer) {
-            log.error("Invalid data given: ", chunk);
+            log.error('Invalid data given: ', chunk);
             throw new TypeError('Must be a string or Buffer.');
         }
 
         return chunk;
-
     }
-
 }
 
-
 // noinspection TsLint
-export type StreamProtocolCallback = (stream?: ReadableStream | StreamProtocolResponse | CorrectStreamProtocolResponse) => void;
+export type StreamProtocolCallback = (
+    stream?:
+        | ReadableStream
+        | StreamProtocolResponse
+        | CorrectStreamProtocolResponse
+) => void;
 
 export interface CorrectStreamProtocolResponse {
-
-
     // Docs: http://electron.atom.io/docs/api/structures/stream-protocol-response
 
     /**
@@ -184,9 +174,7 @@ export interface CorrectStreamProtocolResponse {
      * The HTTP response code
      */
     statusCode: number;
-
 }
-
 
 function createStream(text: string) {
     const rv = new PassThrough();

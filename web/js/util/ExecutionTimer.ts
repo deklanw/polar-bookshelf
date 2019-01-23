@@ -1,40 +1,33 @@
-import {Logger} from '../logger/Logger';
+import { Logger } from '../logger/Logger';
 
 const log = Logger.create();
 
 export class ExecutionTimer {
-
     public static execute<T>(func: () => T) {
+        const before = Date.now();
 
-        let before = Date.now();
+        const result = func();
 
-        let result = func();
+        const after = Date.now();
 
-        let after = Date.now();
-
-        let duration = after - before;
+        const duration = after - before;
 
         log.info(`Execution time: ${duration}`);
 
         return result;
-
     }
 
     public static async executeAsync<T>(func: () => Promise<T>): Promise<T> {
+        const before = Date.now();
 
-        let before = Date.now();
+        const result = await func();
 
-        let result = await func();
+        const after = Date.now();
 
-        let after = Date.now();
-
-        let duration = after - before;
+        const duration = after - before;
 
         log.info(`Execution time: ${duration}`);
 
         return result;
-
     }
-
-
 }

@@ -1,4 +1,4 @@
-import {BrowserWindow} from "electron";
+import { BrowserWindow } from 'electron';
 
 declare var window: any;
 
@@ -7,39 +7,29 @@ declare var window: any;
  * from the main process.
  */
 export class InjectorService {
-
     public static create() {
+        console.log('Injector created and listening for code to require');
 
-        console.log("Injector created and listening for code to require");
-
-        window.addEventListener("message", (event: MessageEvent) => {
-
+        window.addEventListener('message', (event: MessageEvent) => {
             if (event.data.type === 'injector-require') {
-                console.log("Injecting code via require: " + event.data.src);
+                console.log('Injecting code via require: ' + event.data.src);
                 require(event.data.src);
             }
-
         });
-
     }
-
 }
 
 export class Injector {
-
     public static async inject(browserWindow: BrowserWindow, path: string) {
-
         const message = {
             type: 'injector-require',
-            src: path
+            src: path,
         };
 
         const script = `window.postMessage(${JSON.stringify(message)}, '*')`;
 
         await browserWindow.webContents.executeJavaScript(script);
-
     }
-
 }
 
 export function create() {

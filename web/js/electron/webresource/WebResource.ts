@@ -1,12 +1,11 @@
 import BrowserWindow = Electron.BrowserWindow;
 import WebContents = Electron.WebContents;
-import {Logger} from '../../logger/Logger';
+import { Logger } from '../../logger/Logger';
 import fs from 'fs';
 
 const log = Logger.create();
 
 export abstract class WebResource {
-
     public abstract loadBrowserWindow(browserWindow: BrowserWindow): void;
 
     public abstract loadWebContents(webContents: WebContents): void;
@@ -20,16 +19,14 @@ export abstract class WebResource {
     public static createURL(url: string): WebResource {
         return new URLWebResource(url);
     }
-
 }
 
 export enum WebResourceType {
-    FILE = "FILE",
-    URL = "URL"
+    FILE = 'FILE',
+    URL = 'URL',
 }
 
 class FileWebResource extends WebResource {
-
     public readonly type = WebResourceType.FILE;
     public readonly file: string;
 
@@ -37,11 +34,10 @@ class FileWebResource extends WebResource {
         super();
 
         if (!fs.existsSync(file)) {
-            throw new Error("File does not exist: " + file);
+            throw new Error('File does not exist: ' + file);
         }
 
         this.file = file;
-
     }
 
     public loadBrowserWindow(browserWindow: BrowserWindow): void {
@@ -49,24 +45,22 @@ class FileWebResource extends WebResource {
     }
 
     public loadWebContents(webContents: WebContents): void {
-        log.info("Loading file: ", this.file);
+        log.info('Loading file: ', this.file);
         // webContents.loadFile(this.file);
         webContents.loadURL('file://' + this.file);
     }
 
     public load(loader: URLLoader): void {
-        log.info("Loading file: ", this.file);
+        log.info('Loading file: ', this.file);
         loader.loadURL('file://' + this.file);
     }
 
     public toString(): string {
         return `${this.type}: ${this.file}`;
     }
-
 }
 
 class URLWebResource extends WebResource {
-
     public readonly type = WebResourceType.URL;
 
     public readonly url: string;
@@ -81,19 +75,18 @@ class URLWebResource extends WebResource {
     }
 
     public loadWebContents(webContents: WebContents): void {
-        log.info("Loading URL: ", this.url);
+        log.info('Loading URL: ', this.url);
         webContents.loadURL(this.url);
     }
 
     public load(loader: URLLoader): void {
-        log.info("Loading URL: ", this.url);
+        log.info('Loading URL: ', this.url);
         loader.loadURL(this.url);
     }
 
     public toString(): string {
         return `${this.type}: ${this.url}`;
     }
-
 }
 
 export interface URLLoader {

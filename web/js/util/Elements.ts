@@ -1,11 +1,10 @@
-import {Preconditions} from '../Preconditions';
-import {Rects} from '../Rects';
-import {Rect} from '../Rect';
+import { Preconditions } from '../Preconditions';
+import { Rects } from '../Rects';
+import { Rect } from '../Rect';
 
 const $ = require('jquery');
 
 export class Elements {
-
     /**
      *
      * Compute the offset relative to another parent element.  This can be used
@@ -19,18 +18,20 @@ export class Elements {
 
     // FIXME: this should be getPageOffsetRect and have a
     // relativeToParentElement which is optional.
-    public static getRelativeOffsetRect(element: HTMLElement, parentElement?: HTMLElement): Rect {
+    public static getRelativeOffsetRect(
+        element: HTMLElement,
+        parentElement?: HTMLElement
+    ): Rect {
+        Preconditions.assertNotNull(element, 'element');
 
-        Preconditions.assertNotNull(element, "element");
-
-        if (! parentElement) {
+        if (!parentElement) {
             parentElement = element.ownerDocument!.documentElement!;
         }
 
-        const offsetRect = {left: 0, top: 0, width: 0, height: 0};
+        const offsetRect = { left: 0, top: 0, width: 0, height: 0 };
 
         function toInt(value: number) {
-            if ( isNaN(value) ) {
+            if (isNaN(value)) {
                 return 0;
             }
             return value;
@@ -40,7 +41,6 @@ export class Elements {
         offsetRect.height = toInt(element.offsetHeight);
 
         while (element !== null) {
-
             if (element === parentElement) {
                 break;
             }
@@ -55,12 +55,10 @@ export class Elements {
             // offsetRect.left += toInt(element.scrollLeft);
             // offsetRect.top += toInt(element.scrollTop);
 
-            element = <HTMLElement> element.offsetParent;
-
+            element = <HTMLElement>element.offsetParent;
         }
 
         return Rects.createFromBasicRect(offsetRect);
-
     }
 
     /**
@@ -70,12 +68,10 @@ export class Elements {
      * @return {HTMLDivElement}
      */
     public static createWrapperElementHTML(innerHTML: string) {
-
-        const div = document.createElement("div");
+        const div = document.createElement('div');
         div.innerHTML = innerHTML;
 
         return div;
-
     }
 
     /**
@@ -83,47 +79,42 @@ export class Elements {
      *
      * @param html The HTML element to create
      */
-    public static createElementHTML(html: string, tagName = 'div' ): HTMLElement {
-
+    public static createElementHTML(
+        html: string,
+        tagName = 'div'
+    ): HTMLElement {
         const div = document.createElement(tagName);
         div.innerHTML = html;
 
-        return <HTMLElement> div.firstChild!;
-
+        return <HTMLElement>div.firstChild!;
     }
 
     public static offset(element: HTMLElement) {
-
         const result = {
             left: element.offsetLeft,
             top: element.offsetTop,
             width: element.offsetWidth,
             height: element.offsetHeight,
             right: 0,
-            bottom: 0
+            bottom: 0,
         };
 
         result.right = result.left + result.width;
         result.bottom = result.top + result.height;
 
         return Rects.validate(Rects.createFromBasicRect(result));
-
     }
 
     /**
      * Require that the element have the given classname.
      */
     public static requireClass(element: HTMLElement, clazz: string) {
+        const classValue = element.getAttribute('class');
 
-        const classValue = element.getAttribute("class");
-
-        if ( ! classValue || classValue.indexOf(clazz) === -1) {
-
+        if (!classValue || classValue.indexOf(clazz) === -1) {
             // element isn't the proper class we're expecting.
-            throw new Error("Element does not have the proper class: " + clazz);
-
+            throw new Error('Element does not have the proper class: ' + clazz);
         }
-
     }
 
     /**
@@ -132,15 +123,14 @@ export class Elements {
      *
      */
     public static untilRoot(element: HTMLElement, selector: string): any {
-
         // TODO: refactor this for typescript
 
         if (!element) {
-            throw new Error("element required");
+            throw new Error('element required');
         }
 
         if (!selector) {
-            throw new Error("selector required");
+            throw new Error('selector required');
         }
 
         if (element.matches(selector)) {
@@ -153,13 +143,11 @@ export class Elements {
         }
 
         return Elements.untilRoot(element.parentElement, selector);
-
     }
 
     public static calculateVisibilityForDiv(div: HTMLElement): number {
-
         if (div == null) {
-            throw Error("Not given a div");
+            throw Error('Not given a div');
         }
 
         const windowHeight = $(window).height();
@@ -168,9 +156,13 @@ export class Elements {
         const divHeight = $(div).height();
 
         const hiddenBefore = docScroll - divPosition;
-        const hiddenAfter = (divPosition + divHeight) - (docScroll + windowHeight);
+        const hiddenAfter =
+            divPosition + divHeight - (docScroll + windowHeight);
 
-        if ((docScroll > divPosition + divHeight) || (divPosition > docScroll + windowHeight)) {
+        if (
+            docScroll > divPosition + divHeight ||
+            divPosition > docScroll + windowHeight
+        ) {
             return 0;
         } else {
             let result = 100;
@@ -185,7 +177,5 @@ export class Elements {
 
             return result;
         }
-
     }
-
 }

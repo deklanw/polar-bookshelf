@@ -1,52 +1,44 @@
 import * as React from 'react';
-import {ListGroupItem} from 'reactstrap';
+import { ListGroupItem } from 'reactstrap';
 
 /**
  * Simple header for the repository which supports arbitrary children.
  */
 export class RepoSidebarItem extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
-
     }
 
     public render() {
-
-        const hash = document.location!.hash !== '' ? document.location!.hash : "#";
+        const hash =
+            document.location!.hash !== '' ? document.location!.hash : '#';
 
         const active = hash === this.props.href;
 
         return (
-
-            <ListGroupItem active={active}
-                           tag="a"
-                           href={this.props.href}
-                           onClick={() => this.props.onClick()}
-                           action>
-
+            <ListGroupItem
+                active={active}
+                tag="a"
+                href={this.props.href}
+                onClick={() => this.props.onClick()}
+                action
+            >
                 {/*<div style={{position: 'absolute', top: '0px', left: '55px'}>*/}
                 {/*<i className={this.props.iconClassName}></i>*/}
                 {/*</div>*/}
 
-                <div style={{display: 'flex'}}>
-
-                    <div style={{width: '1em', textAlign: 'right'}}>
-                        <i className={this.props.iconClassName}></i>
+                <div style={{ display: 'flex' }}>
+                    <div style={{ width: '1em', textAlign: 'right' }}>
+                        <i className={this.props.iconClassName} />
                     </div>
 
-                    <div style={{paddingLeft: '10px', fontWeight: 'normal'}}>
+                    <div style={{ paddingLeft: '10px', fontWeight: 'normal' }}>
                         {this.props.text}
                     </div>
-
                 </div>
-
             </ListGroupItem>
-
         );
-
     }
-
 }
 
 interface IProps {
@@ -56,5 +48,4 @@ interface IProps {
     readonly onClick: () => void;
 }
 
-interface IState {
-}
+interface IState {}

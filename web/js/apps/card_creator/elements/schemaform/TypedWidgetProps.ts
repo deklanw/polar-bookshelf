@@ -1,4 +1,3 @@
-
 // https://github.com/mozilla-services/react-jsonschema-form#custom-widgets-and-fields
 //
 // The following props are passed to custom widget components:
@@ -16,7 +15,6 @@
 // formContext: The formContext object that you passed to Form.
 
 export class TypedWidgetProps {
-
     public readonly id?: string;
 
     public readonly value?: string;
@@ -30,5 +28,4 @@ export class TypedWidgetProps {
     constructor(val: any) {
         Object.assign(this, val);
     }
-
 }

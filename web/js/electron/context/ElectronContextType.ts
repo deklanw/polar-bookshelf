@@ -1,4 +1,4 @@
 export enum ElectronContextType {
     MAIN,
-    RENDERER
+    RENDERER,
 }

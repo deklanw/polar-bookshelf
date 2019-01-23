@@ -1,11 +1,9 @@
-import {isPresent, notNull, Preconditions} from '../Preconditions';
-
+import { isPresent, notNull, Preconditions } from '../Preconditions';
 
 /**
  * Simple line with just a start and end.
  */
 export class Line {
-
     public readonly start: number;
     public readonly end: number;
     public readonly axis?: string;
@@ -17,10 +15,10 @@ export class Line {
      * @param [axis] Optional axis parameter ('x' or 'y')
      */
     constructor(start: number, end: number, axis?: string) {
-        this.start = Preconditions.assertNumber(start, "start");
-        this.end = Preconditions.assertNumber(end, "end");
+        this.start = Preconditions.assertNumber(start, 'start');
+        this.end = Preconditions.assertNumber(end, 'end');
         this.axis = axis; // TODO validate
-        //this.length = length;
+        // this.length = length;
     }
 
     /**
@@ -45,7 +43,7 @@ export class Line {
      * @param pt {number}
      * @return {boolean}
      */
-    containsPoint(pt: number) {
+    public containsPoint(pt: number) {
         return this.within(pt);
     }
 
@@ -54,7 +52,7 @@ export class Line {
      *
      * @param pt {number}
      */
-    within(pt: number) {
+    public within(pt: number) {
         return this.start <= pt && pt <= this.end;
     }
 
@@ -64,10 +62,10 @@ export class Line {
      * current line.
      *
      */
-    overlaps(line: Line): boolean {
-        Preconditions.assertNotNull(line, "line");
+    public overlaps(line: Line): boolean {
+        Preconditions.assertNotNull(line, 'line');
 
-        //console.log("DEBUG: %s vs %s", this.toString("interval"), line.toString("interval"));
+        // console.log("DEBUG: %s vs %s", this.toString("interval"), line.toString("interval"));
 
         return this.containsPoint(line.start) || this.containsPoint(line.end);
     }
@@ -77,14 +75,12 @@ export class Line {
      * @param [fmt] optional format parameter. May be 'interval' for interval notation.
      * @return {string}
      */
-    toString(fmt: string) {
-
-        if(fmt === "interval") {
+    public toString(fmt: string) {
+        if (fmt === 'interval') {
             return `[${this.start},${this.end}]`;
         }
 
         return `{start: ${this.start}, end: ${this.end}}`;
-
     }
 
     /**
@@ -94,40 +90,40 @@ export class Line {
      * start origin.
      *
      */
-    multiply(scalar: number): Line {
+    public multiply(scalar: number): Line {
         return new Line(this.start * scalar, this.end * scalar, this.axis);
     }
 
     /**
      * Call Math.floor on the points in this line.
      */
-    floor(): Line {
-        return new Line(Math.floor(this.start), Math.floor(this.end), this.axis);
+    public floor(): Line {
+        return new Line(
+            Math.floor(this.start),
+            Math.floor(this.end),
+            this.axis
+        );
     }
 
-    toJSON() {
-
+    public toJSON() {
         return {
             axis: this.axis,
             start: this.start,
             end: this.end,
-            length: this.length
-        }
-
+            length: this.length,
+        };
     }
 
-    static interval(start: number, pt: number, end: number): boolean {
+    public static interval(start: number, pt: number, end: number): boolean {
         return start <= pt && pt <= end;
     }
 
-    static builder() {
+    public static builder() {
         return new LineBuilder();
     }
-
 }
 
 class LineBuilder {
-
     private start?: number;
 
     private end?: number;
@@ -136,38 +132,35 @@ class LineBuilder {
 
     private axis?: string;
 
-    setStart(value: number) {
+    public setStart(value: number) {
         this.start = value;
         return this;
     }
 
-    setEnd(value: number) {
+    public setEnd(value: number) {
         this.end = value;
         return this;
     }
 
-    setLength(value: number) {
+    public setLength(value: number) {
         this.length = value;
         return this;
     }
 
-    setAxis(value: string) {
+    public setAxis(value: string) {
         this.axis = value;
         return this;
     }
 
-    build() {
+    public build() {
+        const start = notNull(this.start);
 
-        let start = notNull(this.start);
-
-        if(! isPresent(this.end) && isPresent(this.length)) {
+        if (!isPresent(this.end) && isPresent(this.length)) {
             this.end = start + this.length!;
         }
 
-        let end = notNull(this.end);
+        const end = notNull(this.end);
 
         return new Line(start, end);
-
     }
-
 }

@@ -1,14 +1,9 @@
-import {Model} from '../model/Model';
-
+import { Model } from '../model/Model';
 
 export class View {
-
     protected model: Model;
 
     constructor(model: Model) {
-
         this.model = model;
-
     }
-
 }

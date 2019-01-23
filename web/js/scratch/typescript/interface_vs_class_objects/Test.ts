@@ -4,10 +4,9 @@
 // constructor much harder to implement and is kind of pointless for compiler
 // requirements.
 
-import {ITAddress} from './ITAddress';
+import { ITAddress } from './ITAddress';
 
 class Address implements IAddress {
-
     public city: string;
     public state: string;
     public zip: number;
@@ -24,18 +23,15 @@ class Address implements IAddress {
     //     return result;
     // }
 
-    static create(archetype: IAddress): Address {
+    public static create(archetype: IAddress): Address {
         return new Address(archetype.city, archetype.state, archetype.zip);
     }
-
 }
 
 interface IAddress {
-
     city: string;
     state: string;
     zip: number;
-
 }
 
 function fromAddress(obj: Address) {
@@ -46,38 +42,27 @@ function toIAddress(obj: IAddress): IAddress {
     return obj;
 }
 
-let address0 = <Address> {
+const address0 = <Address>{};
 
-};
+const address1 = <IAddress>{};
 
-let address1 = <IAddress> {
+const address2 = <ITAddress>{};
 
-};
+// fromAddress({});
 
-let address2 = <ITAddress> {
-
-};
-
-//fromAddress({});
-
-//fromIAddress({})
+// fromIAddress({})
 
 // TODO: Electron.Rectangle with a T.ds file is a much better setup.
 
 describe('Test', function() {
-
-    it("Basic test", function () {
-
-        let address = Address.create({
+    it('Basic test', function() {
+        const address = Address.create({
             city: 'San Francisco',
             state: 'CA',
-            zip: 94546
+            zip: 94546,
         });
 
-        console.log("FIXME: " + typeof address)
-        console.log("FIXME: " + (address instanceof Address));
-
+        console.log('FIXME: ' + typeof address);
+        console.log('FIXME: ' + (address instanceof Address));
     });
-
 });
-

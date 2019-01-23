@@ -1,6 +1,6 @@
-import {PersistenceLayerListener} from './PersistenceLayerListener';
-import {PersistenceLayer} from './PersistenceLayer';
-import {Releaseable} from '../reactor/EventListener';
+import { PersistenceLayerListener } from './PersistenceLayerListener';
+import { PersistenceLayer } from './PersistenceLayer';
+import { Releaseable } from '../reactor/EventListener';
 
 /**
  * Persistence layer that allows us to listen to changes in the backing store
@@ -8,7 +8,6 @@ import {Releaseable} from '../reactor/EventListener';
  * which files have been updated and their DocInfo.
  */
 export interface ListenablePersistenceLayer extends PersistenceLayer {
-
     addEventListener(listener: PersistenceLayerListener): Releaseable;
 
     /**
@@ -17,6 +16,8 @@ export interface ListenablePersistenceLayer extends PersistenceLayer {
      * @param fingerprint
      * @param listener
      */
-    addEventListenerForDoc(fingerprint: string, listener: PersistenceLayerListener): void;
-
+    addEventListenerForDoc(
+        fingerprint: string,
+        listener: PersistenceLayerListener
+    ): void;
 }

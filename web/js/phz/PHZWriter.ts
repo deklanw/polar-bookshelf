@@ -1,8 +1,8 @@
 import JSZip from 'jszip';
-import {Resources} from './Resources';
-import {ResourceEntry} from './ResourceEntry';
-import {ContentTypes} from './ContentTypes';
-import {Resource} from './Resource';
+import { Resources } from './Resources';
+import { ResourceEntry } from './ResourceEntry';
+import { ContentTypes } from './ContentTypes';
+import { Resource } from './Resource';
 
 import fs from 'fs';
 
@@ -10,7 +10,6 @@ import fs from 'fs';
  * Write to a new zip output stream.
  */
 export class PHZWriter {
-
     public path: string;
 
     public zip: JSZip;
@@ -21,7 +20,6 @@ export class PHZWriter {
         this.path = path;
         this.zip = new JSZip();
         this.resources = new Resources();
-
     }
 
     /**
@@ -29,51 +27,68 @@ export class PHZWriter {
      *
      */
     public async writeMetadata(metadata: any): Promise<PHZWriter> {
-        this.__write("metadata.json", JSON.stringify(metadata, null, "  "), "metadata");
+        this.__write(
+            'metadata.json',
+            JSON.stringify(metadata, null, '  '),
+            'metadata'
+        );
         return this;
     }
 
     /**
      *
      */
-    public async writeResource(resource: Resource, content: string, comment?: string): Promise<PHZWriter> {
-
+    public async writeResource(
+        resource: Resource,
+        content: string,
+        comment?: string
+    ): Promise<PHZWriter> {
         // TODO: when writing the content  update the contentLength with the
         // binary storage used to represent the data as UTF-8...
 
         // TODO: verify that we store the data as UTF-8
 
         if (comment === undefined) {
-            comment = "";
+            comment = '';
         }
 
         const ext = ContentTypes.contentTypeToExtension(resource.contentType);
         const path = `${resource.id}.${ext}`;
 
-        const resourceEntry = new ResourceEntry({id: resource.id, path, resource});
+        const resourceEntry = new ResourceEntry({
+            id: resource.id,
+            path,
+            resource,
+        });
 
         // add this to the resources index.
         this.resources.entries[resource.id] = resourceEntry;
 
         // *** write the metadata
 
-        this.__write(`${resource.id}-meta.json`, JSON.stringify(resource, null, "  "), "");
+        this.__write(
+            `${resource.id}-meta.json`,
+            JSON.stringify(resource, null, '  '),
+            ''
+        );
 
         // *** write the actual data
 
         this.__write(path, content, comment);
 
         return this;
-
     }
 
     public __writeResources() {
-        this.__write("resources.json", JSON.stringify(this.resources, null, "  "), "resources");
+        this.__write(
+            'resources.json',
+            JSON.stringify(this.resources, null, '  '),
+            'resources'
+        );
         return this;
     }
 
     public __write(path: string, content: string, comment: string) {
-
         // FIXME: comment and how do I handle binary data??
 
         this.zip.file(path, content);
@@ -86,21 +101,20 @@ export class PHZWriter {
      * @return {Promise<void>}
      */
     public async close() {
-
         this.__writeResources();
 
         return new Promise((resolve, reject) => {
-
             const options: JSZip.JSZipGeneratorOptions<'nodebuffer'> = {
                 type: 'nodebuffer',
                 streamFiles: true,
-                compression: "DEFLATE",
+                compression: 'DEFLATE',
                 compressionOptions: {
-                    level: 9
-                }
+                    level: 9,
+                },
             };
 
-            this.zip.generateNodeStream(options)
+            this.zip
+                .generateNodeStream(options)
                 .pipe(fs.createWriteStream(this.path))
                 .on('error', function(err: Error) {
                     reject(err);
@@ -108,9 +122,6 @@ export class PHZWriter {
                 .on('finish', function() {
                     resolve();
                 });
-
         });
-
     }
-
 }

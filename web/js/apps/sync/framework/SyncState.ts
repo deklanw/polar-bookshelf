@@ -6,27 +6,25 @@
  *                      +--> FAILED
  */
 export enum SyncState {
-
     /**
      * The job has not yet started and is still pending.
      */
-    PENDING = "PENDING",
+    PENDING = 'PENDING',
 
     /**
      * The job has started.
      */
-    STARTED = "STARTED",
+    STARTED = 'STARTED',
 
-    COMPLETED = "COMPLETED",
+    COMPLETED = 'COMPLETED',
 
     /**
      * Failed with an error.
      */
-    FAILED = "FAILED",
+    FAILED = 'FAILED',
 
     /**
      * Aborted by the user.
      */
-    ABORTED = "ABORTED"
-
+    ABORTED = 'ABORTED',
 }

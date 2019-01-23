@@ -1,12 +1,11 @@
 /**
  * Listen to a mutation and we're given a list of names and types.
  */
-import {MutationType} from './MutationType';
-import {MutationState} from './MutationState';
-import {MutationTypes} from './MutationTypes';
+import { MutationType } from './MutationType';
+import { MutationState } from './MutationState';
+import { MutationTypes } from './MutationTypes';
 
 export class TraceEvent {
-
     /**
      * @type {string} The path in the object tree of the object being mutated.
      */
@@ -43,7 +42,6 @@ export class TraceEvent {
     public mutationState: MutationState;
 
     constructor(opts: any) {
-
         this.path = opts.path;
         this.mutationType = opts.mutationType;
         this.target = opts.target;
@@ -51,7 +49,5 @@ export class TraceEvent {
         this.value = opts.value;
         this.previousValue = opts.previousValue;
         this.mutationState = MutationTypes.toMutationState(this.mutationType);
-
     }
-
 }

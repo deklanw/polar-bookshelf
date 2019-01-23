@@ -1,89 +1,89 @@
-import {LoggerDelegate} from './LoggerDelegate';
-import {FilteredLogger} from './FilteredLogger';
-import {ConsoleLogger} from './ConsoleLogger';
-import {LevelAnnotatingLogger} from './annotating/LevelAnnotatingLogger';
-import {VersionAnnotatingLogger} from './annotating/VersionAnnotatingLogger';
-import {ILogger} from './ILogger';
-import {Directories} from '../datastore/Directories';
-import {LogLevel} from './LogLevel';
-import {Files} from '../util/Files';
-import {LogLevels} from './LogLevels';
-import {Optional} from '../util/ts/Optional';
-import {MultiLogger} from './MultiLogger';
-import {SentryLogger} from './SentryLogger';
-import {FilePaths} from '../util/FilePaths';
-import {ElectronContextType} from '../electron/context/ElectronContextType';
-import {ElectronContextTypes} from '../electron/context/ElectronContextTypes';
-import {ToasterLogger} from './ToasterLogger';
-import {PersistentErrorLogger} from './PersistentErrorLogger';
-import {isPresent} from '../Preconditions';
+import { LoggerDelegate } from './LoggerDelegate';
+import { FilteredLogger } from './FilteredLogger';
+import { ConsoleLogger } from './ConsoleLogger';
+import { LevelAnnotatingLogger } from './annotating/LevelAnnotatingLogger';
+import { VersionAnnotatingLogger } from './annotating/VersionAnnotatingLogger';
+import { ILogger } from './ILogger';
+import { Directories } from '../datastore/Directories';
+import { LogLevel } from './LogLevel';
+import { Files } from '../util/Files';
+import { LogLevels } from './LogLevels';
+import { Optional } from '../util/ts/Optional';
+import { MultiLogger } from './MultiLogger';
+import { SentryLogger } from './SentryLogger';
+import { FilePaths } from '../util/FilePaths';
+import { ElectronContextType } from '../electron/context/ElectronContextType';
+import { ElectronContextTypes } from '../electron/context/ElectronContextTypes';
+import { ToasterLogger } from './ToasterLogger';
+import { PersistentErrorLogger } from './PersistentErrorLogger';
+import { isPresent } from '../Preconditions';
 
 import process from 'process';
-import {MemoryLogger} from './MemoryLogger';
-import {ISODateTimeString} from '../metadata/ISODateTimeStrings';
-import {AppRuntime} from '../AppRuntime';
+import { MemoryLogger } from './MemoryLogger';
+import { ISODateTimeString } from '../metadata/ISODateTimeStrings';
+import { AppRuntime } from '../AppRuntime';
 
 /**
  * Maintains our general logging infrastructure.  Differentiated from Logger
  * which performs the actual logging of message. This maintains Loggers.
  */
 export class Logging {
-
     /**
      * Initialize the logger to write to a specific directory.
      */
     public static async init() {
-
         const level = this.configuredLevel();
 
         const target: ILogger = await this.createTarget(level);
 
         await this.initWithTarget(target);
-
     }
 
     /**
      * Initialize a logger suitable for testing.
      */
     public static initForTesting() {
-
         const level = this.configuredLevel();
 
         const target = new ConsoleLogger();
 
-        const delegate =
-            new FilteredLogger(
-                new VersionAnnotatingLogger(
-                    new LevelAnnotatingLogger(target)), level);
+        const delegate = new FilteredLogger(
+            new VersionAnnotatingLogger(new LevelAnnotatingLogger(target)),
+            level
+        );
 
         LoggerDelegate.set(delegate);
-
     }
 
     public static async initWithTarget(target: ILogger) {
-
         const lc = await this.loggingConfig();
 
-        const delegate =
-            new FilteredLogger(
-                new VersionAnnotatingLogger(
-                    new LevelAnnotatingLogger(target)), lc.level);
+        const delegate = new FilteredLogger(
+            new VersionAnnotatingLogger(new LevelAnnotatingLogger(target)),
+            lc.level
+        );
 
         LoggerDelegate.set(delegate);
 
         const logger = LoggerDelegate.get();
 
-        logger.info(`Using logger: ${logger.name}: target=${lc.target}, level=${LogLevel[lc.level]}`);
-
+        logger.info(
+            `Using logger: ${logger.name}: target=${lc.target}, level=${
+                LogLevel[lc.level]
+            }`
+        );
     }
 
     public static async createTarget(level: LogLevel): Promise<ILogger> {
-
         const loggers: ILogger[] = [];
 
         const electronContext = ElectronContextTypes.create();
 
-        if (level === LogLevel.WARN && SentryLogger.isEnabled() && AppRuntime.isElectron()) {
+        if (
+            level === LogLevel.WARN &&
+            SentryLogger.isEnabled() &&
+            AppRuntime.isElectron()
+        ) {
             // SentryLogger enabled for INFO will lock us up.
             // *** first logger is sentry but only if we are not running within
             // a SNAP container.
@@ -117,58 +117,48 @@ export class Logging {
         loggers.push(await this.createPrimaryTarget());
 
         return new MultiLogger(...loggers);
-
     }
 
-
     public static async createPrimaryTarget(): Promise<ILogger> {
-
         const loggingConfig = await this.loggingConfig();
 
         if (loggingConfig.target === LoggerTarget.CONSOLE) {
             return new ConsoleLogger();
         } else {
-            throw new Error("Invalid target: " + loggingConfig.target);
+            throw new Error('Invalid target: ' + loggingConfig.target);
         }
-
     }
 
     private static async loggingConfig(): Promise<LoggingConfig> {
-
         if (AppRuntime.isElectron()) {
-
             const directories = await new Directories().init();
 
             const path = FilePaths.join(directories.configDir, 'logging.json');
 
             if (await Files.existsAsync(path)) {
-
                 const buffer = await Files.readFileAsync(path);
                 const json = buffer.toString('utf8');
                 let config = JSON.parse(json) as LoggingConfig;
 
                 if (typeof config.level === 'string') {
-
                     // needed to convert the symbol back to the enum.  Not sure
                     // this is very clean though and wish there was a better way
                     // to do this.
 
-                    config = { level: LogLevels.fromName(config.level),
-                        target: config.target };
-
+                    config = {
+                        level: LogLevels.fromName(config.level),
+                        target: config.target,
+                    };
                 }
 
                 return config;
-
             }
-
         }
 
         return {
             target: LoggerTarget.CONSOLE,
-            level: this.configuredLevel()
+            level: this.configuredLevel(),
         };
-
     }
 
     private static configuredLevel(): LogLevel {
@@ -176,7 +166,6 @@ export class Logging {
             .map(level => LogLevels.fromName(level))
             .getOrElse(LogLevel.WARN);
     }
-
 }
 
 enum LoggerTarget {
@@ -192,9 +181,7 @@ export interface LoggingConfig {
     readonly level: LogLevel;
 }
 
-
 export interface LogMessage {
-
     /**
      * A unique number for this LogMessage, just needs to be unique to the
      * process and we should be able to use a simple nonce.
@@ -208,4 +195,10 @@ export interface LogMessage {
     readonly args: ReadonlyArray<any>;
 }
 
-export type LogLevelName = 'notice' | 'info' | 'warn' | 'error' | 'verbose' | 'debug';
+export type LogLevelName =
+    | 'notice'
+    | 'info'
+    | 'warn'
+    | 'error'
+    | 'verbose'
+    | 'debug';

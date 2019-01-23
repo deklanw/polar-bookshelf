@@ -1,6 +1,6 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import * as TypeMoq from "typemoq";
-import {NoteDescriptor} from '../NoteDescriptor';
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import * as TypeMoq from 'typemoq';
+import { NoteDescriptor } from '../NoteDescriptor';
 
 /**
  *
@@ -31,21 +31,19 @@ import {NoteDescriptor} from '../NoteDescriptor';
  * *
  */
 export class StoreMediaFileClient implements IStoreMediaFileClient {
-
     public async execute(filename: string, data: string): Promise<void> {
-
         const body = {
-            action: "storeMediaFile",
+            action: 'storeMediaFile',
             version: 6,
             params: {
-                filename, data
-            }
+                filename,
+                data,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
         await AnkiConnectFetch.fetch(init);
-
     }
 
     /**
@@ -53,25 +51,22 @@ export class StoreMediaFileClient implements IStoreMediaFileClient {
      */
     public static createMock() {
         const client = TypeMoq.Mock.ofType<IStoreMediaFileClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve());
         return client.object;
     }
-
 }
 
 export interface IStoreMediaFileClient {
-
     execute(filename: string, data: string): Promise<void>;
-
 }
 
 export interface MediaFile {
-
     readonly filename: string;
 
     /**
      * Base64 binary data for the media.
      */
     readonly data: string;
-
 }

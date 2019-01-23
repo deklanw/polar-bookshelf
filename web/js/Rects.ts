@@ -1,19 +1,18 @@
-import {Rect} from './Rect';
-import {Preconditions} from './Preconditions';
-import {Point} from './Point';
-import {Line} from './util/Line';
-import {Styles} from './util/Styles';
-import {Objects} from './util/Objects';
+import { Rect } from './Rect';
+import { Preconditions } from './Preconditions';
+import { Point } from './Point';
+import { Line } from './util/Line';
+import { Styles } from './util/Styles';
+import { Objects } from './util/Objects';
 
 export class Rects {
-
     /**
      * Make sure the rect is visible. If it has a zero width or height it's
      * not visible.
      * @param rect {Rect | DOMRect}
      * @return boolean True when the rect is visible.
      */
-    static isVisible(rect: Rect | DOMRect) {
+    public static isVisible(rect: Rect | DOMRect) {
         return rect.height > 0 && rect.width > 0;
     }
 
@@ -22,23 +21,21 @@ export class Rects {
      * @param rect {Rect}
      * @param scale {number}
      */
-    static scale(rect: Rect, scale: number) {
-
-        Preconditions.assertNotNull(rect, "rect");
+    public static scale(rect: Rect, scale: number) {
+        Preconditions.assertNotNull(rect, 'rect');
 
         // make sure the input is valid before we work on it.
         rect = Rects.validate(rect);
 
         rect = new Rect(rect);
 
-        let result: any = {};
+        const result: any = {};
 
         Objects.typedKeys(rect).forEach(key => {
             result[key] = <number>rect[key] * scale;
         });
 
         return Rects.validate(result);
-
     }
 
     /**
@@ -51,28 +48,26 @@ export class Rects {
      *
      * @return {Rect}
      */
-    static validate(rect: any): Rect {
+    public static validate(rect: any): Rect {
+        Preconditions.assertNotNull(rect.left, 'left');
+        Preconditions.assertNotNull(rect.top, 'top');
+        Preconditions.assertNotNull(rect.width, 'width');
+        Preconditions.assertNotNull(rect.height, 'height');
+        Preconditions.assertNotNull(rect.bottom, 'bottom');
+        Preconditions.assertNotNull(rect.right, 'right');
 
-        Preconditions.assertNotNull(rect.left, "left");
-        Preconditions.assertNotNull(rect.top, "top");
-        Preconditions.assertNotNull(rect.width, "width");
-        Preconditions.assertNotNull(rect.height, "height");
-        Preconditions.assertNotNull(rect.bottom, "bottom");
-        Preconditions.assertNotNull(rect.right, "right");
+        Preconditions.assertNumber(rect.left, 'left');
+        Preconditions.assertNumber(rect.top, 'top');
+        Preconditions.assertNumber(rect.width, 'width');
+        Preconditions.assertNumber(rect.height, 'height');
+        Preconditions.assertNumber(rect.bottom, 'bottom');
+        Preconditions.assertNumber(rect.right, 'right');
 
-        Preconditions.assertNumber(rect.left, "left");
-        Preconditions.assertNumber(rect.top, "top");
-        Preconditions.assertNumber(rect.width, "width");
-        Preconditions.assertNumber(rect.height, "height");
-        Preconditions.assertNumber(rect.bottom, "bottom");
-        Preconditions.assertNumber(rect.right, "right");
-
-        if(! (rect instanceof Rect)) {
+        if (!(rect instanceof Rect)) {
             return new Rect(rect);
         } else {
             return rect;
         }
-
     }
 
     /**
@@ -82,8 +77,7 @@ export class Rects {
      * @param point {Point}
      * @param rect {Rect}
      */
-    static relativeTo(point: Point, rect: Rect) {
-
+    public static relativeTo(point: Point, rect: Rect) {
         rect = Rects.validate(rect);
         rect = new Rect(rect);
 
@@ -94,7 +88,6 @@ export class Rects {
         rect.bottom = rect.bottom + point.y;
 
         return Rects.validate(rect);
-
     }
 
     /**
@@ -110,40 +103,34 @@ export class Rects {
      *                           relative.
      * @return {Rect}
      */
-    static move(rect: Rect, dir: Direction, absolute: boolean) {
-
+    public static move(rect: Rect, dir: Direction, absolute: boolean) {
         rect = new Rect(rect);
 
-        if(absolute) {
-
-            if(dir.x !== undefined) {
+        if (absolute) {
+            if (dir.x !== undefined) {
                 rect.left = dir.x;
                 rect.right = rect.left + rect.width;
             }
 
-            if(dir.y !== undefined) {
+            if (dir.y !== undefined) {
                 rect.top = dir.y;
                 rect.bottom = rect.top + rect.height;
             }
-
         } else {
-
             // TODO: I could just convert the relative positions to absolute to
             // clean up this code a bit.
-            if(dir.x !== undefined) {
+            if (dir.x !== undefined) {
                 rect.left = rect.left + dir.x;
                 rect.right = rect.right + dir.x;
             }
 
-            if(dir.y !== undefined) {
+            if (dir.y !== undefined) {
                 rect.bottom = rect.bottom + dir.y;
                 rect.top = rect.top + dir.y;
             }
-
         }
 
         return Rects.validate(rect);
-
     }
 
     /**
@@ -154,16 +141,16 @@ export class Rects {
      *
      * @return {boolean}
      */
-    static intersect(a: Rect, b: Rect) {
-
+    public static intersect(a: Rect, b: Rect) {
         // TODO: internally we should convert the object to a rect so we can
         // validate it.
 
-        return (a.left <= b.right &&
-                b.left <= a.right &&
-                a.top <= b.bottom &&
-                b.top <= a.bottom)
-
+        return (
+            a.left <= b.right &&
+            b.left <= a.right &&
+            a.top <= b.bottom &&
+            b.top <= a.bottom
+        );
     }
 
     /**
@@ -175,8 +162,11 @@ export class Rects {
      *
      * @return {boolean}
      */
-    static overlap(a: Rect, b: Rect) {
-        return a.toLine("x").overlaps(b.toLine("x")) || a.toLine("y").overlaps(b.toLine("y"));
+    public static overlap(a: Rect, b: Rect) {
+        return (
+            a.toLine('x').overlaps(b.toLine('x')) ||
+            a.toLine('y').overlaps(b.toLine('y'))
+        );
     }
 
     /**
@@ -187,8 +177,7 @@ export class Rects {
      * @param b {Rect}
      * @return {Rect}
      */
-    static intersection(a: Rect, b: Rect) {
-
+    public static intersection(a: Rect, b: Rect) {
         // TODO/refactor.  Make each dimension a line, then adjust the line.
         // This way the same function is used twice with less copy/paste.
 
@@ -198,7 +187,6 @@ export class Rects {
             left: Math.max(a.left, b.left),
             right: Math.min(a.right, b.right),
         });
-
     }
 
     /**
@@ -209,28 +197,26 @@ export class Rects {
      * @param b {Rect}
      * @return {Array<string>}
      */
-    static intersectedPositions(a: Rect, b: Rect) {
+    public static intersectedPositions(a: Rect, b: Rect) {
+        const result = [];
 
-        let result = [];
-
-        if(_interval(a.left, b.right, a.right)) {
-            result.push("left");
+        if (_interval(a.left, b.right, a.right)) {
+            result.push('left');
         }
 
-        if(_interval(a.left, b.left, a.right)) {
-            result.push("right");
+        if (_interval(a.left, b.left, a.right)) {
+            result.push('right');
         }
 
-        if(_interval(a.top, b.bottom, a.bottom)) {
-            result.push("top");
+        if (_interval(a.top, b.bottom, a.bottom)) {
+            result.push('top');
         }
 
-        if(_interval(a.top, b.top, a.bottom)) {
-            result.push("bottom");
+        if (_interval(a.top, b.top, a.bottom)) {
+            result.push('bottom');
         }
 
         return result;
-
     }
 
     /**
@@ -241,12 +227,11 @@ export class Rects {
      * @param b {Rect}
      * @return {Object}
      */
-    static relativePositions(a: Rect, b: Rect) {
-
+    public static relativePositions(a: Rect, b: Rect) {
         Rects.validate(a);
         Rects.validate(b);
 
-        let result: any = {};
+        const result: any = {};
 
         // basically this is the degree AWAY from given position.  Negative
         // values would be BEFORE the position.
@@ -257,7 +242,6 @@ export class Rects {
         result.right = Math.abs(a.right - b.left);
 
         return result;
-
     }
 
     /**
@@ -269,21 +253,26 @@ export class Rects {
      * @param a {Rect}
      * @param b {Rect}
      */
-    static subtract(a: Rect, b: Rect): Rect {
-
+    public static subtract(a: Rect, b: Rect): Rect {
         a = Rects.validate(a);
         b = Rects.validate(b);
 
-        let keys: (keyof Rect)[] = ["left", "top", "right", "bottom", "width", "height"];
+        const keys: Array<keyof Rect> = [
+            'left',
+            'top',
+            'right',
+            'bottom',
+            'width',
+            'height',
+        ];
 
-        let result: any = {};
+        const result: any = {};
 
         keys.forEach(key => {
             result[key] = <number>a[key] - <number>b[key];
         });
 
         return new Rect(result);
-
     }
 
     /**
@@ -293,21 +282,26 @@ export class Rects {
      * @param a {Rect}
      * @param b {Rect}
      */
-    static add(a: Rect, b: Rect) {
-
+    public static add(a: Rect, b: Rect) {
         a = Rects.validate(a);
         b = Rects.validate(b);
 
-        let keys: (keyof Rect)[] = ["left", "top", "right", "bottom", "width", "height"];
+        const keys: Array<keyof Rect> = [
+            'left',
+            'top',
+            'right',
+            'bottom',
+            'width',
+            'height',
+        ];
 
-        let result: any = {};
+        const result: any = {};
 
         keys.forEach(key => {
             result[key] = <number>a[key] + <number>b[key];
         });
 
         return new Rect(result);
-
     }
 
     /**
@@ -318,21 +312,21 @@ export class Rects {
      * @param b {Rect}
      * @return {Rect}
      */
-    static perc(a: Rect, b: Rect) {
-
-        if(a.width > b.width || a.height > b.height) {
-            throw new Error(`Dimensions invalid ${a.dimensions} vs ${b.dimensions}`);
+    public static perc(a: Rect, b: Rect) {
+        if (a.width > b.width || a.height > b.height) {
+            throw new Error(
+                `Dimensions invalid ${a.dimensions} vs ${b.dimensions}`
+            );
         }
 
-        let result = {
+        const result = {
             left: 100 * (a.left / b.width),
             right: 100 * (a.right / b.width),
             top: 100 * (a.top / b.height),
-            bottom: 100 * (a.bottom / b.height)
+            bottom: 100 * (a.bottom / b.height),
         };
 
         return Rects.createFromBasicRect(result);
-
     }
 
     /**
@@ -341,8 +335,7 @@ export class Rects {
      * @param rect {Rect | Object}
      * @return {Rect}
      */
-    static createFromBasicRect(rect: any): Rect {
-
+    public static createFromBasicRect(rect: any): Rect {
         rect = new Rect(rect);
 
         // TODO: add x,y in the future.
@@ -354,24 +347,23 @@ export class Rects {
         // var2 or var 3... and then define them when they are not defined.  For
         // example. If top and height are defined, I can define bottom.
 
-        if(! rect.bottom && "top" in rect && "height" in rect) {
+        if (!rect.bottom && 'top' in rect && 'height' in rect) {
             rect.bottom = rect.top + rect.height;
         }
 
-        if(! rect.right && "left" in rect && "width" in rect) {
+        if (!rect.right && 'left' in rect && 'width' in rect) {
             rect.right = rect.left + rect.width;
         }
 
-        if(! rect.height && "bottom" in rect && "top" in rect) {
+        if (!rect.height && 'bottom' in rect && 'top' in rect) {
             rect.height = rect.bottom - rect.top;
         }
 
-        if(! rect.width && "right" in rect && "left" in rect) {
+        if (!rect.width && 'right' in rect && 'left' in rect) {
             rect.width = rect.right - rect.left;
         }
 
         return Rects.validate(new Rect(rect));
-
     }
 
     /**
@@ -380,20 +372,18 @@ export class Rects {
      * @param yAxis {Line}
      * @return {Rect}
      */
-    static createFromLines(xAxis: Line, yAxis: Line) {
-
-        Preconditions.assertNotNull(xAxis, "xAxis");
-        Preconditions.assertNotNull(yAxis, "yAxis");
-        Preconditions.assertEqual(xAxis.axis, "x", "xAxis.axis");
-        Preconditions.assertEqual(yAxis.axis, "y", "yAxis.axis");
+    public static createFromLines(xAxis: Line, yAxis: Line) {
+        Preconditions.assertNotNull(xAxis, 'xAxis');
+        Preconditions.assertNotNull(yAxis, 'yAxis');
+        Preconditions.assertEqual(xAxis.axis, 'x', 'xAxis.axis');
+        Preconditions.assertEqual(yAxis.axis, 'y', 'yAxis.axis');
 
         return Rects.createFromBasicRect({
             left: xAxis.start,
             width: xAxis.length,
             top: yAxis.start,
-            height: yAxis.length
-        })
-
+            height: yAxis.length,
+        });
     }
 
     /**
@@ -401,8 +391,7 @@ export class Rects {
      * @param element {HTMLElement}
      * @return {Rect}
      */
-    static createFromOffset(element: HTMLElement) {
-
+    public static createFromOffset(element: HTMLElement) {
         // FIXME: if I'm using this it might not be what I want.
 
         return Rects.createFromBasicRect({
@@ -411,7 +400,6 @@ export class Rects {
             width: element.offsetWidth,
             height: element.offsetHeight,
         });
-
     }
 
     /**
@@ -419,21 +407,16 @@ export class Rects {
      * return this as a rect.
      * @param element {HTMLElement}
      */
-    static fromElementStyle(element: HTMLElement) {
-
-        let rect = {
-
+    public static fromElementStyle(element: HTMLElement) {
+        const rect = {
             left: Styles.parsePX(element.style.left),
             top: Styles.parsePX(element.style.top),
             width: Styles.parsePX(element.style.width),
-            height: Styles.parsePX(element.style.height)
-
+            height: Styles.parsePX(element.style.height),
         };
 
         return Rects.createFromBasicRect(rect);
-
     }
-
 }
 
 /**

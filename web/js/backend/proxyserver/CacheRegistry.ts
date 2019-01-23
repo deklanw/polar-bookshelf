@@ -1,29 +1,26 @@
-import {ProxyServerConfig} from './ProxyServerConfig';
-import {Preconditions} from '../../Preconditions';
-import {CachedRequestsHolder} from './CachedRequestsHolder';
-import {CacheEntry} from './CacheEntry';
-import {CachedRequest} from './CachedRequest';
-import {CacheEntriesFactory} from './CacheEntriesFactory';
-import {forDict} from '../../util/Functions';
-import {Logger} from '../../logger/Logger';
+import { ProxyServerConfig } from './ProxyServerConfig';
+import { Preconditions } from '../../Preconditions';
+import { CachedRequestsHolder } from './CachedRequestsHolder';
+import { CacheEntry } from './CacheEntry';
+import { CachedRequest } from './CachedRequest';
+import { CacheEntriesFactory } from './CacheEntriesFactory';
+import { forDict } from '../../util/Functions';
+import { Logger } from '../../logger/Logger';
 
 const log = Logger.create();
 
 export class CacheRegistry {
-
     private readonly proxyServerConfig: ProxyServerConfig;
 
-    private readonly registry: {[url: string]: CacheEntry} = {};
+    private readonly registry: { [url: string]: CacheEntry } = {};
 
     /**
      *
      */
     constructor(proxyServerConfig: ProxyServerConfig) {
-
         this.proxyServerConfig = Preconditions.assertNotNull(proxyServerConfig);
 
         this.registry = {};
-
     }
 
     /**
@@ -32,15 +29,16 @@ export class CacheRegistry {
      * @return {Promise<CachedRequestsHolder>}
      */
     public async registerFile(path: string) {
-
-        const cacheEntriesHolder = await CacheEntriesFactory.createEntriesFromFile(path);
+        const cacheEntriesHolder = await CacheEntriesFactory.createEntriesFromFile(
+            path
+        );
 
         const cachedRequestsHolder = new CachedRequestsHolder({
-            metadata: cacheEntriesHolder.metadata
+            metadata: cacheEntriesHolder.metadata,
         });
 
-        if(! cacheEntriesHolder.cacheEntries) {
-            throw new Error("No cache entries!");
+        if (!cacheEntriesHolder.cacheEntries) {
+            throw new Error('No cache entries!');
         }
 
         forDict(cacheEntriesHolder.cacheEntries, (key, cacheEntry) => {
@@ -49,9 +47,7 @@ export class CacheRegistry {
         });
 
         return cachedRequestsHolder;
-
     }
-
 
     /**
      * Register a file to be served with the given checksum.  Then return
@@ -60,23 +56,24 @@ export class CacheRegistry {
      *
      */
     public register(cacheEntry: CacheEntry) {
-
-        Preconditions.assertNotNull(cacheEntry, "cacheEntry");
-        Preconditions.assertNotNull(cacheEntry.statusCode, "cacheEntry.statusCode");
-        Preconditions.assertNotNull(cacheEntry.headers, "cacheEntry.headers");
+        Preconditions.assertNotNull(cacheEntry, 'cacheEntry');
+        Preconditions.assertNotNull(
+            cacheEntry.statusCode,
+            'cacheEntry.statusCode'
+        );
+        Preconditions.assertNotNull(cacheEntry.headers, 'cacheEntry.headers');
 
         const url = cacheEntry.url;
 
-        Preconditions.assertNotNull(url, "url");
+        Preconditions.assertNotNull(url, 'url');
 
         log.info(`Registered new cache entry at: ${url}`);
 
         this.registry[url] = cacheEntry;
 
         return new CachedRequest({
-            url
+            url,
         });
-
     }
 
     /**
@@ -94,13 +91,10 @@ export class CacheRegistry {
      * @return {CacheEntry}
      */
     public get(url: string): CacheEntry {
-
         if (!this.hasEntry(url)) {
-            throw new Error("URL not registered: " + url);
+            throw new Error('URL not registered: ' + url);
         }
 
         return this.registry[url];
-
     }
-
 }

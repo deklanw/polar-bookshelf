@@ -17,12 +17,10 @@
  *
  */
 export class WebserverCerts {
-
     /**
      * The raw CERT data. Note that this should last ten years.
      */
-    public static CERT: string =
-`-----BEGIN CERTIFICATE-----
+    public static CERT: string = `-----BEGIN CERTIFICATE-----
 MIIDlDCCAnwCCQDmwK4pUDF44DANBgkqhkiG9w0BAQsFADCBizELMAkGA1UEBhMC
 VVMxCzAJBgNVBAgMAkNBMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMQ4wDAYDVQQK
 DAVQb2xhcjEhMB8GA1UEAwwYbG9jYWxhcHAuZ2V0cG9sYXJpemVkLmlvMSQwIgYJ
@@ -45,8 +43,7 @@ lzC0l5Or3TTAWTNlU8S/MxVJPV0OpUWmNVpTR1Lvdb1ztsAp8xf3UJJO4YRrty+R
 Ods6EH6Wny0=
 -----END CERTIFICATE-----`;
 
-    public static KEY: string =
-`-----BEGIN RSA PRIVATE KEY-----
+    public static KEY: string = `-----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEA1kECNM8jXw4ySy98Ly0sm9Mp9mvrEZvne8rAPl1Mg6PGhWru
 49u+atfnVT5h/8vqf5zZKe3TAAIjVhaKn5eMWTxXjNx2ygNbWBh2a26MZC/uCgye
 bHbF73YtGXR7wv0+IkloQvbUPG0tqej09h7BdXx8xFN5/n2EEjnAR/SsZm9BfKHK
@@ -74,8 +71,7 @@ OCyNX08cpryHkVgJP+nKhCjwnt9YE3exJTyDizRiy9bKJoCQv5uCWtEdWk0vnCIY
 MfBK0RRPala4EL7jgGJ0JjhTLE3QbLyiw1POg0y57MVf97/1baQ=
 -----END RSA PRIVATE KEY-----`;
 
-    public static CSR: string =
-`-----BEGIN CERTIFICATE REQUEST-----
+    public static CSR: string = `-----BEGIN CERTIFICATE REQUEST-----
 MIIC0TCCAbkCAQAwgYsxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEWMBQGA1UE
 BwwNU2FuIEZyYW5jaXNjbzEOMAwGA1UECgwFUG9sYXIxITAfBgNVBAMMGGxvY2Fs
 YXBwLmdldHBvbGFyaXplZC5pbzEkMCIGCSqGSIb3DQEJARYVYWRtaW5AZ2V0cG9s
@@ -93,5 +89,4 @@ fBuLzwKduAYMVY4DCmecHljx+RgynhC7TIYfABEfWc/LwxjE3bbbrngHEzGPZ1ia
 JesR9yBlquSdB8Nt8mdYGEmRUXa9AgghlkZgXr5bUfMEvoSZxA8UTeFkI/Mo7TZF
 vCUYVb4=
 -----END CERTIFICATE REQUEST-----`;
-
 }

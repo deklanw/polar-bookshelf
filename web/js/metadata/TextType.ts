@@ -1,18 +1,16 @@
-
 export enum TextType {
     /**
      * RAW text. No interpretation.
      */
-    TEXT = "TEXT",
+    TEXT = 'TEXT',
 
     /**
      * Markdown content.
      */
-    MARKDOWN = "MARKDOWN",
+    MARKDOWN = 'MARKDOWN',
 
     /**
      * Well-formed and safe HTML.
      */
-    HTML = "HTML"
-
+    HTML = 'HTML',
 }

@@ -1,6 +1,6 @@
-import {Logger} from '../logger/Logger';
-import {IPCEngines} from '../ipc/handler/IPCEngines';
-import {ScreenshotHandler} from './ScreenshotHandler';
+import { Logger } from '../logger/Logger';
+import { IPCEngines } from '../ipc/handler/IPCEngines';
+import { ScreenshotHandler } from './ScreenshotHandler';
 
 /**
  * Service that runs in the Electron main context which listens to IPC events
@@ -12,18 +12,16 @@ import {ScreenshotHandler} from './ScreenshotHandler';
  * @ElectronMainContext - Must be run from the electron main context.
  */
 export class ScreenshotService {
+    constructor() {}
 
-    constructor() {
-    }
+    public start() {
+        const ipcEngine = IPCEngines.mainProcess();
 
-    start() {
-
-        let ipcEngine = IPCEngines.mainProcess();
-
-        ipcEngine.registry.registerPath('/screenshots/create-screenshot', new ScreenshotHandler());
+        ipcEngine.registry.registerPath(
+            '/screenshots/create-screenshot',
+            new ScreenshotHandler()
+        );
 
         ipcEngine.start();
-
     }
-
 }

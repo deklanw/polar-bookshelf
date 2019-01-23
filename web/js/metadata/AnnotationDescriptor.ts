@@ -1,5 +1,5 @@
-import {AnnotationType} from './AnnotationType';
-import {Preconditions} from '../Preconditions';
+import { AnnotationType } from './AnnotationType';
+import { Preconditions } from '../Preconditions';
 
 /**
  * High level descriptor for an annotation.  Used so that we can references
@@ -7,32 +7,34 @@ import {Preconditions} from '../Preconditions';
  * want a reference without the full descriptor.
  */
 export class AnnotationDescriptor {
-
     public readonly type: AnnotationType;
     public readonly id: string;
     public readonly docFingerprint: string;
     public readonly pageNum: number;
 
     public constructor(template: AnnotationDescriptor) {
-
-        this.type = Preconditions.assertNotNull(template.type, "type");
-        this.id = Preconditions.assertNotNull(template.id, "id");
-        this.docFingerprint = Preconditions.assertNotNull(template.docFingerprint, "docFingerprint");
-        this.pageNum = Preconditions.assertNotNull(template.pageNum, "pageNum");
-
+        this.type = Preconditions.assertNotNull(template.type, 'type');
+        this.id = Preconditions.assertNotNull(template.id, 'id');
+        this.docFingerprint = Preconditions.assertNotNull(
+            template.docFingerprint,
+            'docFingerprint'
+        );
+        this.pageNum = Preconditions.assertNotNull(template.pageNum, 'pageNum');
     }
 
-    public static newInstance(type: AnnotationType,
-                              id: string,
-                              docFingerprint: string,
-                              pageNum: number): Readonly<AnnotationDescriptor> {
-
-        const result = new AnnotationDescriptor(<AnnotationDescriptor> {
-            type, id, docFingerprint, pageNum
+    public static newInstance(
+        type: AnnotationType,
+        id: string,
+        docFingerprint: string,
+        pageNum: number
+    ): Readonly<AnnotationDescriptor> {
+        const result = new AnnotationDescriptor(<AnnotationDescriptor>{
+            type,
+            id,
+            docFingerprint,
+            pageNum,
         });
 
         return Object.freeze(result);
-
     }
-
 }

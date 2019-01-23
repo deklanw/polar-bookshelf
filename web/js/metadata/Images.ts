@@ -1,5 +1,3 @@
-import {Hashcodes} from '../Hashcodes';
+import { Hashcodes } from '../Hashcodes';
 
-export class Images {
-
-}
+export class Images {}

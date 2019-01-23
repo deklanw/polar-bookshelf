@@ -1,7 +1,6 @@
-import {assert} from 'chai';
+import { assert } from 'chai';
 
 class Address {
-
     public city: string;
     public state: string;
     public zip: number;
@@ -17,56 +16,44 @@ class Address {
         this.city = address.city;
         this.state = address.state;
         this.zip = address.zip;
-
     }
 
-    static create(address: Partial<Address>): Address {
-        let result = Object.create(Address.prototype);
+    public static create(address: Partial<Address>): Address {
+        const result = Object.create(Address.prototype);
         Object.assign(result, address);
         return result;
     }
-
 }
 
 // https://github.com/Microsoft/TypeScript/issues/5326
 // this is a descructured constructor.. not sure if it's good though.
 
-
 describe('Partials', function() {
-
-    xit("Test basic partial", function () {
-
+    xit('Test basic partial', function() {
         Address.create({});
 
         //
         //
         // strings.map(current => 101);
-
     });
 
-    xit("Test defaults with partials", function () {
+    xit('Test defaults with partials', function() {
+        const address = Address.create({});
 
-        let address = Address.create({});
-
-        assert.equal(address.city, "San Francisco");
+        assert.equal(address.city, 'San Francisco');
 
         //
         //
         // strings.map(current => 101);
-
     });
 
-    xit("Readonly types.", function () {
+    xit('Readonly types.', function() {
+        const address = Address.create({});
 
-        let address = Address.create({});
-
-        assert.equal(address.city, "San Francisco");
+        assert.equal(address.city, 'San Francisco');
 
         //
         //
         // strings.map(current => 101);
-
     });
-
 });
-

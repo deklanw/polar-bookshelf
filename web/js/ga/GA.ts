@@ -1,8 +1,7 @@
-import {Preconditions} from '../Preconditions';
-import {AppAnalytics} from './AppAnalytics';
+import { Preconditions } from '../Preconditions';
+import { AppAnalytics } from './AppAnalytics';
 
 const Analytics: IAnalytics = require('electron-google-analytics').default;
-
 
 const TRACKING_ID = 'UA-122721184-1';
 
@@ -12,15 +11,15 @@ const TRACKING_ID = 'UA-122721184-1';
 let USER_AGENT: string | undefined;
 
 export class GA {
-
     public static analytics?: IAnalytics;
 
     public static getInstance(): IAnalytics {
-
-        Preconditions.assertNotNull(USER_AGENT, "USER_AGENT");
+        Preconditions.assertNotNull(USER_AGENT, 'USER_AGENT');
 
         if (this.analytics === undefined) {
-            this.analytics = new Analytics(TRACKING_ID, {userAgent: USER_AGENT});
+            this.analytics = new Analytics(TRACKING_ID, {
+                userAgent: USER_AGENT,
+            });
         }
 
         return this.analytics;
@@ -33,32 +32,38 @@ export class GA {
     public static setUserAgent(userAgent: string) {
         USER_AGENT = userAgent;
     }
-
 }
 
 /**
  * Raw analytics interface.
  */
 export interface IAnalytics {
-
-    new(trackingID: string, opts?: IAnalyticsOpts): IAnalytics;
+    new (trackingID: string, opts?: IAnalyticsOpts): IAnalytics;
 
     set(key: string, value: number | string): void;
 
-    screen(appName: string,
-           appVer: string,
-           appID: string,
-           appInstallerID: string,
-           screenName: string,
-           clientID: string): Promise<IResponse>;
+    screen(
+        appName: string,
+        appVer: string,
+        appID: string,
+        appInstallerID: string,
+        screenName: string,
+        clientID: string
+    ): Promise<IResponse>;
 
-    event(category: string, action: string, eventData?: IEventData, clientID?: string): Promise<IResponse>;
+    event(
+        category: string,
+        action: string,
+        eventData?: IEventData,
+        clientID?: string
+    ): Promise<IResponse>;
 
-    pageview(hostname: string,
-             url: string,
-             title: string,
-             clientID: string): Promise<IResponse>;
-
+    pageview(
+        hostname: string,
+        url: string,
+        title: string,
+        clientID: string
+    ): Promise<IResponse>;
 }
 
 export interface IEventData {
@@ -66,9 +71,7 @@ export interface IEventData {
     readonly evValue: number;
 }
 
-export interface IResponse {
-
-}
+export interface IResponse {}
 
 export interface IAnalyticsOpts {
     userAgent?: string;

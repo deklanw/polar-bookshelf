@@ -1,13 +1,11 @@
-import {SpectronRenderer} from "../../js/test/SpectronRenderer";
+import { SpectronRenderer } from '../../js/test/SpectronRenderer';
 
-SpectronRenderer.run(async (state) => {
+SpectronRenderer.run(async state => {
+    console.log('Running within SpectronRenderer now.');
 
-    console.log("Running within SpectronRenderer now.");
+    history.pushState({}, 'Home', 'http://localhost/');
 
-    history.pushState({}, "Home", "http://localhost/");
-
-    state.testResultWriter.write(document.location!.href === "http://localhost/");
-
+    state.testResultWriter.write(
+        document.location!.href === 'http://localhost/'
+    );
 });
-
-

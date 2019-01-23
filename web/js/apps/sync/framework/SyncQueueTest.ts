@@ -1,14 +1,12 @@
-import {assert} from 'chai';
-import {SyncQueue} from './SyncQueue';
-import {Abortable} from './Abortable';
-import {SyncProgressListener} from './SyncProgressListener';
-import {Optional} from '../../../util/ts/Optional';
-
+import { assert } from 'chai';
+import { SyncQueue } from './SyncQueue';
+import { Abortable } from './Abortable';
+import { SyncProgressListener } from './SyncProgressListener';
+import { Optional } from '../../../util/ts/Optional';
 
 describe('SyncQueueTest', function() {
-
     const abortable: Abortable = {
-        aborted: false
+        aborted: false,
     };
 
     const syncProgressListener: SyncProgressListener = syncProgress => {
@@ -17,11 +15,10 @@ describe('SyncQueueTest', function() {
 
     const syncQueue = new SyncQueue(abortable, syncProgressListener);
 
-    it("basic test", async function () {
-
+    it('basic test', async function() {
         const results: number[] = [];
 
-        syncQueue.add(async() => {
+        syncQueue.add(async () => {
             results.push(0);
             return Optional.empty();
         });
@@ -29,12 +26,9 @@ describe('SyncQueueTest', function() {
         await syncQueue.execute();
 
         assert.deepEqual(results, [0]);
-
     });
 
-
-    it("with one level of generators", async function () {
-
+    it('with one level of generators', async function() {
         const results: number[] = [];
 
         syncQueue.add(async () => {
@@ -46,14 +40,10 @@ describe('SyncQueueTest', function() {
             });
 
             return Optional.empty();
-
         });
 
         await syncQueue.execute();
 
         assert.deepEqual(results, [0, 1]);
-
     });
-
-
 });

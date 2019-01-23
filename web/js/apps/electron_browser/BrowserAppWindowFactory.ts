@@ -1,5 +1,8 @@
-import {BrowserWindow} from "electron";
-import {APP_ICON, MainAppBrowserWindowFactory} from '../main/MainAppBrowserWindowFactory';
+import { BrowserWindow } from 'electron';
+import {
+    APP_ICON,
+    MainAppBrowserWindowFactory,
+} from '../main/MainAppBrowserWindowFactory';
 
 const WIDTH = 800 * 1.2;
 const HEIGHT = 1100 * 1.2;
@@ -16,7 +19,6 @@ export const BROWSER_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = 
     // TODO: the AppIcon CAN be a file URL
     icon: APP_ICON,
     webPreferences: {
-
         // NOTE: these must be disabled becuase they break pdf.js.  It must be
         // some change to require() from their workers.  So maybe I just can't
         // use workers for now.
@@ -39,9 +41,7 @@ export const BROWSER_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = 
          * that we keep user cookies including Google Analytics cookies.
          */
         // partition: "persist:polar"
-
-    }
-
+    },
 };
 
 /**
@@ -49,9 +49,10 @@ export const BROWSER_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = 
  * to easily try new settings.
  */
 export class BrowserAppWindowFactory {
-
     public static createWindow(url: string): Promise<BrowserWindow> {
-        return MainAppBrowserWindowFactory.createWindow(BROWSER_WINDOW_OPTIONS, url);
+        return MainAppBrowserWindowFactory.createWindow(
+            BROWSER_WINDOW_OPTIONS,
+            url
+        );
     }
-
 }

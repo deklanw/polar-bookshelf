@@ -1,5 +1,5 @@
-import {Pipe, PipeNotification} from './Pipe';
-import {Logger} from '../../logger/Logger';
+import { Pipe, PipeNotification } from './Pipe';
+import { Logger } from '../../logger/Logger';
 
 const log = Logger.create();
 
@@ -11,8 +11,7 @@ const log = Logger.create();
  *
  */
 export class SyncPipe {
-
-    private readonly delegate: Pipe<any,string>;
+    private readonly delegate: Pipe<any, string>;
 
     private readonly type: string;
 
@@ -28,15 +27,18 @@ export class SyncPipe {
      * @param delegate
      * @param type The type for the sync pipe instance. Used for tracing.
      */
-    public constructor(delegate: Pipe<any,string>, type: string, name: string) {
+    public constructor(
+        delegate: Pipe<any, string>,
+        type: string,
+        name: string
+    ) {
         this.delegate = delegate;
         this.type = type;
         this.name = name;
         this.channel = `/sync-establish#${name}`;
     }
 
-    async sync(): Promise<void> {
-
+    public async sync(): Promise<void> {
         // TODO: one issue if what happens if the SECOND client dies and comes
         // back. then this service is still working and alive BUT new / resuming
         // SyncPipe will not be able to work and will block.  Consider adding
@@ -44,33 +46,28 @@ export class SyncPipe {
 
         // must use the create-then-await pattern or else there may be a chance
         // we miss the response notification event if we're the second waiter.
-        let establishPromise = this.delegate.when(this.channel);
+        const establishPromise = this.delegate.when(this.channel);
 
         this.writeSync();
 
         await this.awaitSync(establishPromise);
 
         this.writeSync();
-
     }
 
     private writeSync() {
-
         log.info(`${this.type} write ${this.channel} sync`);
 
         this.delegate.write(this.channel, 'sync');
-
     }
 
-    private async awaitSync(establishPromise: Promise<PipeNotification<any, string>>) {
-
-
+    private async awaitSync(
+        establishPromise: Promise<PipeNotification<any, string>>
+    ) {
         log.info(`${this.type} await ${this.channel} sync promise...`);
 
         await establishPromise;
 
         log.info(`${this.type} await ${this.channel} sync promise...done`);
-
     }
-
 }

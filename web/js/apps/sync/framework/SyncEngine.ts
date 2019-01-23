@@ -1,14 +1,13 @@
 /**
  * A SyncTarget provides a way to integrate with 3rd party sync implementations.
  */
-import {SyncProgressListener} from './SyncProgressListener';
-import {SyncEngineDescriptor} from './SyncEngineDescriptor';
-import {PendingSyncJob} from './SyncJob';
-import {DocMetaSet} from '../../../metadata/DocMetaSet';
-import {DocMetaSupplierCollection} from '../../../metadata/DocMetaSupplierCollection';
+import { SyncProgressListener } from './SyncProgressListener';
+import { SyncEngineDescriptor } from './SyncEngineDescriptor';
+import { PendingSyncJob } from './SyncJob';
+import { DocMetaSet } from '../../../metadata/DocMetaSet';
+import { DocMetaSupplierCollection } from '../../../metadata/DocMetaSupplierCollection';
 
 export interface SyncEngine {
-
     readonly descriptor: SyncEngineDescriptor;
 
     /**
@@ -17,6 +16,8 @@ export interface SyncEngine {
      * SyncJob.  Note that the job is not initially started and start() must be
      * called manually.
      */
-    sync(docMetaSupplierCollection: DocMetaSupplierCollection, progress: SyncProgressListener): Promise<PendingSyncJob>;
-
+    sync(
+        docMetaSupplierCollection: DocMetaSupplierCollection,
+        progress: SyncProgressListener
+    ): Promise<PendingSyncJob>;
 }

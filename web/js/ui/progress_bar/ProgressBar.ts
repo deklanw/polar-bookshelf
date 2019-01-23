@@ -1,6 +1,6 @@
-import {Percentage} from '../../util/ProgressTracker';
-import {Logger} from '../../logger/Logger';
-import {Optional} from '../../util/ts/Optional';
+import { Percentage } from '../../util/ProgressTracker';
+import { Logger } from '../../logger/Logger';
+import { Optional } from '../../util/ts/Optional';
 
 const ID = 'polar-progress-bar';
 
@@ -12,10 +12,8 @@ const log = Logger.create();
  * us to easily show a GUI for a download at any point in time.
  */
 export class ProgressBar {
-
     public update(val: number, autoDestroy: boolean = true) {
-
-        if (! val || val < 0) {
+        if (!val || val < 0) {
             return;
         }
 
@@ -25,7 +23,6 @@ export class ProgressBar {
         // in the interval [0,100) but destroy it if the value is 100.
 
         ProgressBar.getProgressElement().map(progressElement => {
-
             if (progressElement instanceof HTMLProgressElement) {
                 progressElement.value = val;
             }
@@ -33,36 +30,29 @@ export class ProgressBar {
             if (autoDestroy && val >= 100) {
                 this.destroy();
             }
-
         });
-
     }
 
     public destroy() {
-
         const progressElement = ProgressBar.getProgressElement().getOrUndefined();
 
         if (progressElement) {
-
             if (progressElement.parentElement !== null) {
                 progressElement.parentElement.removeChild(progressElement);
             } else {
-                log.warn("No parent element for progress bar.");
+                log.warn('No parent element for progress bar.');
             }
-
         } else {
             // log.warn("No progress bar to destroy.");
         }
-
     }
 
     private static getProgressElement(): Optional<HTMLProgressElement> {
         const element = document.getElementById(ID);
-        return Optional.of(<HTMLProgressElement> element);
+        return Optional.of(<HTMLProgressElement>element);
     }
 
     public static create(indeterminate: boolean = true): ProgressBar {
-
         const current = this.getProgressElement();
 
         if (current.isPresent()) {
@@ -76,7 +66,6 @@ export class ProgressBar {
         // the same app right now.
 
         if (indeterminate) {
-
             element = document.createElement('div');
 
             element.setAttribute('class', 'progress-indeterminate-slider');
@@ -86,12 +75,11 @@ export class ProgressBar {
                 <div class="progress-indeterminate-subline progress-indeterminate-inc"></div>
                 <div class="progress-indeterminate-subline progress-indeterminate-dec"></div>
             `;
-
         } else {
             element = document.createElement('progress');
         }
 
-        if (! indeterminate && element instanceof HTMLProgressElement) {
+        if (!indeterminate && element instanceof HTMLProgressElement) {
             // set the defaults
             element.value = 0;
             element.max = 100;
@@ -119,8 +107,5 @@ export class ProgressBar {
         document.body.appendChild(element);
 
         return new ProgressBar();
-
     }
-
 }
-

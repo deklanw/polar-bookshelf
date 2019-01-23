@@ -1,18 +1,17 @@
-import {assert} from 'chai';
-import {Latch} from "../util/Latch";
-import {Throttler} from './Throttler';
-import {Promises} from '../util/Promises';
+import { assert } from 'chai';
+import { Latch } from '../util/Latch';
+import { Throttler } from './Throttler';
+import { Promises } from '../util/Promises';
 
 describe('Throttler', function() {
-
     describe('by maxRequests', function() {
-
-        it("basic with one request throttled", async function() {
-
+        it('basic with one request throttled', async function() {
             let resolved: boolean = false;
 
-            const throttler = new Throttler(() => resolved = true,
-                                            {maxRequests: 1, maxTimeout: 99999999} );
+            const throttler = new Throttler(() => (resolved = true), {
+                maxRequests: 1,
+                maxTimeout: 99999999,
+            });
 
             assert.equal(resolved, false);
 
@@ -20,30 +19,29 @@ describe('Throttler', function() {
             assert.equal(resolved, false);
             throttler.exec();
             assert.equal(resolved, true);
-
         });
 
-        it("no requests throttled", async function() {
-
+        it('no requests throttled', async function() {
             let resolved: boolean = false;
 
-            const throttler = new Throttler(() => resolved = true,
-                                            {maxRequests: 0, maxTimeout: 99999999} );
+            const throttler = new Throttler(() => (resolved = true), {
+                maxRequests: 0,
+                maxTimeout: 99999999,
+            });
 
             assert.equal(resolved, false);
 
             throttler.exec();
             assert.equal(resolved, true);
-
         });
 
-
-        it("two requests throttled", async function() {
-
+        it('two requests throttled', async function() {
             let resolved: boolean = false;
 
-            const throttler = new Throttler(() => resolved = true,
-                                            {maxRequests: 2, maxTimeout: 99999999} );
+            const throttler = new Throttler(() => (resolved = true), {
+                maxRequests: 2,
+                maxTimeout: 99999999,
+            });
 
             assert.equal(resolved, false);
 
@@ -53,19 +51,17 @@ describe('Throttler', function() {
             assert.equal(resolved, false);
             throttler.exec();
             assert.equal(resolved, true);
-
         });
-
     });
 
     describe('by time', function() {
-
-        it("basic with one request throttled", async function() {
-
+        it('basic with one request throttled', async function() {
             let resolved: number = 0;
 
-            const throttler = new Throttler(() => ++resolved,
-                                            {maxRequests: 9999, maxTimeout: 1000} );
+            const throttler = new Throttler(() => ++resolved, {
+                maxRequests: 9999,
+                maxTimeout: 1000,
+            });
 
             assert.equal(resolved, 0);
 
@@ -85,11 +81,6 @@ describe('Throttler', function() {
             await Promises.waitFor(1010);
 
             assert.equal(resolved, 1);
-
         });
-
     });
-
 });
-
-

@@ -1,4 +1,4 @@
-import {SimpleReactor} from "../reactor/SimpleReactor";
+import { SimpleReactor } from '../reactor/SimpleReactor';
 
 /**
  * Allows us to expose synchronization state between the local datastore
@@ -8,13 +8,11 @@ import {SimpleReactor} from "../reactor/SimpleReactor";
  * progress bars and log messages to notify the user of their current state.
  */
 export class Synchronizer {
-
     private reactor: SimpleReactor<ProgressEvent> = new SimpleReactor();
 
     public addEventListener(listener: (event: ProgressEvent) => void): void {
         this.reactor.addEventListener(listener);
     }
-
 }
 
 /**
@@ -22,7 +20,6 @@ export class Synchronizer {
  * synchronization is happening.
  */
 export interface ProgressEvent {
-
     /**
      * The overall percentage of the current sychronization.
      */
@@ -32,22 +29,18 @@ export interface ProgressEvent {
      * The current operation being performed.
      */
     task: Task;
-
 }
 
 export interface Task {
-
     /**
      * The name of the task being performed. Usually the name of the file.
      */
     name: string;
 
-    type: 'docmeta' | 'file'
+    type: 'docmeta' | 'file';
 
     /**
      * The percentage complete of this specific task.
      */
     percentage: number;
-
 }
-

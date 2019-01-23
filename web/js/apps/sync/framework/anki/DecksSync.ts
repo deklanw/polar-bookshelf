@@ -2,17 +2,23 @@
  * Code that synchronizes decks by creating new decks when the required decks
  * are missing.
  */
-import {DeckDescriptor} from './DeckDescriptor';
-import {Sets} from '../../../../util/Sets';
-import {CreateDeckClient, ICreateDeckClient} from './clients/CreateDeckClient';
-import {DeckNamesAndIdsClient, IDeckNamesAndIdsClient} from './clients/DeckNamesAndIdsClient';
-import {SyncProgressListener} from '../SyncProgressListener';
-import {Abortable} from '../Abortable';
-import {Logger} from '../../../../logger/Logger';
-import {SyncQueue} from '../SyncQueue';
-import {Optional} from '../../../../util/ts/Optional';
-import {SyncTaskResult} from '../SyncTask';
-import {NormalizedNote} from './NotesSync';
+import { DeckDescriptor } from './DeckDescriptor';
+import { Sets } from '../../../../util/Sets';
+import {
+    CreateDeckClient,
+    ICreateDeckClient,
+} from './clients/CreateDeckClient';
+import {
+    DeckNamesAndIdsClient,
+    IDeckNamesAndIdsClient,
+} from './clients/DeckNamesAndIdsClient';
+import { SyncProgressListener } from '../SyncProgressListener';
+import { Abortable } from '../Abortable';
+import { Logger } from '../../../../logger/Logger';
+import { SyncQueue } from '../SyncQueue';
+import { Optional } from '../../../../util/ts/Optional';
+import { SyncTaskResult } from '../SyncTask';
+import { NormalizedNote } from './NotesSync';
 
 const log = Logger.create();
 
@@ -20,7 +26,6 @@ const log = Logger.create();
  * Sync decks to Anki.
  */
 export class DecksSync {
-
     public createDeckClient: ICreateDeckClient = new CreateDeckClient();
 
     public deckNamesAndIdsClient: IDeckNamesAndIdsClient = new DeckNamesAndIdsClient();
@@ -47,7 +52,6 @@ export class DecksSync {
      *
      */
     public enqueue(deckDescriptors: DeckDescriptor[]) {
-
         this.syncQueue.add(async () => {
             return await this.findExistingDecks(deckDescriptors);
         });
@@ -57,12 +61,15 @@ export class DecksSync {
         });
 
         return this.missingDeckDescriptors;
-
     }
 
-    private async findExistingDecks(deckDescriptors: DeckDescriptor[]): Promise<Optional<SyncTaskResult>> {
-
-        log.info("Fetching existing decks for deckDescriptors: ", deckDescriptors);
+    private async findExistingDecks(
+        deckDescriptors: DeckDescriptor[]
+    ): Promise<Optional<SyncTaskResult>> {
+        log.info(
+            'Fetching existing decks for deckDescriptors: ',
+            deckDescriptors
+        );
 
         const deckNamesAndIds = await this.deckNamesAndIdsClient.execute();
 
@@ -72,19 +79,21 @@ export class DecksSync {
         const currentDecks: string[] = Object.keys(deckNamesAndIds);
         const expectedDecks = deckDescriptors.map(current => current.name);
 
-        this.missingDecks.push(... Sets.difference(expectedDecks, currentDecks));
+        this.missingDecks.push(...Sets.difference(expectedDecks, currentDecks));
 
-        const message = `Found ${this.missingDecks.length} missing decks from a total of ${currentDecks.length}`;
+        const message = `Found ${
+            this.missingDecks.length
+        } missing decks from a total of ${currentDecks.length}`;
         log.info(message);
 
-        this.missingDeckDescriptors.push(... this.missingDecks.map(name => <DeckDescriptor> { name }));
+        this.missingDeckDescriptors.push(
+            ...this.missingDecks.map(name => <DeckDescriptor>{ name })
+        );
 
-        return Optional.of({message});
-
+        return Optional.of({ message });
     }
 
     private async createMissingDecks(): Promise<Optional<SyncTaskResult>> {
-
         this.missingDecks.forEach(missingDeck => {
             this.syncQueue.add(async () => {
                 return await this.createMissingDeck(missingDeck);
@@ -93,15 +102,15 @@ export class DecksSync {
 
         const message = `Creating ${this.missingDecks.length} decks.`;
 
-        return Optional.of({message});
-
+        return Optional.of({ message });
     }
 
-    private async createMissingDeck(missingDeck: string): Promise<Optional<SyncTaskResult>> {
+    private async createMissingDeck(
+        missingDeck: string
+    ): Promise<Optional<SyncTaskResult>> {
         const message = `Creating missing deck: ${missingDeck}`;
         log.info(message);
         await this.createDeckClient.execute(missingDeck);
-        return Optional.of({message});
+        return Optional.of({ message });
     }
-
 }

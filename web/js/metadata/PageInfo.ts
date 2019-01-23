@@ -1,9 +1,8 @@
-import {SerializedObject} from './SerializedObject';
-import {Preconditions} from '../Preconditions';
-import {IDimensions} from '../util/Dimensions';
+import { SerializedObject } from './SerializedObject';
+import { Preconditions } from '../Preconditions';
+import { IDimensions } from '../util/Dimensions';
 
 export class PageInfo extends SerializedObject {
-
     /**
      * The page number of this page.
      */
@@ -18,17 +17,14 @@ export class PageInfo extends SerializedObject {
     public dimensions?: IDimensions;
 
     constructor(val: any) {
-
         super(val);
 
         this.num = val.num;
 
         this.init(val);
-
     }
 
-    validate() {
-        Preconditions.assertNumber(this.num, "num");
+    public validate() {
+        Preconditions.assertNumber(this.num, 'num');
     }
-
 }

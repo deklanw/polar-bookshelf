@@ -1,16 +1,16 @@
 /**
  *
  */
-import {Container} from '../../Container';
-import {ContainerLifecycleListener} from '../ContainerLifecycleListener';
-import {ContainerLifecycleState} from '../ContainerLifecycleState';
-import {isPresent} from '../../../../Preconditions';
+import { Container } from '../../Container';
+import { ContainerLifecycleListener } from '../ContainerLifecycleListener';
+import { ContainerLifecycleState } from '../ContainerLifecycleState';
+import { isPresent } from '../../../../Preconditions';
 
 /**
  * Listens to the lifecycle of .page
  */
-export abstract class AbstractContainerLifecycleListener implements ContainerLifecycleListener {
-
+export abstract class AbstractContainerLifecycleListener
+    implements ContainerLifecycleListener {
     protected readonly container: Container;
 
     // TODO: type this.. not sure what it is yet.
@@ -19,51 +19,45 @@ export abstract class AbstractContainerLifecycleListener implements ContainerLif
     protected constructor(container: Container) {
         this.container = container;
         this.listener = null;
-
     }
 
-    register(callback: any) {
-
+    public register(callback: any) {
         this.listener = this._createListener(callback);
 
-        let element = this.container.element;
+        const element = this.container.element;
 
         element.addEventListener('DOMNodeInserted', this.listener, false);
-
     }
 
-    _createContainerLifecycleEvent(visible: boolean) {
-
+    public _createContainerLifecycleEvent(visible: boolean) {
         return new ContainerLifecycleState({
             container: this.container,
-            visible
+            visible,
         });
-
     }
 
-    _createListener(callback: (state: ContainerLifecycleState) => void ) {
-
+    public _createListener(callback: (state: ContainerLifecycleState) => void) {
         return (event: any) => {
+            const containerLifecycleState = this.getStateFromEvent(event);
 
-            let containerLifecycleState = this.getStateFromEvent(event);
-
-            if(isPresent(containerLifecycleState)) {
+            if (isPresent(containerLifecycleState)) {
                 callback(containerLifecycleState!);
             }
-
-        }
-
+        };
     }
 
-    abstract getStateFromEvent(event: any): ContainerLifecycleState | undefined;
+    public abstract getStateFromEvent(
+        event: any
+    ): ContainerLifecycleState | undefined;
 
-    abstract getState(): ContainerLifecycleState | undefined;
+    public abstract getState(): ContainerLifecycleState | undefined;
 
-    unregister() {
-
-        this.container.element.removeEventListener('DOMNodeInserted', this.listener, false);
+    public unregister() {
+        this.container.element.removeEventListener(
+            'DOMNodeInserted',
+            this.listener,
+            false
+        );
         this.listener = null;
-
     }
-
 }

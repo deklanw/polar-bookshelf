@@ -1,8 +1,3 @@
-
 export class SenderReference {
-
-    send(channel: string, message: any): void {
-
-    }
-
+    public send(channel: string, message: any): void {}
 }

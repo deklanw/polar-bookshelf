@@ -1,15 +1,13 @@
-import {Image} from './Image';
-import {ExtendedAnnotation} from './ExtendedAnnotation';
-import {Preconditions} from '../Preconditions';
-import {Rect} from '../Rect';
-
+import { Image } from './Image';
+import { ExtendedAnnotation } from './ExtendedAnnotation';
+import { Preconditions } from '../Preconditions';
+import { Rect } from '../Rect';
 
 export class BaseHighlight extends ExtendedAnnotation {
-
     /**
      * The rectangles where we need to place content for this highlights.
      */
-    public rects: {[key: string]: Rect} = {};
+    public rects: { [key: string]: Rect } = {};
 
     /**
      * Optional image for this highlight taken when the highlight was
@@ -21,7 +19,7 @@ export class BaseHighlight extends ExtendedAnnotation {
     /**
      * Images for this highlight.  By default there are none.
      */
-    public images: {[key: string]: Image} = {};
+    public images: { [key: string]: Image } = {};
 
     /**
      * The color of this highlight. Defaults to yellow if undefined.
@@ -29,20 +27,15 @@ export class BaseHighlight extends ExtendedAnnotation {
     public color?: HighlightColor;
 
     constructor(val: any) {
-
         super(val);
-
     }
 
     public validate() {
-
         super.validate();
 
-        Preconditions.assertNotNull(this.rects, "rects");
-        Preconditions.assertNotInstanceOf(this.rects, "rects", Array);
-
+        Preconditions.assertNotNull(this.rects, 'rects');
+        Preconditions.assertNotInstanceOf(this.rects, 'rects', Array);
     }
-
 }
 
 /**
@@ -51,4 +44,9 @@ export class BaseHighlight extends ExtendedAnnotation {
  * for secondary / anonymous highlights like notes and comments which might
  * not need to be visibly shown.
  */
-export type HighlightColor = 'yellow' | 'red' | 'green' | 'blue' | 'transparent';
+export type HighlightColor =
+    | 'yellow'
+    | 'red'
+    | 'green'
+    | 'blue'
+    | 'transparent';

@@ -1,9 +1,8 @@
-import {Logger} from '../logger/Logger';
+import { Logger } from '../logger/Logger';
 
 const log = Logger.create();
 
 export class Promises {
-
     /**
      * A promise based timeout.  This just returns a promise which returns
      * once the timeout has expired. You can then call .then() or just await
@@ -12,15 +11,11 @@ export class Promises {
      * @param timeout
      */
     public static async waitFor(timeout: number) {
-
         return new Promise(resolve => {
-
             setTimeout(() => {
                 resolve();
             }, timeout);
-
         });
-
     }
 
     /**
@@ -35,23 +30,22 @@ export class Promises {
         });
     }
 
-
     /**
      * Calls the given callback as a promise which we can await but runs it with
      * the background event loop via timeout to avoid locking up the UI with longer
      * running tasks.
      */
-    public static async withTimeout<T>(timeout: number, callback: () => Promise<T> ) {
-
+    public static async withTimeout<T>(
+        timeout: number,
+        callback: () => Promise<T>
+    ) {
         return new Promise((resolve, reject) => {
-
             setTimeout(() => {
-                callback().then(result => resolve(result))
-                          .catch(err => reject(err));
+                callback()
+                    .then(result => resolve(result))
+                    .catch(err => reject(err));
             }, timeout);
-
         });
-
     }
 
     /**
@@ -63,22 +57,15 @@ export class Promises {
      * @param func
      */
     public static executeLogged(func: () => Promise<any>) {
-        func().catch(err => log.error("Caught error: ", err))
+        func().catch(err => log.error('Caught error: ', err));
     }
-
 }
 
 export interface Completion<T> {
-
     readonly resolve: ResolveFunction<T>;
     readonly reject: RejectFunction;
-
 }
 
-export interface ResolveFunction<T> {
-    (value: T): void;
-}
+export type ResolveFunction<T> = (value: T) => void;
 
-export interface RejectFunction {
-    (error: Error): void;
-}
+export type RejectFunction = (error: Error) => void;

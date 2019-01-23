@@ -2,16 +2,15 @@
  * Lightweight metadata about a document. We do not include full page metadata
  * with this object which makes it lightweight to pass around.
  */
-import {SerializedObject} from './SerializedObject';
-import {PagemarkType} from './PagemarkType';
-import {Preconditions} from '../Preconditions';
-import {ISODateTimeString, ISODateString} from './ISODateTimeStrings';
-import {Tag} from '../tags/Tag';
-import {Hashcode} from './Hashcode';
-import {UUID} from './UUID';
+import { SerializedObject } from './SerializedObject';
+import { PagemarkType } from './PagemarkType';
+import { Preconditions } from '../Preconditions';
+import { ISODateTimeString, ISODateString } from './ISODateTimeStrings';
+import { Tag } from '../tags/Tag';
+import { Hashcode } from './Hashcode';
+import { UUID } from './UUID';
 
 export class DocInfo extends SerializedObject implements IDocInfo {
-
     public nrPages: number;
     public fingerprint: string;
     public progress: number = 0;
@@ -22,12 +21,12 @@ export class DocInfo extends SerializedObject implements IDocInfo {
     public url?: string;
     public lastOpened?: ISODateTimeString;
     public lastUpdated?: ISODateTimeString;
-    public properties: {[id: string]: string} = {};
+    public properties: { [id: string]: string } = {};
     public archived: boolean = false;
     public flagged: boolean = false;
     public filename?: string;
     public added?: ISODateTimeString;
-    public tags?: {[id: string]: Tag} = {};
+    public tags?: { [id: string]: Tag } = {};
     public nrComments?: number;
     public nrNotes?: number;
     public nrFlashcards?: number;
@@ -43,33 +42,30 @@ export class DocInfo extends SerializedObject implements IDocInfo {
     public published?: ISODateString | ISODateTimeString;
 
     constructor(val: IDocInfo) {
-
         super();
 
         this.nrPages = val.nrPages;
         this.fingerprint = val.fingerprint;
 
         this.init(val);
-
     }
 
     public setup() {
-
         this.progress = Preconditions.defaultValue(this.progress, 0);
-        this.pagemarkType = Preconditions.defaultValue(this.pagemarkType, PagemarkType.SINGLE_COLUMN);
+        this.pagemarkType = Preconditions.defaultValue(
+            this.pagemarkType,
+            PagemarkType.SINGLE_COLUMN
+        );
         this.properties = Preconditions.defaultValue(this.properties, {});
-
     }
 
     public validate() {
-        Preconditions.assertNumber(this.nrPages, "nrPages");
-        Preconditions.assertNotNull(this.fingerprint, "fingerprint");
+        Preconditions.assertNumber(this.nrPages, 'nrPages');
+        Preconditions.assertNotNull(this.fingerprint, 'fingerprint');
     }
-
 }
 
 export interface IDocInfo {
-
     /**
      * The number of pages in this document.
      */
@@ -132,7 +128,7 @@ export interface IDocInfo {
      * Arbitrary name/value properties set by 3rd party extensions for this
      * document.  Anki, etc may set these properties directly.
      */
-    properties: {[id: string]: string};
+    properties: { [id: string]: string };
 
     /**
      * True if this document is marked 'archived'.  The user has completed
@@ -160,7 +156,7 @@ export interface IDocInfo {
      * Singular key/value pairs where the id is the lowercase representation
      * of a tag and value is the human/string representation.
      */
-    tags?: {[id: string]: Tag};
+    tags?: { [id: string]: Tag };
 
     /**
      * The number of comments in the document.
@@ -225,7 +221,6 @@ export interface IDocInfo {
      * opengraph information.
      */
     published?: ISODateString | ISODateTimeString;
-
 }
 
 /**
@@ -258,7 +253,6 @@ export type ShareStrategy = 'saved' | 'navigated';
 export type StoredResource = 'link' | 'doc' | 'styles' | 'images' | 'fonts';
 
 export interface Storage {
-
     /**
      * The number of bytes used by the doc (pdf or phz file).
      */

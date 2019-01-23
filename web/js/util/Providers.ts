@@ -11,7 +11,6 @@ export interface IProvider<T> {
 }
 
 export class Providers {
-
     /**
      * Convert a provider interface to a function.
      */
@@ -30,7 +29,6 @@ export class Providers {
      * Memoize the given function to improve its performance or make it optional.
      */
     public static memoize<T>(provider: Provider<T>): Provider<T> {
-
         let memoized: boolean = false;
 
         // an error that the provider threw
@@ -40,39 +38,30 @@ export class Providers {
         let memo: T | undefined;
 
         return () => {
-
             if (memoized) {
-
                 if (err) {
                     throw err;
                 }
 
                 return memo!;
-
             }
 
             try {
-
                 memo = provider();
                 return memo!;
-
             } catch (e) {
                 err = e;
                 throw e;
             } finally {
                 memoized = true;
             }
-
         };
-
     }
-
 }
 
 export type AsyncProvider<T> = () => Promise<T>;
 
 export class AsyncProviders {
-
     public static of<T>(value: T): AsyncProvider<T> {
         return () => Promise.resolve(value);
     }
@@ -80,7 +69,6 @@ export class AsyncProviders {
     /**
      */
     public static memoize<T>(provider: AsyncProvider<T>): AsyncProvider<T> {
-
         let memoized: boolean = false;
 
         // an error that the provider threw
@@ -90,30 +78,23 @@ export class AsyncProviders {
         let memo: T | undefined;
 
         return async () => {
-
             if (memoized) {
-
                 if (err) {
                     throw err;
                 }
 
                 return memo!;
-
             }
 
             try {
-
                 memo = await provider();
                 return memo!;
-
             } catch (e) {
                 err = e;
                 throw e;
             } finally {
                 memoized = true;
             }
-
         };
-
     }
 }

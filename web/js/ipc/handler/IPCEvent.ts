@@ -1,12 +1,11 @@
-import {IPCMessage} from './IPCMessage';
-import {WritablePipe} from '../pipes/Pipe';
-import {IPCResponse} from './IPCResponse';
+import { IPCMessage } from './IPCMessage';
+import { WritablePipe } from '../pipes/Pipe';
+import { IPCResponse } from './IPCResponse';
 
 /**
  * Represents an event that we can respond with.
  */
 export class IPCEvent {
-
     public readonly responsePipe: WritablePipe<IPCMessage<any>>;
 
     public readonly message: IPCMessage<any>;
@@ -19,7 +18,11 @@ export class IPCEvent {
      */
     public readonly webContents?: Electron.WebContents;
 
-    constructor(responsePipe: WritablePipe<IPCMessage<any>>, message: IPCMessage<any>, webContents?: Electron.WebContents) {
+    constructor(
+        responsePipe: WritablePipe<IPCMessage<any>>,
+        message: IPCMessage<any>,
+        webContents?: Electron.WebContents
+    ) {
         this.responsePipe = responsePipe;
         this.message = message;
         this.response = new IPCResponse(responsePipe, message);
@@ -30,5 +33,4 @@ export class IPCEvent {
     //     let ipcMessage = new IPCMessage<T>('result', result);
     //     this.responsePipe.write(this.message.computeResponseChannel(), ipcMessage);
     // }
-
 }

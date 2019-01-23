@@ -1,5 +1,5 @@
-import {Dictionaries} from "../../util/Dictionaries";
-import {Arrays} from "../../util/Arrays";
+import { Dictionaries } from '../../util/Dictionaries';
+import { Arrays } from '../../util/Arrays';
 
 /**
  * Related tag index for in memory related tags computation.  This does not
@@ -9,21 +9,25 @@ import {Arrays} from "../../util/Arrays";
  * collections.
  */
 export class RelatedTags {
+    private tagMetaIndex: { [tag: string]: TagMeta } = {};
 
-    private tagMetaIndex: {[tag: string]: TagMeta} = {};
+    private docMetaIndex: { [docID: string]: DocMeta } = {};
 
-    private docMetaIndex: {[docID: string]: DocMeta} = {};
-
-    public update(docID: DocID, mutationType: MutationType, ...tags: TagLiteral[]) {
-
+    public update(
+        docID: DocID,
+        mutationType: MutationType,
+        ...tags: TagLiteral[]
+    ) {
         for (const tag of tags) {
-
-            const tagMeta = Dictionaries.computeIfAbsent(this.tagMetaIndex, tag, () => {
-                return {tag, docs: new Set<DocID>()};
-            });
+            const tagMeta = Dictionaries.computeIfAbsent(
+                this.tagMetaIndex,
+                tag,
+                () => {
+                    return { tag, docs: new Set<DocID>() };
+                }
+            );
 
             switch (mutationType) {
-
                 case 'set':
                     tagMeta.docs.add(docID);
                     break;
@@ -31,17 +35,18 @@ export class RelatedTags {
                 case 'delete':
                     tagMeta.docs.delete(docID);
                     break;
-
             }
 
-            const docMeta = Dictionaries.computeIfAbsent(this.docMetaIndex, docID, () => {
-                return {doc: docID, tags: []};
-            });
+            const docMeta = Dictionaries.computeIfAbsent(
+                this.docMetaIndex,
+                docID,
+                () => {
+                    return { doc: docID, tags: [] };
+                }
+            );
 
             docMeta.tags.push(tag);
-
         }
-
     }
 
     /**
@@ -49,17 +54,15 @@ export class RelatedTags {
      * @param tags
      */
     public compute(tags: TagLiteral[], limit: number = 5): TagHit[] {
-
         // keep a running index of the hits when computing the related tags.
-        const tagHits: {[tag: string]: TagHit} = {};
+        const tagHits: { [tag: string]: TagHit } = {};
 
         const updateHits = (tag: TagLiteral) => {
-
             // get all the documents that mention this tag
 
             const indexedTagMeta = this.tagMetaIndex[tag];
 
-            if (! indexedTagMeta) {
+            if (!indexedTagMeta) {
                 // this tag isn't indexed yet.
                 return;
             }
@@ -67,23 +70,22 @@ export class RelatedTags {
             const relatedDocs = indexedTagMeta.docs;
 
             for (const relatedDoc of relatedDocs) {
-
                 const indexedDocMeta = this.docMetaIndex[relatedDoc];
 
                 const relatedTags = indexedDocMeta.tags;
 
                 for (const relatedTag of relatedTags) {
-
-                    const tagHitMeta = Dictionaries.computeIfAbsent(tagHits, relatedTag, () => {
-                        return {tag: relatedTag, hits: 0};
-                    });
+                    const tagHitMeta = Dictionaries.computeIfAbsent(
+                        tagHits,
+                        relatedTag,
+                        () => {
+                            return { tag: relatedTag, hits: 0 };
+                        }
+                    );
 
                     ++tagHitMeta.hits;
-
                 }
-
             }
-
         };
 
         for (const tag of tags) {
@@ -95,16 +97,13 @@ export class RelatedTags {
 
         const tagHitsDesc = Object.values(tagHits)
             // remove the input tags from the results...
-            .filter(current => ! tags.includes(current.tag))
+            .filter(current => !tags.includes(current.tag))
             .filter(current => current.hits > 1)
             // sort the results descending.
             .sort((hit0, hit1) => hit1.hits - hit0.hits);
 
-
         return Arrays.head(tagHitsDesc, limit);
-
     }
-
 }
 
 export interface TagMeta {
@@ -117,10 +116,8 @@ export interface DocMeta {
 }
 
 export interface TagHit {
-
     readonly tag: TagLiteral;
     hits: number;
-
 }
 
 export type DocID = string;

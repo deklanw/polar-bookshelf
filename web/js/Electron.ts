@@ -1,8 +1,6 @@
 export class Electron {
-
-    static isElectron() {
-        let userAgent = navigator.userAgent.toLowerCase();
+    public static isElectron() {
+        const userAgent = navigator.userAgent.toLowerCase();
         return userAgent.indexOf(' electron/') !== -1;
     }
-
 }

@@ -3,18 +3,8 @@
 // // mocha.checkLeaks();
 // Mocha.run();
 
-
-import {assert} from 'chai';
-
-
+import { assert } from 'chai';
 
 describe('Web Workers', function() {
-
-    it("TypedWorker", function() {
-
-
-
-    });
-
+    it('TypedWorker', function() {});
 });
-

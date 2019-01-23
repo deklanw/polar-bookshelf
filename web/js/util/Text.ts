@@ -1,5 +1,4 @@
 export class Text {
-
     /**
      * Indent the lines in the given text with the given prefix.
      *
@@ -8,14 +7,12 @@ export class Text {
      * @return {string}
      *
      */
-    static indent(text: string, prefix: string) {
-
-        let result = prefix + text;
+    public static indent(text: string, prefix: string) {
+        const result = prefix + text;
         return result.replace(/\n/g, `\n${prefix}`);
-
     }
 
-    static isWhitespace(text: string) {
+    public static isWhitespace(text: string) {
         return /^\s+$/.test(text);
     }
 
@@ -24,20 +21,15 @@ export class Text {
      * @param ch {string} The char to duplicate.
      * @param len {number} the amount of text.
      */
-    static createDuplicateText(ch: string, len: number) {
-
-        if(ch.length !== 1) {
-            throw new Error("The ch char must be 1 char");
+    public static createDuplicateText(ch: string, len: number) {
+        if (ch.length !== 1) {
+            throw new Error('The ch char must be 1 char');
         }
 
-        let arr = new Array(len);
+        const arr = new Array(len);
 
         arr.fill(ch);
 
-        return arr.join("");
-
+        return arr.join('');
     }
-
 }
-
-

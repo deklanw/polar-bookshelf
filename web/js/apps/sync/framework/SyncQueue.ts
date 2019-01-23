@@ -1,11 +1,11 @@
-import {SyncProgressListener} from './SyncProgressListener';
-import {Abortable} from './Abortable';
-import {SyncProgress} from './SyncProgress';
-import {SyncState} from './SyncState';
-import {SyncTask} from './SyncTask';
-import {Logger} from '../../../logger/Logger';
-import {Percentages} from '../../../util/Percentages';
-import {Optional} from '../../../util/ts/Optional';
+import { SyncProgressListener } from './SyncProgressListener';
+import { Abortable } from './Abortable';
+import { SyncProgress } from './SyncProgress';
+import { SyncState } from './SyncState';
+import { SyncTask } from './SyncTask';
+import { Logger } from '../../../logger/Logger';
+import { Percentages } from '../../../util/Percentages';
+import { Optional } from '../../../util/ts/Optional';
 
 const log = Logger.create();
 
@@ -17,7 +17,6 @@ const log = Logger.create();
  * executing all tasks.
  */
 export class SyncQueue {
-
     private readonly pending: SyncTask[] = [];
 
     /**
@@ -33,7 +32,7 @@ export class SyncQueue {
         percentage: 0,
         state: SyncState.STARTED,
         error: undefined,
-        taskResult: Optional.empty()
+        taskResult: Optional.empty(),
     };
 
     /**
@@ -44,7 +43,10 @@ export class SyncQueue {
      * @param syncProgressListener A callback for the state while we're
      *     executing.
      */
-    constructor(abortable: Abortable, syncProgressListener: SyncProgressListener) {
+    constructor(
+        abortable: Abortable,
+        syncProgressListener: SyncProgressListener
+    ) {
         this.abortable = abortable;
         this.syncProgressListener = syncProgressListener;
     }
@@ -61,25 +63,20 @@ export class SyncQueue {
      * Execute all tasks in the queue.
      */
     public async execute() {
-
         let syncTask: SyncTask | undefined;
 
         let idx = 0;
 
         // noinspection TsLint
         while ((syncTask = this.pending.shift()) !== undefined) {
-
             if (this.abortable.aborted) {
-                log.info("Aborting sync.");
+                log.info('Aborting sync.');
                 return;
             }
 
             try {
-
                 this.syncProgress.taskResult = await syncTask();
-
             } catch (e) {
-
                 this.syncProgress.error = e;
                 this.syncProgress.state = SyncState.FAILED;
 
@@ -89,12 +86,13 @@ export class SyncQueue {
             }
 
             ++idx;
-            this.syncProgress.percentage = Percentages.calculate(idx, this.total);
+            this.syncProgress.percentage = Percentages.calculate(
+                idx,
+                this.total
+            );
 
             this.fireSyncProgress();
-
         }
-
     }
 
     public size() {
@@ -102,13 +100,12 @@ export class SyncQueue {
     }
 
     private fireSyncProgress() {
-
         if (this.syncProgress.percentage === 100) {
             this.syncProgress.state = SyncState.COMPLETED;
         }
 
-        this.syncProgressListener(Object.freeze(Object.assign({}, this.syncProgress)));
-
+        this.syncProgressListener(
+            Object.freeze(Object.assign({}, this.syncProgress))
+        );
     }
-
 }

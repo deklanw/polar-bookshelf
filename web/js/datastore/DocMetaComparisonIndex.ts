@@ -1,9 +1,9 @@
-import {DocMeta} from '../metadata/DocMeta';
-import {DocInfo, IDocInfo} from '../metadata/DocInfo';
-import {DocUUID} from './CloudAwareDatastore';
-import {isPresent} from '../Preconditions';
-import {DocMetaMutation} from './Datastore';
-import {UUIDs} from '../metadata/UUIDs';
+import { DocMeta } from '../metadata/DocMeta';
+import { DocInfo, IDocInfo } from '../metadata/DocInfo';
+import { DocUUID } from './CloudAwareDatastore';
+import { isPresent } from '../Preconditions';
+import { DocMetaMutation } from './Datastore';
+import { UUIDs } from '../metadata/UUIDs';
 
 /**
  * The DocComparisonIndex allows us to detect which documents are local already
@@ -11,8 +11,7 @@ import {UUIDs} from '../metadata/UUIDs';
  * that we do not need to replicate it locally.
  */
 export class DocMetaComparisonIndex {
-
-    private readonly backing: {[fingerprint: string]: DocUUID} = {};
+    private readonly backing: { [fingerprint: string]: DocUUID } = {};
 
     public contains(fingerprint: string) {
         return isPresent(this.backing[fingerprint]);
@@ -27,21 +26,17 @@ export class DocMetaComparisonIndex {
     }
 
     public updateUsingDocMeta(docMeta: DocMeta) {
-
         this.backing[docMeta.docInfo.fingerprint] = {
             fingerprint: docMeta.docInfo.fingerprint,
-            uuid: docMeta.docInfo.uuid
+            uuid: docMeta.docInfo.uuid,
         };
-
     }
 
     public updateUsingDocInfo(docInfo: IDocInfo) {
-
         this.backing[docInfo.fingerprint] = {
             fingerprint: docInfo.fingerprint,
-            uuid: docInfo.uuid
+            uuid: docInfo.uuid,
         };
-
     }
 
     /**
@@ -53,39 +48,39 @@ export class DocMetaComparisonIndex {
      * @param docMetaMutation
      * @param docInfo
      */
-    public handleDocMetaMutation(docMetaMutation: DocMetaMutation, docInfo: IDocInfo): boolean {
-
+    public handleDocMetaMutation(
+        docMetaMutation: DocMetaMutation,
+        docInfo: IDocInfo
+    ): boolean {
         const mutationType = docMetaMutation.mutationType;
 
         let doUpdated = false;
 
-        if (mutationType === 'created' && ! this.contains(docInfo.fingerprint)) {
+        if (mutationType === 'created' && !this.contains(docInfo.fingerprint)) {
             doUpdated = true;
         }
 
         if (mutationType === 'updated') {
-
             const docComparison = this.get(docInfo.fingerprint);
 
             if (!docComparison) {
                 doUpdated = true;
             }
 
-            if (docComparison && UUIDs.compare(docComparison.uuid, docInfo.uuid) < 0) {
+            if (
+                docComparison &&
+                UUIDs.compare(docComparison.uuid, docInfo.uuid) < 0
+            ) {
                 doUpdated = true;
             }
 
             if (docComparison) {
-
                 if (UUIDs.compare(docComparison.uuid, docInfo.uuid) < 0) {
                     doUpdated = true;
                 } else {
                     // noop
                 }
-
             }
-
-
         }
 
         if (doUpdated) {
@@ -95,7 +90,6 @@ export class DocMetaComparisonIndex {
         }
 
         if (mutationType === 'deleted' && this.get(docInfo.fingerprint)) {
-
             // TODO: a delete might need to have a UUID too so that we do not
             // get out of order DELETEs.  For this to work we probably need
             // the concept of tombstones.
@@ -104,11 +98,8 @@ export class DocMetaComparisonIndex {
             // and it's in the index.
             this.remove(docInfo.fingerprint);
             return true;
-
         }
 
         return false;
-
     }
-
 }

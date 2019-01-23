@@ -1,9 +1,7 @@
-import {Dictionaries} from '../../../../util/Dictionaries';
+import { Dictionaries } from '../../../../util/Dictionaries';
 
 export class AnkiFields {
-
     public static normalize(fields: FieldsMap) {
-
         const result: FieldsMap = {};
 
         Dictionaries.forDict(fields, (key, value) => {
@@ -12,9 +10,9 @@ export class AnkiFields {
         });
 
         return result;
-
     }
-
 }
 
-interface FieldsMap {[key: string]: string}
+interface FieldsMap {
+    [key: string]: string;
+}

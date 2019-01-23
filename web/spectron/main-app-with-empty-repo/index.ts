@@ -1,25 +1,24 @@
-import {SpectronMain2} from '../../js/test/SpectronMain2';
-import {Datastore} from '../../js/datastore/Datastore';
-import {MemoryDatastore} from '../../js/datastore/MemoryDatastore';
-import {Logging} from '../../js/logger/Logging';
-import {MainApp} from '../../js/apps/main/MainApp';
-import {BrowserWindowRegistry} from '../../js/electron/framework/BrowserWindowRegistry';
-import {assert} from 'chai';
+import { SpectronMain2 } from '../../js/test/SpectronMain2';
+import { Datastore } from '../../js/datastore/Datastore';
+import { MemoryDatastore } from '../../js/datastore/MemoryDatastore';
+import { Logging } from '../../js/logger/Logging';
+import { MainApp } from '../../js/apps/main/MainApp';
+import { BrowserWindowRegistry } from '../../js/electron/framework/BrowserWindowRegistry';
+import { assert } from 'chai';
 import waitForExpect from 'wait-for-expect';
-import {Logger} from '../../js/logger/Logger';
-import {MainAppController} from '../../js/apps/main/MainAppController';
+import { Logger } from '../../js/logger/Logger';
+import { MainAppController } from '../../js/apps/main/MainAppController';
 import BrowserWindow = Electron.BrowserWindow;
-import {AppPath} from '../../js/electron/app_path/AppPath';
-import {FilePaths} from '../../js/util/FilePaths';
+import { AppPath } from '../../js/electron/app_path/AppPath';
+import { FilePaths } from '../../js/util/FilePaths';
 
 const log = Logger.create();
 
 let mainAppController: MainAppController | undefined;
 
-AppPath.set(FilePaths.resolve(__dirname, "..", "..", ".."));
+AppPath.set(FilePaths.resolve(__dirname, '..', '..', '..'));
 
 async function createWindow(): Promise<BrowserWindow> {
-
     const datastore: Datastore = new MemoryDatastore();
 
     await datastore.init();
@@ -32,19 +31,18 @@ async function createWindow(): Promise<BrowserWindow> {
     mainAppController = mainAppState.mainAppController;
 
     return mainAppState.mainWindow;
-
 }
 
-SpectronMain2.create({windowFactory: createWindow}).run(async state => {
-
-    log.info("Waiting for repository to show...");
+SpectronMain2.create({ windowFactory: createWindow }).run(async state => {
+    log.info('Waiting for repository to show...');
 
     await waitForExpect(() => {
-        const windows = BrowserWindowRegistry.tagged({name: 'app', value: 'repository'});
+        const windows = BrowserWindowRegistry.tagged({
+            name: 'app',
+            value: 'repository',
+        });
         assert.ok(windows.length === 1);
-
     });
 
     await state.testResultWriter.write(true);
-
 });

@@ -1,4 +1,4 @@
-import {DocMeta} from './DocMeta';
+import { DocMeta } from './DocMeta';
 
 /**
  * A (potentially) lightweight supplier of DocMeta objects.

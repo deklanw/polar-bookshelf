@@ -1,30 +1,28 @@
-import {TriggerEvent} from '../contextmenu/TriggerEvent';
-import {AnnotationPointer} from './AnnotationPointer';
-
+import { TriggerEvent } from '../contextmenu/TriggerEvent';
+import { AnnotationPointer } from './AnnotationPointer';
 
 export class AnnotationPointers {
-
     /**
      *
      */
-    static toAnnotationPointers(selector: string, triggerEvent: TriggerEvent) {
-
-        let result: AnnotationPointer[] = [];
+    public static toAnnotationPointers(
+        selector: string,
+        triggerEvent: TriggerEvent
+    ) {
+        const result: AnnotationPointer[] = [];
 
         // should we just send this event to all the the windows?
-        triggerEvent.matchingSelectors[selector].annotationDescriptors.forEach(annotationDescriptor => {
+        triggerEvent.matchingSelectors[selector].annotationDescriptors.forEach(
+            annotationDescriptor => {
+                const annotationPointer = new AnnotationPointer(
+                    annotationDescriptor.id,
+                    annotationDescriptor.pageNum
+                );
 
-            let annotationPointer = new AnnotationPointer(
-                annotationDescriptor.id,
-                annotationDescriptor.pageNum,
-            );
-
-            result.push(annotationPointer);
-
-        });
+                result.push(annotationPointer);
+            }
+        );
 
         return result;
-
     }
-
 }

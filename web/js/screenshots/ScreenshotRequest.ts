@@ -1,4 +1,4 @@
-import {IXYRect} from '../util/rects/IXYRect';
+import { IXYRect } from '../util/rects/IXYRect';
 
 export interface ScreenshotRequest {
     readonly rect: IXYRect;

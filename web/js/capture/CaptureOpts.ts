@@ -1,8 +1,7 @@
-import {PendingWebRequestsCallback} from '../webrequests/PendingWebRequestsListener';
-import {Capture} from './Capture';
+import { PendingWebRequestsCallback } from '../webrequests/PendingWebRequestsListener';
+import { Capture } from './Capture';
 
 export interface CaptureOpts {
-
     /**
      * A callback which receives updates about the pending web requests for
      * updating the UI.
@@ -28,7 +27,6 @@ export interface CaptureOpts {
      * Title for the content.
      */
     readonly title?: string;
-
 }
 
 export class DefaultCaptureOpts implements CaptureOpts {

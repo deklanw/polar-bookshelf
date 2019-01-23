@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-declare namespace firebaseui { }
+declare namespace firebaseui {}
 
 export as namespace firebaseui;
 
@@ -66,8 +66,12 @@ declare namespace firebaseui.auth {
         queryParameterForSignInSuccessUrl?: string;
         queryParameterForWidgetMode?: string;
         signInFlow?: string;
-        signInOptions?: Array<string
-            | FederatedSignInOption | EmailSignInOption | PhoneSignInOption>;
+        signInOptions?: Array<
+            | string
+            | FederatedSignInOption
+            | EmailSignInOption
+            | PhoneSignInOption
+        >;
         signInSuccessUrl?: string;
         siteName?: string;
         tosUrl?: (() => void) | string;
@@ -76,37 +80,40 @@ declare namespace firebaseui.auth {
     }
 
     class AuthUI {
-        static getInstance(appId?: string): AuthUI | null;
+        public static getInstance(appId?: string): AuthUI | null;
         // tslint:disable-next-line:no-any firebase dependency not available.
         constructor(auth: any, appId?: string);
-        disableAutoSignIn(): void;
-        start(element: string | Element, config: firebaseui.auth.Config): void;
-        setConfig(config: firebaseui.auth.Config): void;
-        signIn(): void;
-        reset(): void;
-        delete(): Promise<void>;
-        isPendingRedirect(): boolean;
+        public disableAutoSignIn(): void;
+        public start(
+            element: string | Element,
+            config: firebaseui.auth.Config
+        ): void;
+        public setConfig(config: firebaseui.auth.Config): void;
+        public signIn(): void;
+        public reset(): void;
+        public delete(): Promise<void>;
+        public isPendingRedirect(): boolean;
     }
 
     class AuthUIError {
         private constructor();
-        code: string;
-        message: string;
+        public code: string;
+        public message: string;
         // tslint:disable-next-line:no-any firebase dependency not available.
-        credential: any | null;
-        toJSON(): object;
+        public credential: any | null;
+        public toJSON(): object;
     }
 
     class CredentialHelper {
         private constructor();
-        static ACCOUNT_CHOOSER_COM: CredentialHelperType;
-        static GOOGLE_YOLO: CredentialHelperType;
-        static NONE: CredentialHelperType;
+        public static ACCOUNT_CHOOSER_COM: CredentialHelperType;
+        public static GOOGLE_YOLO: CredentialHelperType;
+        public static NONE: CredentialHelperType;
     }
 
     class AnonymousAuthProvider {
         private constructor();
-        static PROVIDER_ID: string;
+        public static PROVIDER_ID: string;
     }
 }
 

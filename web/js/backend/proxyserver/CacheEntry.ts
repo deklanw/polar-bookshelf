@@ -1,26 +1,23 @@
-
 // https://expressjs.com/en/4x/api.html#req
 // https://expressjs.com/en/4x/api.html#res
 
-import {isPresent} from '../../Preconditions';
-import {Objects} from '../../util/Objects';
+import { isPresent } from '../../Preconditions';
+import { Objects } from '../../util/Objects';
 
 export abstract class CacheEntry implements ICacheEntry {
-
     public method: string;
     public url: string;
-    public headers: {[key: string]: string | string[]} = {};
+    public headers: { [key: string]: string | string[] } = {};
     public statusCode = 200;
-    public statusMessage = "OK";
-    public contentType = "text/html";
-    public mimeType = "text/html";
-    public encoding = "UTF-8";
+    public statusMessage = 'OK';
+    public contentType = 'text/html';
+    public mimeType = 'text/html';
+    public encoding = 'UTF-8';
     public contentLength?: number;
     public docTypeFormat?: DocTypeFormat;
 
     protected constructor(options: ICacheEntry) {
-
-        this.method = "GET";
+        this.method = 'GET';
 
         this.url = options.url;
 
@@ -28,15 +25,14 @@ export abstract class CacheEntry implements ICacheEntry {
 
         // make sure we have defaults for everything.
         Objects.defaults(this, {
-            method: "GET",
+            method: 'GET',
             headers: {},
             statusCode: 200,
-            statusMessage: "OK",
-            contentType: "text/html",
-            mimeType: "text/html",
-            encoding: "UTF-8",
+            statusMessage: 'OK',
+            contentType: 'text/html',
+            mimeType: 'text/html',
+            encoding: 'UTF-8',
         });
-
     }
 
     /**
@@ -53,16 +49,11 @@ export abstract class CacheEntry implements ICacheEntry {
     public abstract async toBuffer(): Promise<Buffer>;
 
     public abstract async toStream(): Promise<NodeJS.ReadableStream>;
-
 }
 
-export interface DataCallback {
-    // noinspection TsLint
-    (data: Buffer): void;
-}
+export type DataCallback = (data: Buffer) => void;
 
 export interface ICacheEntry {
-
     method: string;
 
     /**
@@ -74,7 +65,7 @@ export interface ICacheEntry {
      * The request headers.
      *
      */
-    headers: {[key: string]: string | string[]};
+    headers: { [key: string]: string | string[] };
 
     /**
      * The status code for this cache entry.
@@ -110,7 +101,6 @@ export interface ICacheEntry {
     contentLength?: number;
 
     docTypeFormat?: DocTypeFormat;
-
 }
 
 /**

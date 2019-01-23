@@ -1,19 +1,18 @@
-import {TextRect} from './TextRect';
-import {Text} from './Text';
-import {Texts} from './Texts';
-import {TextType} from './TextType';
-import {BaseHighlight, HighlightColor} from './BaseHighlight';
-import {Preconditions} from '../Preconditions';
-import {Rect} from '../Rect';
-import {Image} from './Image';
-import {Note} from './Note';
-import {Question} from './Question';
-import {Flashcard} from './Flashcard';
-import {Author} from './Author';
-import {ISODateTimeString} from './ISODateTimeStrings';
+import { TextRect } from './TextRect';
+import { Text } from './Text';
+import { Texts } from './Texts';
+import { TextType } from './TextType';
+import { BaseHighlight, HighlightColor } from './BaseHighlight';
+import { Preconditions } from '../Preconditions';
+import { Rect } from '../Rect';
+import { Image } from './Image';
+import { Note } from './Note';
+import { Question } from './Question';
+import { Flashcard } from './Flashcard';
+import { Author } from './Author';
+import { ISODateTimeString } from './ISODateTimeStrings';
 
 export class TextHighlight extends BaseHighlight {
-
     /**
      * A raw array-like object of text from the regions that the user
      * has highlighted in the UI. In PDF and pdf.js there isn't really
@@ -21,7 +20,7 @@ export class TextHighlight extends BaseHighlight {
      * in the specific regions they selected.
      *
      */
-    public textSelections: {[id: number]: TextRect} = {};
+    public textSelections: { [id: number]: TextRect } = {};
 
     /**
      * The text selections converted to a text string which may or may not be
@@ -30,12 +29,10 @@ export class TextHighlight extends BaseHighlight {
      *
      * When this is just a plain string we assume it's text and not HTML.
      */
-    public text: Text | string = Texts.create("", TextType.HTML);
+    public text: Text | string = Texts.create('', TextType.HTML);
 
     constructor(val: ITextHighlight) {
-
         super(val);
-
 
         // FIXME: all these extractions (text, html, etc) should be 'snippet'
         // because we also have to include the context with them and with the
@@ -66,26 +63,27 @@ export class TextHighlight extends BaseHighlight {
         // this.html = null;
 
         this.init(val);
-
     }
 
     public validate() {
         super.validate();
-        Preconditions.assertNotInstanceOf(this.textSelections, "textSelections", Array);
+        Preconditions.assertNotInstanceOf(
+            this.textSelections,
+            'textSelections',
+            Array
+        );
     }
-
 }
 
 export interface ITextHighlight {
-
-    readonly textSelections: {[id: number]: TextRect};
+    readonly textSelections: { [id: number]: TextRect };
     readonly text: Text | string;
-    readonly rects: {[key: number]: Rect};
+    readonly rects: { [key: number]: Rect };
     readonly image?: Image;
-    readonly images: {[key: string]: Image};
-    readonly notes: {[key: string]: Note};
-    readonly questions: {[key: string]: Question};
-    readonly flashcards: {[key: string]: Flashcard};
+    readonly images: { [key: string]: Image };
+    readonly notes: { [key: string]: Note };
+    readonly questions: { [key: string]: Question };
+    readonly flashcards: { [key: string]: Flashcard };
     readonly id: string;
     readonly guid: string;
     readonly created: ISODateTimeString;

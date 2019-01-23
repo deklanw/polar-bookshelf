@@ -5,13 +5,11 @@
  * @type {Readonly<{PRESENT: string, ABSENT: string}>}
  */
 export enum MutationState {
+    /**
+     */
+    PRESENT = 'PRESENT',
 
     /**
      */
-    PRESENT = "PRESENT",
-
-    /**
-     */
-    ABSENT = "ABSENT",
-
+    ABSENT = 'ABSENT',
 }

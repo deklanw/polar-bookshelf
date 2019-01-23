@@ -1,8 +1,7 @@
-import {IBrowser} from './Browser';
-import {Navigation} from './navigation/Navigation';
+import { IBrowser } from './Browser';
+import { Navigation } from './navigation/Navigation';
 
 export interface BrowserProfile extends IBrowser {
-
     /**
      * A unique instance ID for this browser profile.
      */
@@ -45,7 +44,6 @@ export interface BrowserProfile extends IBrowser {
      * it should be destroyed but for testing this might be problematic.
      */
     destroy: boolean;
-
 }
 
 export type BrowserProfileID = number;

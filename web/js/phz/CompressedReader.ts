@@ -1,8 +1,7 @@
-import {Resources} from './Resources';
-import {ResourceEntry} from './ResourceEntry';
+import { Resources } from './Resources';
+import { ResourceEntry } from './ResourceEntry';
 
 export interface CompressedReader {
-
     init(): Promise<void>;
 
     /**
@@ -17,7 +16,9 @@ export interface CompressedReader {
 
     getResource(resourceEntry: ResourceEntry): Promise<Buffer>;
 
-    getResourceAsStream(resourceEntry: ResourceEntry): Promise<NodeJS.ReadableStream>;
+    getResourceAsStream(
+        resourceEntry: ResourceEntry
+    ): Promise<NodeJS.ReadableStream>;
 
     close(): Promise<void>;
 }

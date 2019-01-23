@@ -1,5 +1,4 @@
 export interface LoadDocRequest {
-
     readonly filename: string;
 
     readonly fingerprint: string;
@@ -8,5 +7,4 @@ export interface LoadDocRequest {
      * When true load in a new window.  Should probably always be true.
      */
     readonly newWindow: boolean;
-
 }

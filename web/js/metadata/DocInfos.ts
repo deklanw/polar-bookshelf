@@ -1,12 +1,14 @@
-import {DocInfo, IDocInfo} from './DocInfo';
-import {ISODateTimeStrings} from './ISODateTimeStrings';
-import {Optional} from '../util/ts/Optional';
-import {UUIDs} from './UUIDs';
+import { DocInfo, IDocInfo } from './DocInfo';
+import { ISODateTimeStrings } from './ISODateTimeStrings';
+import { Optional } from '../util/ts/Optional';
+import { UUIDs } from './UUIDs';
 
 export class DocInfos {
-
-    public static create(fingerprint: string, nrPages: number, filename?: string) {
-
+    public static create(
+        fingerprint: string,
+        nrPages: number,
+        filename?: string
+    ) {
         const tmp: DocInfo = Object.create(DocInfos.prototype);
 
         tmp.fingerprint = fingerprint;
@@ -16,7 +18,6 @@ export class DocInfos {
         tmp.uuid = UUIDs.create();
 
         return new DocInfo(tmp);
-
     }
 
     /**
@@ -24,12 +25,8 @@ export class DocInfos {
      * if one isn't available and then 'Untitled' after that.
      */
     public static bestTitle(docInfo: IDocInfo) {
-
-        return Optional.first(docInfo.title,
-                              docInfo.filename)
+        return Optional.first(docInfo.title, docInfo.filename)
             .validateString()
             .getOrElse('Untitled');
-
     }
-
 }

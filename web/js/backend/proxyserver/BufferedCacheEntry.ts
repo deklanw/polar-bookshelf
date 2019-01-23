@@ -1,11 +1,10 @@
-import {CacheEntry, DataCallback} from './CacheEntry';
-import {Buffers} from '../../util/Buffers';
+import { CacheEntry, DataCallback } from './CacheEntry';
+import { Buffers } from '../../util/Buffers';
 
 /**
  * Cache entry which is just buffered in memory.
  */
 export class BufferedCacheEntry extends CacheEntry {
-
     public data: Buffer;
 
     constructor(opts: any) {
@@ -25,6 +24,4 @@ export class BufferedCacheEntry extends CacheEntry {
     public async toStream(): Promise<NodeJS.ReadableStream> {
         return Buffers.toStream(this.data);
     }
-
 }
-

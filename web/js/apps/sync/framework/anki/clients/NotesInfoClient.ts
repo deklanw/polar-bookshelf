@@ -1,6 +1,9 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import {DeckNamesAndIds, IDeckNamesAndIdsClient} from './DeckNamesAndIdsClient';
-import * as TypeMoq from "typemoq";
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import {
+    DeckNamesAndIds,
+    IDeckNamesAndIdsClient,
+} from './DeckNamesAndIdsClient';
+import * as TypeMoq from 'typemoq';
 
 /**
  *
@@ -34,21 +37,18 @@ import * as TypeMoq from "typemoq";
  *
  */
 export class NotesInfoClient implements INotesInfoClient {
-
     public async execute(notes: number[]): Promise<NoteInfo[]> {
-
         const body = {
-            action: "notesInfo",
+            action: 'notesInfo',
             version: 6,
             params: {
-                notes
-            }
+                notes,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
-        return <NoteInfo[]> await AnkiConnectFetch.fetch(init);
-
+        return <NoteInfo[]>await AnkiConnectFetch.fetch(init);
     }
 
     /**
@@ -56,27 +56,25 @@ export class NotesInfoClient implements INotesInfoClient {
      */
     public static createMock(result: NoteInfo[]) {
         const client = TypeMoq.Mock.ofType<INotesInfoClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve(result));
         return client.object;
     }
-
 }
 
 export interface INotesInfoClient {
-
     execute(notes: number[]): Promise<NoteInfo[]>;
-
 }
 
 interface NoteInfo {
     noteId: number;
     modelName: string;
     tags: string[];
-    fields: {[name: string]: Field};
+    fields: { [name: string]: Field };
 }
 
 interface Field {
     value: string;
     order: number;
 }
-

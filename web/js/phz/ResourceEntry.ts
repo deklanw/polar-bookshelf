@@ -1,10 +1,9 @@
 /**
  * The internal resource entry for this Resource.
  */
-import {Resource} from './Resource';
+import { Resource } from './Resource';
 
 export class ResourceEntry {
-
     /**
      * Unique ID representing this resource in this archive.
      *
@@ -26,13 +25,10 @@ export class ResourceEntry {
     public resource: Resource;
 
     constructor(opts: any) {
-
         this.id = opts.id;
         this.path = opts.path;
         this.resource = opts.resource;
 
         Object.assign(this, opts);
-
     }
-
 }

@@ -1,23 +1,23 @@
-import {assert} from 'chai';
-import {MockDocMetas} from '../metadata/DocMetas';
-import {MemoryDatastore} from './MemoryDatastore';
-import {DefaultPersistenceLayer} from './DefaultPersistenceLayer';
-import {TestingTime} from '../test/TestingTime';
+import { assert } from 'chai';
+import { MockDocMetas } from '../metadata/DocMetas';
+import { MemoryDatastore } from './MemoryDatastore';
+import { DefaultPersistenceLayer } from './DefaultPersistenceLayer';
+import { TestingTime } from '../test/TestingTime';
 import uuid from 'uuid';
 
-
 describe('DefaultPersistenceLayer', function() {
-
     const fingerprint = '0x0001';
 
-    it("verify that lastUpdated was written", async function() {
-
+    it('verify that lastUpdated was written', async function() {
         TestingTime.freeze();
 
         const memoryDatastore = new MemoryDatastore();
         const persistenceLayer = new DefaultPersistenceLayer(memoryDatastore);
 
-        const docMeta = MockDocMetas.createWithinInitialPagemarks(fingerprint, 1);
+        const docMeta = MockDocMetas.createWithinInitialPagemarks(
+            fingerprint,
+            1
+        );
 
         assert.ok(docMeta.docInfo.lastUpdated === undefined);
 
@@ -43,17 +43,18 @@ describe('DefaultPersistenceLayer', function() {
         const now = writtenDocMeta2!.docInfo.lastUpdated!;
 
         assert.ok(current.toString() !== now.toString());
-
     });
 
-    it("verify that added was written", async function() {
-
+    it('verify that added was written', async function() {
         TestingTime.freeze();
 
         const memoryDatastore = new MemoryDatastore();
         const persistenceLayer = new DefaultPersistenceLayer(memoryDatastore);
 
-        const docMeta = MockDocMetas.createWithinInitialPagemarks(fingerprint, 1);
+        const docMeta = MockDocMetas.createWithinInitialPagemarks(
+            fingerprint,
+            1
+        );
 
         await persistenceLayer.writeDocMeta(docMeta);
 
@@ -75,7 +76,5 @@ describe('DefaultPersistenceLayer', function() {
 
         // now verify that if we write a second time, that the added value
         // is NOT changed.
-
     });
-
 });

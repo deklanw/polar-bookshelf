@@ -1,20 +1,19 @@
 /**
  * A generic IPC request message with a type parameter.
  */
-import {Optional} from '../../util/ts/Optional';
-import {IPCError} from './IPCError';
-import {ElectronContext} from './ElectronContext';
-import {ElectronContexts} from './ElectronContexts';
-import {Logger} from '../../logger/Logger';
-import {isPresent} from '../../Preconditions';
+import { Optional } from '../../util/ts/Optional';
+import { IPCError } from './IPCError';
+import { ElectronContext } from './ElectronContext';
+import { ElectronContexts } from './ElectronContexts';
+import { Logger } from '../../logger/Logger';
+import { isPresent } from '../../Preconditions';
 
 const log = Logger.create();
 
 export class IPCMessage<T> {
-
     private readonly _type: string;
 
-    private readonly _value?: T ;
+    private readonly _value?: T;
 
     private readonly _context: ElectronContext;
 
@@ -27,14 +26,15 @@ export class IPCMessage<T> {
 
     private readonly _error?: IPCError;
 
-    constructor(type: string,
-                value?: T,
-                nonce = IPCMessage.createNonce(),
-                error?: IPCError,
-                context = ElectronContexts.create()) {
-
+    constructor(
+        type: string,
+        value?: T,
+        nonce = IPCMessage.createNonce(),
+        error?: IPCError,
+        context = ElectronContexts.create()
+    ) {
         if (value && value instanceof IPCMessage) {
-            throw new Error("Value is already an IPCMessage");
+            throw new Error('Value is already an IPCMessage');
         }
 
         this._type = type;
@@ -49,14 +49,13 @@ export class IPCMessage<T> {
     }
 
     get value(): T {
-
-        if(this._error) {
+        if (this._error) {
             throw new Error(this._error.msg);
         }
 
-        if(! this._value) {
+        if (!this._value) {
             // technically this should never happen.
-            throw new Error("Value was undefined and no error defined.");
+            throw new Error('Value was undefined and no error defined.');
         }
 
         return this._value;
@@ -74,7 +73,7 @@ export class IPCMessage<T> {
         return this._context;
     }
 
-    computeResponseChannel() {
+    public computeResponseChannel() {
         return '/ipc/response:' + this.nonce;
     }
 
@@ -82,18 +81,24 @@ export class IPCMessage<T> {
         return Date.now();
     }
 
-    static createError<T>(type: string, error: IPCError): IPCMessage<T> {
-        return new IPCMessage<T>(type, undefined, IPCMessage.createNonce(), error);
+    public static createError<T>(type: string, error: IPCError): IPCMessage<T> {
+        return new IPCMessage<T>(
+            type,
+            undefined,
+            IPCMessage.createNonce(),
+            error
+        );
     }
 
-    public static create<T>(obj: any, valueFactory?: ValueFactory<T> ): IPCMessage<T> {
-
+    public static create<T>(
+        obj: any,
+        valueFactory?: ValueFactory<T>
+    ): IPCMessage<T> {
         if (obj._value === undefined) {
-            log.warn("IPC message missing value: ", obj);
+            log.warn('IPC message missing value: ', obj);
         }
 
-        obj._value = Optional.of(obj._value, "value")
-            .getOrUndefined();
+        obj._value = Optional.of(obj._value, 'value').getOrUndefined();
 
         if (isPresent(obj._value) && valueFactory) {
             obj._value = valueFactory(obj._value);
@@ -103,14 +108,7 @@ export class IPCMessage<T> {
         Object.assign(result, obj);
 
         return result;
-
     }
-
-
 }
 
-interface ValueFactory<T> {
-
-    (obj: any): T;
-
-}
+type ValueFactory<T> = (obj: any) => T;

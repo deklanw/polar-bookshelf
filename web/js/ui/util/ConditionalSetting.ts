@@ -1,7 +1,6 @@
-import {Optional} from "../../util/ts/Optional";
+import { Optional } from '../../util/ts/Optional';
 
 export class ConditionalSetting {
-
     private readonly key: string;
 
     constructor(key: string) {
@@ -25,7 +24,6 @@ export class ConditionalSetting {
     public set(value: string): void {
         window.localStorage.setItem(this.key, value);
     }
-
 }
 
 export type Predicate<T> = (value: Optional<T>) => boolean;

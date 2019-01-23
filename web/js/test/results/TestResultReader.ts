@@ -4,12 +4,10 @@
  */
 
 export interface TestResultReader {
-
     /**
      * Read the current value.
      *
      * @return {any}
      */
     read(): Promise<any>;
-
 }

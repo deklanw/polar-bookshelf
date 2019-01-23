@@ -1,5 +1,5 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import * as TypeMoq from "typemoq";
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import * as TypeMoq from 'typemoq';
 
 /**
  *
@@ -37,21 +37,18 @@ import * as TypeMoq from "typemoq";
  *
  * */
 export class CanAddNotesClient implements ICanAddNotesClient {
-
     public async execute(notes: Note[]): Promise<boolean[]> {
-
         const body = {
-            action: "canAddNotes",
+            action: 'canAddNotes',
             version: 6,
             params: {
-                notes
-            }
+                notes,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
-        return <boolean[]> await AnkiConnectFetch.fetch(init);
-
+        return <boolean[]>await AnkiConnectFetch.fetch(init);
     }
 
     /**
@@ -59,23 +56,20 @@ export class CanAddNotesClient implements ICanAddNotesClient {
      */
     public static createMock(result: boolean[]) {
         const client = TypeMoq.Mock.ofType<ICanAddNotesClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve(result));
         return client.object;
     }
-
 }
 
 export interface Note {
-
     readonly deckName: string;
     readonly modelName: string;
-    readonly fields: {[name: string]: string};
+    readonly fields: { [name: string]: string };
     readonly tags: string[];
-
 }
 
 export interface ICanAddNotesClient {
-
     execute(notes: Note[]): Promise<boolean[]>;
-
 }

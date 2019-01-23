@@ -7,11 +7,11 @@
  * Note that Object.observe and other changes were apparently never ratified
  * so we have to use Proxy objects to implement this functionality.
  */
-import {TraceListeners} from "./TraceListeners";
-import {Objects} from "../util/Objects";
-import {TraceHandler} from "./TraceHandler";
-import {ObjectPaths} from "./ObjectPaths";
-import {Paths} from "../util/Paths";
+import { TraceListeners } from './TraceListeners';
+import { Objects } from '../util/Objects';
+import { TraceHandler } from './TraceHandler';
+import { ObjectPaths } from './ObjectPaths';
+import { Paths } from '../util/Paths';
 
 /**
  * A sequence identifier generator so that we can assign objects a unique value
@@ -20,19 +20,17 @@ import {Paths} from "../util/Paths";
 let sequence = 0;
 
 export class Proxies {
-
     /**
      * Deeply trace the given object and call back on the traceListener every time
      * we notice a mutation.  The trace listener receives the following arguments:
      */
     public static create<T>(target: T, traceListeners?: any, opts?: any): T {
-
-        if(typeof target !== "object") {
-            throw new Error("Only works on objects: " + typeof target);
+        if (typeof target !== 'object') {
+            throw new Error('Only works on objects: ' + typeof target);
         }
 
         opts = Objects.defaults(opts, {
-            pathPrefix: ""
+            pathPrefix: '',
         });
 
         if (!traceListeners) {
@@ -45,15 +43,18 @@ export class Proxies {
 
         let root: any;
 
-        objectPathEntries.forEach((objectPathEntry) => {
-
+        objectPathEntries.forEach(objectPathEntry => {
             let path = objectPathEntry.path;
 
-            if (opts.pathPrefix && opts.pathPrefix !== "") {
+            if (opts.pathPrefix && opts.pathPrefix !== '') {
                 path = Paths.create(opts.pathPrefix, objectPathEntry.path);
             }
 
-            const proxy = Proxies.trace(path, objectPathEntry.value, traceListeners);
+            const proxy = Proxies.trace(
+                path,
+                objectPathEntry.value,
+                traceListeners
+            );
 
             // replace the object key in the parent with a new object that is
             // traced.
@@ -62,23 +63,19 @@ export class Proxies {
             } else {
                 root = proxy;
             }
-
         });
 
         return root;
-
     }
 
     public static trace(path: string, value: any, traceListeners: any) {
-
-        if (typeof value !== "object") {
-            throw new Error("We can only trace object types.");
+        if (typeof value !== 'object') {
+            throw new Error('We can only trace object types.');
         }
 
         traceListeners = TraceListeners.asArray(traceListeners);
 
         if (Object.isFrozen(value)) {
-
             // Do not handle frozen objects but might have to in the future for
             // the initial value.
 
@@ -86,7 +83,6 @@ export class Proxies {
             // been asked to trace but we're not tracing.  This is an API flaw.
 
             return value;
-
         }
 
         const traceIdentifier = sequence++;
@@ -95,7 +91,13 @@ export class Proxies {
         // object itself by possibly having a __traceHandlers or some other
         // strategy or __paths and then dispatch that way...
 
-        const traceHandler = new TraceHandler(path, traceListeners, value, traceIdentifier, Proxies);
+        const traceHandler = new TraceHandler(
+            path,
+            traceListeners,
+            value,
+            traceIdentifier,
+            Proxies
+        );
 
         // TODO: could I store these in the TraceHandler and not in the value?
         //
@@ -105,7 +107,6 @@ export class Proxies {
         // returning __traceIdentifier or __traceListeners based on the caller.
 
         const privateMembers = [
-
             // the __traceIdentifier is a unique key for the object which we use
             // to identify which one is being traced.  This way we essentially
             // have a pointer we can use to work with the object directly.
@@ -117,10 +118,8 @@ export class Proxies {
             // // with the same trace and not being re-traced by something else.
             //
             // { name: "__traceListeners", value: traceListeners },
-
             // keep the path to this object for debug purposes.
             // { name: "__path", value: path }
-
         ];
 
         // privateMembers.forEach(privateMember => {
@@ -146,17 +145,13 @@ export class Proxies {
         if (value.addTraceListener) {
             value.addTraceListener(traceListeners);
         } else {
-            Object.defineProperty(value, "addTraceListener", {
+            Object.defineProperty(value, 'addTraceListener', {
                 value: traceHandler.addTraceListener.bind(traceHandler),
                 enumerable: false,
-                writable: false
+                writable: false,
             });
         }
 
         return new Proxy(value, traceHandler);
-
     }
-
 }
-
-

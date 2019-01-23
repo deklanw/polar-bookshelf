@@ -1,40 +1,39 @@
-import {SpectronRenderer, SpectronRendererState} from '../../js/test/SpectronRenderer';
-import {Firebase} from '../../js/firebase/Firebase';
-import {FirebaseUIAuth} from '../../js/firebase/FirebaseUIAuth';
+import {
+    SpectronRenderer,
+    SpectronRendererState,
+} from '../../js/test/SpectronRenderer';
+import { Firebase } from '../../js/firebase/Firebase';
+import { FirebaseUIAuth } from '../../js/firebase/FirebaseUIAuth';
 import * as firebase from '../../js/firebase/lib/firebase';
-import {Elements} from '../../js/util/Elements';
-import {DiskDatastore} from '../../js/datastore/DiskDatastore';
-import {DefaultPersistenceLayer} from '../../js/datastore/DefaultPersistenceLayer';
-import {MockDocMetas} from '../../js/metadata/DocMetas';
-import {assert} from "chai";
-import {DatastoreTester} from '../../js/datastore/DatastoreTester';
-import {Firestore} from '../../js/firebase/Firestore';
-import {Hashcodes} from '../../js/Hashcodes';
-import {Promises} from '../../js/util/Promises';
-import {FirebaseDatastore} from '../../js/datastore/FirebaseDatastore';
-import {FirebaseRunner} from '../../js/firebase/FirebaseRunner';
-import {Datastores} from '../../js/datastore/Datastores';
-import {PersistenceLayers} from '../../js/datastore/PersistenceLayers';
-import {PolarDataDir} from '../../js/test/PolarDataDir';
-import {Strings} from '../../js/util/Strings';
-import {AsyncFunction, AsyncWorkQueue} from '../../js/util/AsyncWorkQueue';
-import {FirestoreQueryCursor} from '../../js/firebase/FirestoreQueryCursor';
-import {Preconditions} from '../../js/Preconditions';
+import { Elements } from '../../js/util/Elements';
+import { DiskDatastore } from '../../js/datastore/DiskDatastore';
+import { DefaultPersistenceLayer } from '../../js/datastore/DefaultPersistenceLayer';
+import { MockDocMetas } from '../../js/metadata/DocMetas';
+import { assert } from 'chai';
+import { DatastoreTester } from '../../js/datastore/DatastoreTester';
+import { Firestore } from '../../js/firebase/Firestore';
+import { Hashcodes } from '../../js/Hashcodes';
+import { Promises } from '../../js/util/Promises';
+import { FirebaseDatastore } from '../../js/datastore/FirebaseDatastore';
+import { FirebaseRunner } from '../../js/firebase/FirebaseRunner';
+import { Datastores } from '../../js/datastore/Datastores';
+import { PersistenceLayers } from '../../js/datastore/PersistenceLayers';
+import { PolarDataDir } from '../../js/test/PolarDataDir';
+import { Strings } from '../../js/util/Strings';
+import { AsyncFunction, AsyncWorkQueue } from '../../js/util/AsyncWorkQueue';
+import { FirestoreQueryCursor } from '../../js/firebase/FirestoreQueryCursor';
+import { Preconditions } from '../../js/Preconditions';
 
 mocha.setup('bdd');
 mocha.timeout(10000);
 
-SpectronRenderer.run(async (state) => {
-
+SpectronRenderer.run(async state => {
     new FirebaseRunner(state).run(async () => {
-
         await PolarDataDir.useFreshDirectory('.test-firebase-write-semantics');
 
         describe('Firebase Write Semantics', function() {
-
-            it("Test receiving large snapshots", async function() {
-
-                const collectionName = "debug_large_snapshots4";
+            it('Test receiving large snapshots', async function() {
+                const collectionName = 'debug_large_snapshots4';
                 const doWrites = false;
                 const doTest = true;
 
@@ -45,13 +44,11 @@ SpectronRenderer.run(async (state) => {
                 const uid = firebase.auth()!.currentUser!.uid;
 
                 if (doWrites) {
-
                     const work: AsyncFunction[] = [];
                     const asyncWorkQueue = new AsyncWorkQueue(work);
 
                     for (let idx = 0; idx < nrWrites; idx++) {
-
-                        const id = Hashcodes.createID({idx});
+                        const id = Hashcodes.createID({ idx });
 
                         const data = Strings.lpad('', 'x', 4096);
 
@@ -59,7 +56,7 @@ SpectronRenderer.run(async (state) => {
                             foo: data,
                             bar: data,
                             id,
-                            uid
+                            uid,
                         };
 
                         const ref = firestore
@@ -68,19 +65,16 @@ SpectronRenderer.run(async (state) => {
 
                         work.push(async () => {
                             await ref.set(doc);
-                            console.log("Wrote doc: "  + idx);
+                            console.log('Wrote doc: ' + idx);
                         });
-
                     }
 
                     await asyncWorkQueue.execute();
 
-                    console.log("Done writes ... ");
-
+                    console.log('Done writes ... ');
                 }
 
                 if (doTest) {
-
                     // doesn't matter the size of the number of writes... we get
                     // them ALL at once it seems ... but let's write more data.
 
@@ -93,28 +87,31 @@ SpectronRenderer.run(async (state) => {
                     // once...
                     //
 
-
                     // const cursor = new FirestoreQueryCursor(collectionName,
                     //                                         {fieldPath: 'uid', opStr: '==', value: uid},
                     //                                         {getOptions: {source: 'server'}});
 
-                    const cursor = new FirestoreQueryCursor(collectionName,
-                                                            {fieldPath: 'uid', opStr: '==', value: uid});
+                    const cursor = new FirestoreQueryCursor(collectionName, {
+                        fieldPath: 'uid',
+                        opStr: '==',
+                        value: uid,
+                    });
 
                     const before = Date.now();
 
                     let total = 0;
                     while (cursor.hasNext()) {
-                        console.log("Fetching cursor...");
+                        console.log('Fetching cursor...');
                         const querySnapshot = await cursor.next();
-                        console.log("Fetching cursor...done");
+                        console.log('Fetching cursor...done');
                         total += querySnapshot.size;
 
-                        console.log("FIXME: fethced N records: " + total);
-
+                        console.log('FIXME: fethced N records: ' + total);
                     }
 
-                    console.log("Total cursor query duration: " + (Date.now() - before));
+                    console.log(
+                        'Total cursor query duration: ' + (Date.now() - before)
+                    );
 
                     // const before = Date.now();
                     //
@@ -130,19 +127,16 @@ SpectronRenderer.run(async (state) => {
                     //         console.log("From cache: ", snapshot.metadata.fromCache);
                     //         console.log("Total snapshot duration: " + (Date.now() - before));
                     //     });
-
                 }
-
             });
 
-            xit("Write a basic doc", async function() {
-
-                const collectionName = "debug";
+            xit('Write a basic doc', async function() {
+                const collectionName = 'debug';
                 // const iter = Date.now();
                 const iter = 1543071938802;
                 const doWrites = false;
 
-                console.log("Using iter: " + iter);
+                console.log('Using iter: ' + iter);
 
                 const firestore = await Firestore.getInstance();
 
@@ -161,7 +155,6 @@ SpectronRenderer.run(async (state) => {
                 // snapshot.metadata.fromCache, snapshot.metadata,
                 // snapshot);
 
-
                 // https://firebase.google.com/docs/reference/js/firebase.firestore.SnapshotMetadata
                 // fromCache boolean  True if the snapshot was created from
                 // cached data rather than guaranteed up-to-date server data.
@@ -174,72 +167,90 @@ SpectronRenderer.run(async (state) => {
                 // yet.  If your listener has opted into metadata updates via
                 // SnapshotListenOptions, you receive another snapshot with hasPendingWrites set to false once the writes have been committed to the backend.
 
-                const onSnapshot = (snapshot: firebase.firestore.QuerySnapshot) => {
+                const onSnapshot = (
+                    snapshot: firebase.firestore.QuerySnapshot
+                ) => {
+                    console.log(
+                        'FIXME onSnapshot: ==============================='
+                    );
 
-                    console.log("FIXME onSnapshot: ===============================");
+                    console.log('FIXME onSnapshot snapshot: ', snapshot);
 
-                    console.log("FIXME onSnapshot snapshot: ", snapshot);
+                    console.log(
+                        'FIXME: onSnapshot: We have N docs: ' +
+                            snapshot.docs.length
+                    );
+                    console.log(
+                        'FIXME: onSnapshot: We have N docChanges: ' +
+                            snapshot.docChanges().length
+                    );
 
-                    console.log("FIXME: onSnapshot: We have N docs: " + snapshot.docs.length);
-                    console.log("FIXME: onSnapshot: We have N docChanges: " + snapshot.docChanges().length);
+                    console.log('FIXME: onSnapshot: docs: ', snapshot.docs);
 
-                    console.log("FIXME: onSnapshot: docs: ", snapshot.docs);
+                    console.log(
+                        'FIXME: onSnapshot: NR docChanges: ',
+                        snapshot.docChanges().length
+                    );
 
-
-                    console.log("FIXME: onSnapshot: NR docChanges: ", snapshot.docChanges().length);
-
-                    console.log("FIXME: onSnapshot: docChanges: ", snapshot.docChanges());
+                    console.log(
+                        'FIXME: onSnapshot: docChanges: ',
+                        snapshot.docChanges()
+                    );
 
                     for (const docChange of snapshot.docChanges()) {
-
-                        console.log("FIXME id: ", docChange.doc.id);
+                        console.log('FIXME id: ', docChange.doc.id);
 
                         const metadataTrace: MetadataTrace = {
                             id: docChange.doc.id,
                             fromCache: snapshot.metadata.fromCache,
-                            hasPendingWrites: snapshot.metadata.hasPendingWrites,
-                            doc: docChange.doc.data()
+                            hasPendingWrites:
+                                snapshot.metadata.hasPendingWrites,
+                            doc: docChange.doc.data(),
                         };
 
-                        console.log("FIXME onSnapshot/docChange docChange: ", docChange);
-                        console.log("FIXME onSnapshot/docChange metadataTrace: ", metadataTrace);
+                        console.log(
+                            'FIXME onSnapshot/docChange docChange: ',
+                            docChange
+                        );
+                        console.log(
+                            'FIXME onSnapshot/docChange metadataTrace: ',
+                            metadataTrace
+                        );
 
                         metadataTraces.push(metadataTrace);
-
                     }
-
                 };
 
                 await firestore
                     .collection(collectionName)
                     .where('iter', '==', iter)
-                    .onSnapshot({includeMetadataChanges: true}, snapshot => onSnapshot(snapshot));
-
+                    .onSnapshot({ includeMetadataChanges: true }, snapshot =>
+                        onSnapshot(snapshot)
+                    );
 
                 if (doWrites) {
-
                     // now add some records
                     const id0 = Hashcodes.createRandomID();
                     const id1 = Hashcodes.createRandomID();
 
-                    console.log("FIXME: id0: " + id0);
-                    console.log("FIXME: id1: " + id1);
+                    console.log('FIXME: id0: ' + id0);
+                    console.log('FIXME: id1: ' + id1);
 
                     const nrWrites = 10;
 
                     for (const id of [id0]) {
-
                         for (let idx = 0; idx < nrWrites; idx++) {
-
-                            console.log("FIXME: writing with id: " + id);
+                            console.log('FIXME: writing with id: ' + id);
 
                             const doc = {
-                                foo: "bar",
+                                foo: 'bar',
                                 version: idx,
-                                iter
+                                iter,
                             };
 
-                            const ref = firestore.collection(collectionName).doc(id);
+                            const ref = firestore
+                                .collection(collectionName)
+                                .doc(id);
 
                             // FIXME: ok.. the LOCAL version is
                             //
@@ -262,47 +273,50 @@ SpectronRenderer.run(async (state) => {
                             // remote version and we do not, yet, have the
                             // latest copy.
 
-                            ref.onSnapshot({includeMetadataChanges: true}, snapshot => {
-                                console.log("FIXME999999: got per doc snapshot: ", snapshot);
-                                console.log("FIXME999999: : fromCache: ", snapshot.metadata.fromCache);
-                                console.log("FIXME999999: : hasPendingWrites: ", snapshot.metadata.hasPendingWrites);
+                            ref.onSnapshot(
+                                { includeMetadataChanges: true },
+                                snapshot => {
+                                    console.log(
+                                        'FIXME999999: got per doc snapshot: ',
+                                        snapshot
+                                    );
+                                    console.log(
+                                        'FIXME999999: : fromCache: ',
+                                        snapshot.metadata.fromCache
+                                    );
+                                    console.log(
+                                        'FIXME999999: : hasPendingWrites: ',
+                                        snapshot.metadata.hasPendingWrites
+                                    );
 
-                                const metadataTrace: MetadataTrace = {
-                                    id: snapshot.id,
-                                    fromCache: snapshot.metadata.fromCache,
-                                    hasPendingWrites: snapshot.metadata.hasPendingWrites,
-                                    doc: snapshot.data(),
-                                    snapshotVersion: snapshotVersion++
-                                };
+                                    const metadataTrace: MetadataTrace = {
+                                        id: snapshot.id,
+                                        fromCache: snapshot.metadata.fromCache,
+                                        hasPendingWrites:
+                                            snapshot.metadata.hasPendingWrites,
+                                        doc: snapshot.data(),
+                                        snapshotVersion: snapshotVersion++,
+                                    };
 
-                                // console.log("FIXME33333333333333########33333333:
-                                //  " + metadataTrace.snapshotVersion)
+                                    // console.log("FIXME33333333333333########33333333:
+                                    //  " + metadataTrace.snapshotVersion)
 
-                                perDocMetadataTraces.push(metadataTrace);
-
-                            });
+                                    perDocMetadataTraces.push(metadataTrace);
+                                }
+                            );
 
                             await ref.set(doc);
-
                         }
-
                     }
-
                 } else {
-                    console.log("Skipping writes");
+                    console.log('Skipping writes');
                 }
-
 
                 await Promises.waitFor(5000);
 
-                console.log("metadataTraces: ", metadataTraces);
-                console.log("perDocMetadataTraces: ", perDocMetadataTraces);
-
+                console.log('metadataTraces: ', metadataTraces);
+                console.log('perDocMetadataTraces: ', perDocMetadataTraces);
             });
-
         });
-
-
     });
-
 });

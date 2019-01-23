@@ -1,61 +1,74 @@
-import {DocumentReadyStates, MockReadyStateChanger, ReadyStateResolution} from './DocumentReadyStates';
-import {JSDOM} from 'jsdom';
-import {assert} from 'chai';
+import {
+    DocumentReadyStates,
+    MockReadyStateChanger,
+    ReadyStateResolution,
+} from './DocumentReadyStates';
+import { JSDOM } from 'jsdom';
+import { assert } from 'chai';
 
 describe('DocumentReadyStates', function() {
-
     describe('waitForChanger', function() {
+        const jsdom = new JSDOM();
 
-        let jsdom = new JSDOM();
+        const doc = jsdom.window.document;
 
-        let doc = jsdom.window.document;
+        it('basic via event', async function() {
+            const mockReadyStateChanger = new MockReadyStateChanger('loading');
 
-        it("basic via event", async function () {
-
-            let mockReadyStateChanger = new MockReadyStateChanger('loading');
-
-            let result = DocumentReadyStates.waitForChanger(doc, 'interactive', mockReadyStateChanger);
+            const result = DocumentReadyStates.waitForChanger(
+                doc,
+                'interactive',
+                mockReadyStateChanger
+            );
 
             mockReadyStateChanger.resolve();
 
             assert.equal(await result, ReadyStateResolution.EVENT);
-
         });
 
-        it("basic via direct", async function () {
+        it('basic via direct', async function() {
+            const mockReadyStateChanger = new MockReadyStateChanger('loading');
 
-            let mockReadyStateChanger = new MockReadyStateChanger('loading');
-
-            let result = DocumentReadyStates.waitForChanger(doc, 'loading', mockReadyStateChanger);
+            const result = DocumentReadyStates.waitForChanger(
+                doc,
+                'loading',
+                mockReadyStateChanger
+            );
 
             assert.equal(await result, ReadyStateResolution.DIRECT);
-
         });
 
-        it("to via direct", async function () {
+        it('to via direct', async function() {
+            const mockReadyStateChanger = new MockReadyStateChanger('loading');
 
-            let mockReadyStateChanger = new MockReadyStateChanger('loading');
-
-            let result = DocumentReadyStates.waitForChanger(doc, 'complete', mockReadyStateChanger);
+            const result = DocumentReadyStates.waitForChanger(
+                doc,
+                'complete',
+                mockReadyStateChanger
+            );
             mockReadyStateChanger.resolve();
             mockReadyStateChanger.resolve();
 
             assert.equal(await result, ReadyStateResolution.EVENT);
-
         });
-
     });
 
     describe('meetsRequiredState', function() {
-
-        it("basic", function () {
-            assert.equal(DocumentReadyStates.meetsRequiredState('interactive', 'interactive'), true);
+        it('basic', function() {
+            assert.equal(
+                DocumentReadyStates.meetsRequiredState(
+                    'interactive',
+                    'interactive'
+                ),
+                true
+            );
         });
 
-        it("full", function () {
-            assert.equal(DocumentReadyStates.meetsRequiredState('loading', 'complete'), true);
+        it('full', function() {
+            assert.equal(
+                DocumentReadyStates.meetsRequiredState('loading', 'complete'),
+                true
+            );
         });
-
     });
-
 });

@@ -1,26 +1,21 @@
-import {Preconditions} from '../Preconditions';
-import {Optional} from './ts/Optional';
+import { Preconditions } from '../Preconditions';
+import { Optional } from './ts/Optional';
 
 export class Arrays {
-
     public static first<T>(values: ReadonlyArray<T>): T | undefined {
-
         if (values.length === 0) {
             return undefined;
         }
 
         return values[0];
-
     }
 
     public static last<T>(values: ReadonlyArray<T>): T | undefined {
-
         if (values.length === 0) {
             return undefined;
         }
 
         return values[values.length - 1];
-
     }
 
     /**
@@ -28,7 +23,6 @@ export class Arrays {
      * @param values
      */
     public static sample<T>(values: T[], count: number) {
-
         if (count === 0) {
             return [];
         }
@@ -47,43 +41,40 @@ export class Arrays {
         }
 
         return result;
-
     }
 
     /**
      * Convert an array to a dictionary.
      */
-    public static toDict(val: {} | any[]): {[key: string]: any} {
-
-        const isObject = typeof val === "object";
+    public static toDict(val: {} | any[]): { [key: string]: any } {
+        const isObject = typeof val === 'object';
         const isArray = val instanceof Array;
 
-        if (! isObject && ! isArray) {
+        if (!isObject && !isArray) {
             // only needed if we're called from JS.  Otherwise the compiler
             // will check the type.
-            throw new Error("Neither an object or an array.");
+            throw new Error('Neither an object or an array.');
         }
 
-        if(isObject && ! isArray) {
+        if (isObject && !isArray) {
             // already done as this is a dictionary though we might consider
             // making this a
             return val;
         }
 
-        if (! isArray) {
-            throw new Error("Not an array");
+        if (!isArray) {
+            throw new Error('Not an array');
         }
 
-        let result: {[key: string]: any} = {};
+        const result: { [key: string]: any } = {};
 
-        let arrayVal: any[] = <any[]>val;
+        const arrayVal: any[] = <any[]>val;
 
-        for(let idx = 0; idx < arrayVal.length; ++idx) {
+        for (let idx = 0; idx < arrayVal.length; ++idx) {
             result[idx] = arrayVal[idx];
         }
 
         return result;
-
     }
 
     /**
@@ -95,8 +86,7 @@ export class Arrays {
      * inside an iterative algorithm
      */
     public static createSiblings<T>(arrayLikeObject: T[]) {
-
-        Preconditions.assertNotNull(arrayLikeObject, "arrayLikeObject");
+        Preconditions.assertNotNull(arrayLikeObject, 'arrayLikeObject');
 
         /**
          * {Array<ArrayPosition>}
@@ -105,17 +95,16 @@ export class Arrays {
         const result = [];
 
         for (let idx = 0; idx < arrayLikeObject.length; ++idx) {
-
-            result.push(new ArrayPosition<T>(
-                Optional.of(arrayLikeObject[idx-1]).getOrUndefined(),
-                arrayLikeObject[idx],
-                Optional.of(arrayLikeObject[idx+1]).getOrUndefined()
-            ));
-
+            result.push(
+                new ArrayPosition<T>(
+                    Optional.of(arrayLikeObject[idx - 1]).getOrUndefined(),
+                    arrayLikeObject[idx],
+                    Optional.of(arrayLikeObject[idx + 1]).getOrUndefined()
+                )
+            );
         }
 
         return result;
-
     }
 
     /**
@@ -130,20 +119,17 @@ export class Arrays {
      *
      */
     public static createBatches<T>(input: T[], batchSize: number): T[][] {
-
         const result: T[][] = [];
 
         let batch: T[] = [];
 
         input.forEach(current => {
-
             if (batch.length === batchSize) {
                 result.push(batch);
                 batch = [];
             }
 
             batch.push(current);
-
         });
 
         if (batch.length > 0) {
@@ -151,18 +137,18 @@ export class Arrays {
         }
 
         return result;
-
     }
 
     /**
      * Like forEach but sequentially executes each function.
      */
-    public static async asyncForEach<T>(items: T[], callback: AsyncCallback<T>) {
-
+    public static async asyncForEach<T>(
+        items: T[],
+        callback: AsyncCallback<T>
+    ) {
         for (const item of items) {
             await callback(item);
         }
-
     }
 
     /**
@@ -171,7 +157,6 @@ export class Arrays {
      * @param input
      */
     public static shuffle<T>(...input: T[]): T[] {
-
         const arr = Object.assign([], input);
 
         // noinspection TsLint
@@ -184,7 +169,6 @@ export class Arrays {
         }
 
         return arr;
-
     }
 
     /**
@@ -192,7 +176,6 @@ export class Arrays {
      * @param input
      */
     public static head<T>(input: ReadonlyArray<T>, limit: number): T[] {
-
         // adjust the limit so we never fetch too many values.
         limit = Math.min(limit, input.length);
 
@@ -203,14 +186,10 @@ export class Arrays {
         }
 
         return result;
-
     }
-
 }
 
-export interface AsyncCallback<T> {
-    (current: T): Promise<void>;
-}
+export type AsyncCallback<T> = (current: T) => Promise<void>;
 
 /**
  * Represents a 'position' object for createSiblings() that has a curr
@@ -219,7 +198,6 @@ export interface AsyncCallback<T> {
  * previous and future states.
  */
 class ArrayPosition<T> {
-
     public readonly prev?: T;
 
     public readonly curr: T;
@@ -231,5 +209,4 @@ class ArrayPosition<T> {
         this.curr = curr;
         this.next = next;
     }
-
 }

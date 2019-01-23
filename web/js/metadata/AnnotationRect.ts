@@ -1,9 +1,14 @@
-import {Preconditions} from '../Preconditions';
-import {Dimensions} from '../util/Dimensions';
-import {Interval} from '../math/Interval';
-import {Rects} from '../Rects';
+import { Preconditions } from '../Preconditions';
+import { Dimensions } from '../util/Dimensions';
+import { Interval } from '../math/Interval';
+import { Rects } from '../Rects';
 
-const ENTIRE_PAGE = Rects.createFromBasicRect({ left: 0, top: 0, width: 100, height: 100});
+const ENTIRE_PAGE = Rects.createFromBasicRect({
+    left: 0,
+    top: 0,
+    width: 100,
+    height: 100,
+});
 
 /**
  * A AnnotationRect is a basic Rect for representing an annotation on a page.
@@ -41,7 +46,6 @@ const ENTIRE_PAGE = Rects.createFromBasicRect({ left: 0, top: 0, width: 100, hei
  *
  */
 export class AnnotationRect {
-
     /**
      * @type {number}
      */
@@ -63,7 +67,6 @@ export class AnnotationRect {
     public height: number;
 
     constructor(obj: any) {
-
         this.left = obj.left;
         this.top = obj.top;
         this.width = obj.width;
@@ -72,7 +75,6 @@ export class AnnotationRect {
         Object.assign(this, obj);
 
         this._validate();
-
     }
 
     /**
@@ -81,16 +83,14 @@ export class AnnotationRect {
      *
      */
     private _validate() {
-
         const interval = new Interval(0, 100);
 
         const assertInterval = (value: number) => interval.containsPoint(value);
 
-        Preconditions.assert(this.top, assertInterval, "top");
-        Preconditions.assert(this.left, assertInterval, "left");
-        Preconditions.assert(this.width, assertInterval, "width");
-        Preconditions.assert(this.height, assertInterval, "height");
-
+        Preconditions.assert(this.top, assertInterval, 'top');
+        Preconditions.assert(this.left, assertInterval, 'left');
+        Preconditions.assert(this.width, assertInterval, 'width');
+        Preconditions.assert(this.height, assertInterval, 'height');
     }
 
     /**
@@ -106,9 +106,8 @@ export class AnnotationRect {
      *
      * @return {Rect}
      */
-    toFractionalRect() {
-
-        let result = {
+    public toFractionalRect() {
+        const result = {
             left: this.left / 100,
             top: this.top / 100,
             width: this.width / 100,
@@ -116,7 +115,6 @@ export class AnnotationRect {
         };
 
         return Rects.createFromBasicRect(result);
-
     }
 
     /**
@@ -124,19 +122,16 @@ export class AnnotationRect {
      *
      * @return {Rect}
      */
-    toDimensions(dimensions: Dimensions) {
+    public toDimensions(dimensions: Dimensions) {
+        Preconditions.assertNotNull(dimensions, 'dimensions');
 
-        Preconditions.assertNotNull(dimensions, "dimensions");
-
-        let fractionalRect = this.toFractionalRect();
+        const fractionalRect = this.toFractionalRect();
 
         return Rects.createFromBasicRect({
             left: fractionalRect.left * dimensions.width,
             width: fractionalRect.width * dimensions.width,
             top: fractionalRect.top * dimensions.height,
             height: fractionalRect.height * dimensions.height,
-        })
-
+        });
     }
-
 }

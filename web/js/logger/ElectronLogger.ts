@@ -1,16 +1,15 @@
 /**
  * Simple logger that just writes to the console.
  */
-import {ILogger} from './ILogger';
-import {Files} from '../util/Files';
-import {ElectronContextTypes} from '../electron/context/ElectronContextTypes';
-import {ElectronContextType} from '../electron/context/ElectronContextType';
-import {Directories} from '../datastore/Directories';
+import { ILogger } from './ILogger';
+import { Files } from '../util/Files';
+import { ElectronContextTypes } from '../electron/context/ElectronContextTypes';
+import { ElectronContextType } from '../electron/context/ElectronContextType';
+import { Directories } from '../datastore/Directories';
 
 const delegate = require('electron-log');
 
 class ElectronLogger implements ILogger {
-
     public readonly name: string = 'electron-logger';
 
     public notice(msg: string, ...args: any[]) {
@@ -40,38 +39,38 @@ class ElectronLogger implements ILogger {
     public async sync(): Promise<void> {
         // noop
     }
-
 }
 
 export class ElectronLoggers {
-
     public static create() {
-
         const directories = new Directories();
 
         if (ElectronContextTypes.create() === ElectronContextType.MAIN) {
-
             // *** configure console
-            delegate.transports.console.level = "info";
-            delegate.transports.console.format = "[{y}-{m}-{d} {h}:{i}:{s}.{ms} {z}] [{level}] {text}";
+            delegate.transports.console.level = 'info';
+            delegate.transports.console.format =
+                '[{y}-{m}-{d} {h}:{i}:{s}.{ms} {z}] [{level}] {text}';
 
             // *** configure file
 
             // set the directory name properly
             delegate.transports.file.file = `${directories.logsDir}/polar.log`;
-            delegate.transports.file.format = "[{y}-{m}-{d} {h}:{i}:{s}.{ms} {z}] [{level}] {text}";
+            delegate.transports.file.format =
+                '[{y}-{m}-{d} {h}:{i}:{s}.{ms} {z}] [{level}] {text}';
 
-            delegate.transports.file.level = "info";
-            delegate.transports.file.appName = "polar";
+            delegate.transports.file.level = 'info';
+            delegate.transports.file.appName = 'polar';
 
-            console.log("Configured main electron logger writing to: " + directories.logsDir);
-
+            console.log(
+                'Configured main electron logger writing to: ' +
+                    directories.logsDir
+            );
         } else {
-            console.log("Skipping ElectronLogger initialization (running in renderer)");
+            console.log(
+                'Skipping ElectronLogger initialization (running in renderer)'
+            );
         }
 
         return new ElectronLogger();
-
     }
-
 }

@@ -1,7 +1,5 @@
-import {AnnotationEvent} from './AnnotationEvent';
+import { AnnotationEvent } from './AnnotationEvent';
 
-export interface AnnotationEventListener {
-
-    // noinspection TsLint
-    (annotationEvent: AnnotationEvent): void;
-}
+export type AnnotationEventListener = (
+    annotationEvent: AnnotationEvent
+) => void;

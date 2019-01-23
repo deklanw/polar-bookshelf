@@ -1,7 +1,6 @@
-import {Preconditions} from '../../../Preconditions';
+import { Preconditions } from '../../../Preconditions';
 
 export class TextNodes {
-
     /**
      * Create a Range around this textNode so that we can compute metadata like
      * the clientRects which normally can't be determined from a TextNode.
@@ -11,11 +10,14 @@ export class TextNodes {
      * @param length
      * @return {Range}
      */
-    public static getRange(textNode: Node, offset: number = 0, length?: number) {
+    public static getRange(
+        textNode: Node,
+        offset: number = 0,
+        length?: number
+    ) {
+        Preconditions.assertPresent(textNode, 'textNode');
 
-        Preconditions.assertPresent(textNode, "textNode");
-
-        if (! length) {
+        if (!length) {
             length = textNode.textContent!.length;
         }
 
@@ -25,7 +27,6 @@ export class TextNodes {
         range.setEnd(textNode, length);
 
         return range;
-
     }
 
     // /**
@@ -37,5 +38,4 @@ export class TextNodes {
     // static getClientRects(textNode, offset, length) {
     //     return range.getClientRects();
     // }
-
 }

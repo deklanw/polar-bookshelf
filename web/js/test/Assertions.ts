@@ -1,5 +1,5 @@
-const chai = require("chai");
-const chaiDiff = require("chai-diff");
+const chai = require('chai');
+const chaiDiff = require('chai-diff');
 
 const assert = chai.assert;
 const expect = chai.expect;
@@ -8,15 +8,14 @@ chai.config.truncateThreshold = 0;
 chai.use(chaiDiff);
 
 export function assertJSON(actual: any, expected: any, message?: string) {
-
     // first convert both to JSON if necessary.
     actual = toJSON(actual);
     expected = toJSON(expected);
 
-    if ( actual !== expected) {
-        console.error("BEGIN ACTUAL ==========");
+    if (actual !== expected) {
+        console.error('BEGIN ACTUAL ==========');
         console.error(actual);
-        console.error("END ACTUAL   ==========");
+        console.error('END ACTUAL   ==========');
     }
 
     try {
@@ -25,12 +24,10 @@ export function assertJSON(actual: any, expected: any, message?: string) {
         console.error(e.message);
         throw e;
     }
-
 }
 
 export function toJSON(obj: any): string {
-
-    if (typeof obj === "string") {
+    if (typeof obj === 'string') {
         // first parse it as as JSON into an object so it's serialized using
         // the same canonical function below.
         obj = JSON.parse(obj);
@@ -47,16 +44,13 @@ export function toJSON(obj: any): string {
     // also accept an array of strings.
 
     const replacer = (key: any, value: any) => {
-
         // handle set replacement...
         if (typeof value === 'object' && value instanceof Set) {
             return [...value];
         }
 
         return value;
-
     };
 
-    return JSON.stringify(obj, replacer, "  ");
-
+    return JSON.stringify(obj, replacer, '  ');
 }

@@ -1,5 +1,5 @@
-import {Objects} from "../util/Objects";
-import {Preconditions} from "../Preconditions";
+import { Objects } from '../util/Objects';
+import { Preconditions } from '../Preconditions';
 
 /**
  * A defined archetype for creating a flashcard.  These provide a collection of
@@ -8,7 +8,6 @@ import {Preconditions} from "../Preconditions";
  * @type {FlashcardArchetype}
  */
 export class FlashcardArchetype {
-
     /**
      * The unique ID of this archetype.
      */
@@ -24,22 +23,19 @@ export class FlashcardArchetype {
      */
     public readonly description: string;
 
-    public readonly fields: {[key: string]: string};
+    public readonly fields: { [key: string]: string };
 
     constructor(opts: any) {
-
         opts = Objects.defaults(opts, {
-            description: "",
+            description: '',
         });
 
-        this.id = Preconditions.assertNotNull(opts.id, "id");
+        this.id = Preconditions.assertNotNull(opts.id, 'id');
 
-        this.name = Preconditions.assertNotNull(opts.name, "name");
+        this.name = Preconditions.assertNotNull(opts.name, 'name');
 
         this.description = opts.description;
 
         this.fields = opts.fields;
-
     }
-
 }

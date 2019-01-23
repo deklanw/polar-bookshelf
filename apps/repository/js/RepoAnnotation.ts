@@ -2,17 +2,16 @@
  * Just like a DocDetail or DocInfo but designed to be used for in the UI so we
  * replace missing titles with Untitled and define other default values.
  */
-import {IDocInfo} from '../../../web/js/metadata/DocInfo';
-import {ISODateTimeString} from '../../../web/js/metadata/ISODateTimeStrings';
-import {Tag} from '../../../web/js/tags/Tag';
-import {Hashcode} from '../../../web/js/metadata/Hashcode';
-import {AnnotationType} from '../../../web/js/metadata/AnnotationType';
-import {HighlightColor} from '../../../web/js/metadata/BaseHighlight';
+import { IDocInfo } from '../../../web/js/metadata/DocInfo';
+import { ISODateTimeString } from '../../../web/js/metadata/ISODateTimeStrings';
+import { Tag } from '../../../web/js/tags/Tag';
+import { Hashcode } from '../../../web/js/metadata/Hashcode';
+import { AnnotationType } from '../../../web/js/metadata/AnnotationType';
+import { HighlightColor } from '../../../web/js/metadata/BaseHighlight';
 
 // FIXME: a lot of duplication here between DocAnnotations DocAnnotation
 
 export interface RepoAnnotation {
-
     /**
      * The document fingerprint this annotation belongs to.
      */
@@ -26,7 +25,7 @@ export interface RepoAnnotation {
 
     created: ISODateTimeString;
 
-    tags?: Readonly<{[id: string]: Tag}>;
+    tags?: Readonly<{ [id: string]: Tag }>;
 
     /**
      * Extended metadata specific to each annotation type.
@@ -37,7 +36,6 @@ export interface RepoAnnotation {
      * The original DocInfo used to construct this RepoDocInfo.
      */
     docInfo: IDocInfo;
-
 }
 
 /**

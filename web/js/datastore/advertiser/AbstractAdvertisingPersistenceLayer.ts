@@ -1,29 +1,37 @@
-import {ListenablePersistenceLayer} from '../ListenablePersistenceLayer';
-import {SimpleReactor} from '../../reactor/SimpleReactor';
-import {PersistenceLayerEvent} from '../PersistenceLayerEvent';
-import {PersistenceLayerListener} from '../PersistenceLayerListener';
-import {PersistenceLayer} from '../PersistenceLayer';
-import {DocMeta} from '../../metadata/DocMeta';
-import {DocMetaFileRef, DocMetaRef} from '../DocMetaRef';
-import {DeleteResult, DocMetaSnapshotEvent, FileRef,
-        DocMetaSnapshotEventListener, SnapshotResult,
-        ErrorListener,
-    Datastore} from '../Datastore';
-import {PersistenceEventType} from '../PersistenceEventType';
-import {Backend} from '../Backend';
-import {DatastoreFile} from '../DatastoreFile';
-import {FileMeta} from '../Datastore';
-import {Optional} from '../../util/ts/Optional';
-import {DocInfo} from '../../metadata/DocInfo';
-import {DatastoreMutation, DefaultDatastoreMutation} from '../DatastoreMutation';
-import {NULL_FUNCTION} from '../../util/Functions';
-import {Logger} from '../../logger/Logger';
-import {Releaseable} from '../../reactor/EventListener';
+import { ListenablePersistenceLayer } from '../ListenablePersistenceLayer';
+import { SimpleReactor } from '../../reactor/SimpleReactor';
+import { PersistenceLayerEvent } from '../PersistenceLayerEvent';
+import { PersistenceLayerListener } from '../PersistenceLayerListener';
+import { PersistenceLayer } from '../PersistenceLayer';
+import { DocMeta } from '../../metadata/DocMeta';
+import { DocMetaFileRef, DocMetaRef } from '../DocMetaRef';
+import {
+    DeleteResult,
+    DocMetaSnapshotEvent,
+    FileRef,
+    DocMetaSnapshotEventListener,
+    SnapshotResult,
+    ErrorListener,
+    Datastore,
+} from '../Datastore';
+import { PersistenceEventType } from '../PersistenceEventType';
+import { Backend } from '../Backend';
+import { DatastoreFile } from '../DatastoreFile';
+import { FileMeta } from '../Datastore';
+import { Optional } from '../../util/ts/Optional';
+import { DocInfo } from '../../metadata/DocInfo';
+import {
+    DatastoreMutation,
+    DefaultDatastoreMutation,
+} from '../DatastoreMutation';
+import { NULL_FUNCTION } from '../../util/Functions';
+import { Logger } from '../../logger/Logger';
+import { Releaseable } from '../../reactor/EventListener';
 
 const log = Logger.create();
 
-export abstract class AbstractAdvertisingPersistenceLayer implements ListenablePersistenceLayer {
-
+export abstract class AbstractAdvertisingPersistenceLayer
+    implements ListenablePersistenceLayer {
     public readonly datastore: Datastore;
 
     protected readonly reactor = new SimpleReactor<PersistenceLayerEvent>();
@@ -50,49 +58,67 @@ export abstract class AbstractAdvertisingPersistenceLayer implements ListenableP
         return this.reactor.addEventListener(listener);
     }
 
-    public addEventListenerForDoc(fingerprint: string, listener: PersistenceLayerListener): void {
-
-        this.addEventListener((event) => {
-
+    public addEventListenerForDoc(
+        fingerprint: string,
+        listener: PersistenceLayerListener
+    ): void {
+        this.addEventListener(event => {
             if (fingerprint === event.docInfo.fingerprint) {
                 listener(event);
             }
-
         });
-
     }
 
-    public async writeDocMeta(docMeta: DocMeta, datastoreMutation?: DatastoreMutation<DocInfo>): Promise<DocInfo> {
-
-        return this.handleWrite(docMeta, async () => await this.delegate.writeDocMeta(docMeta, datastoreMutation));
-
+    public async writeDocMeta(
+        docMeta: DocMeta,
+        datastoreMutation?: DatastoreMutation<DocInfo>
+    ): Promise<DocInfo> {
+        return this.handleWrite(
+            docMeta,
+            async () =>
+                await this.delegate.writeDocMeta(docMeta, datastoreMutation)
+        );
     }
 
-    public async write(fingerprint: string,
-                       docMeta: DocMeta,
-                       datastoreMutation: DatastoreMutation<DocInfo> = new DefaultDatastoreMutation()): Promise<DocInfo> {
-
-        return this.handleWrite(docMeta, async () => await this.delegate.write(fingerprint, docMeta, datastoreMutation));
-
+    public async write(
+        fingerprint: string,
+        docMeta: DocMeta,
+        datastoreMutation: DatastoreMutation<
+            DocInfo
+        > = new DefaultDatastoreMutation()
+    ): Promise<DocInfo> {
+        return this.handleWrite(
+            docMeta,
+            async () =>
+                await this.delegate.write(
+                    fingerprint,
+                    docMeta,
+                    datastoreMutation
+                )
+        );
     }
 
-    private async handleWrite(docMeta: DocMeta, handler: () => Promise<DocInfo>) {
-
+    private async handleWrite(
+        docMeta: DocMeta,
+        handler: () => Promise<DocInfo>
+    ) {
         const docInfo = await handler();
 
-        const eventType: PersistenceEventType
-            = this.contains(docMeta.docInfo.fingerprint) ? 'updated' : 'created';
+        const eventType: PersistenceEventType = this.contains(
+            docMeta.docInfo.fingerprint
+        )
+            ? 'updated'
+            : 'created';
 
         this.broadcastEvent({
             docInfo,
             docMetaRef: {
-                fingerprint: docMeta.docInfo.fingerprint
+                fingerprint: docMeta.docInfo.fingerprint,
             },
-            eventType
+            eventType,
         });
 
         return docInfo;
-
     }
 
     public async synchronizeDocs(...docMetaRefs: DocMetaRef[]): Promise<void> {
@@ -107,11 +133,11 @@ export abstract class AbstractAdvertisingPersistenceLayer implements ListenableP
         return this.delegate.getDocMetaFiles();
     }
 
-    public snapshot(listener: DocMetaSnapshotEventListener,
-                    errorListener: ErrorListener = NULL_FUNCTION): Promise<SnapshotResult> {
-
+    public snapshot(
+        listener: DocMetaSnapshotEventListener,
+        errorListener: ErrorListener = NULL_FUNCTION
+    ): Promise<SnapshotResult> {
         return this.delegate.snapshot(listener, errorListener);
-
     }
 
     public async createBackup(): Promise<void> {
@@ -119,15 +145,14 @@ export abstract class AbstractAdvertisingPersistenceLayer implements ListenableP
     }
 
     public delete(docMetaFileRef: DocMetaFileRef): Promise<DeleteResult> {
-
         const result = this.delegate.delete(docMetaFileRef);
 
         this.broadcastEvent({
             docInfo: docMetaFileRef.docInfo,
             docMetaRef: {
-                fingerprint: docMetaFileRef.fingerprint
+                fingerprint: docMetaFileRef.fingerprint,
             },
-            eventType: 'deleted'
+            eventType: 'deleted',
         });
 
         return result;
@@ -145,7 +170,12 @@ export abstract class AbstractAdvertisingPersistenceLayer implements ListenableP
         this.reactor.dispatchEvent(event);
     }
 
-    public writeFile(backend: Backend, ref: FileRef, data: Buffer | string, meta: FileMeta): Promise<DatastoreFile> {
+    public writeFile(
+        backend: Backend,
+        ref: FileRef,
+        data: Buffer | string,
+        meta: FileMeta
+    ): Promise<DatastoreFile> {
         return this.delegate.writeFile(backend, ref, data, meta);
     }
 
@@ -153,12 +183,19 @@ export abstract class AbstractAdvertisingPersistenceLayer implements ListenableP
         return this.delegate.containsFile(backend, ref);
     }
 
-    public getFile(backend: Backend, ref: FileRef): Promise<Optional<DatastoreFile>> {
+    public getFile(
+        backend: Backend,
+        ref: FileRef
+    ): Promise<Optional<DatastoreFile>> {
         return this.delegate.getFile(backend, ref);
     }
 
-    public addDocMetaSnapshotEventListener(docMetaSnapshotEventListener: DocMetaSnapshotEventListener): void {
-        this.delegate.addDocMetaSnapshotEventListener(docMetaSnapshotEventListener);
+    public addDocMetaSnapshotEventListener(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener
+    ): void {
+        this.delegate.addDocMetaSnapshotEventListener(
+            docMetaSnapshotEventListener
+        );
     }
 
     protected abstract broadcastEvent(event: PersistenceLayerEvent): void;
@@ -166,6 +203,4 @@ export abstract class AbstractAdvertisingPersistenceLayer implements ListenableP
     public async deactivate() {
         await this.delegate.deactivate();
     }
-
 }
-

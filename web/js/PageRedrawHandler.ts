@@ -6,34 +6,34 @@
  * @type {PageRedrawHandler}
  */
 export class PageRedrawHandler {
-
     private pageElement: HTMLElement;
 
     private listener: any;
 
     constructor(pageElement: HTMLElement) {
-
         this.pageElement = pageElement;
         this.listener = null;
-
     }
 
-    register(callback: (pageElement: HTMLElement) => void) {
-
+    public register(callback: (pageElement: HTMLElement) => void) {
         this.listener = (event: any) => {
-
-            if (event.target && event.target.className === "endOfContent") {
+            if (event.target && event.target.className === 'endOfContent') {
                 callback(this.pageElement);
             }
-
         };
 
-        this.pageElement.addEventListener('DOMNodeInserted', this.listener, false);
-
-    };
-
-    unregister() {
-        this.pageElement.removeEventListener('DOMNodeInserted', this.listener, false);
+        this.pageElement.addEventListener(
+            'DOMNodeInserted',
+            this.listener,
+            false
+        );
     }
 
+    public unregister() {
+        this.pageElement.removeEventListener(
+            'DOMNodeInserted',
+            this.listener,
+            false
+        );
+    }
 }

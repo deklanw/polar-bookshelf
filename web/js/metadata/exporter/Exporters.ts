@@ -1,15 +1,15 @@
-import {TextHighlight} from '../TextHighlight';
-import {AreaHighlight} from '../AreaHighlight';
-import {Flashcard} from '../Flashcard';
-import {Files} from '../../util/Files';
-import {WriteStream} from 'fs';
-import {Preconditions} from '../../Preconditions';
-import {AnnotationHolder} from '../AnnotationHolder';
-import {FileWriter} from './writers/FileWriter';
-import {MarkdownExporter} from './MarkdownExporter';
-import {JSONExporter} from './JSONExporter';
-import {DocMeta} from '../DocMeta';
-import {AnnotationHolders} from '../AnnotationHolders';
+import { TextHighlight } from '../TextHighlight';
+import { AreaHighlight } from '../AreaHighlight';
+import { Flashcard } from '../Flashcard';
+import { Files } from '../../util/Files';
+import { WriteStream } from 'fs';
+import { Preconditions } from '../../Preconditions';
+import { AnnotationHolder } from '../AnnotationHolder';
+import { FileWriter } from './writers/FileWriter';
+import { MarkdownExporter } from './MarkdownExporter';
+import { JSONExporter } from './JSONExporter';
+import { DocMeta } from '../DocMeta';
+import { AnnotationHolders } from '../AnnotationHolders';
 
 /**
  * Exporter provides a mechanism to write data from the internal Polar JSON
@@ -21,11 +21,11 @@ import {AnnotationHolders} from '../AnnotationHolders';
  *
  */
 export class Exporters {
-
-    public static async doExport(path: string,
-                                 format: ExportFormat,
-                                 docMeta: DocMeta): Promise<void> {
-
+    public static async doExport(
+        path: string,
+        format: ExportFormat,
+        docMeta: DocMeta
+    ): Promise<void> {
         const writer = new FileWriter(path);
 
         await writer.init();
@@ -35,21 +35,21 @@ export class Exporters {
 
         await exporter.init(writer);
 
-        const annotationHolders = [...AnnotationHolders.fromDocMeta(docMeta)]
-            .sort((a, b) => a.annotation.created.localeCompare(b.annotation.created));
+        const annotationHolders = [
+            ...AnnotationHolders.fromDocMeta(docMeta),
+        ].sort((a, b) =>
+            a.annotation.created.localeCompare(b.annotation.created)
+        );
 
         for (const annotationHolder of annotationHolders) {
             await exporter.write(annotationHolder);
         }
 
         await exporter.close();
-
     }
 
     private static toExporter(format: ExportFormat) {
-
         switch (format) {
-
             case 'markdown':
                 return new MarkdownExporter();
 
@@ -57,19 +57,15 @@ export class Exporters {
                 return new JSONExporter();
 
             case 'html':
-                throw new Error("not supported yet");
-
+                throw new Error('not supported yet');
         }
-
     }
-
 }
 
 /**
  *
  */
 export interface Exporter {
-
     readonly id: string;
 
     init(writer: Writable): Promise<void>;
@@ -77,13 +73,10 @@ export interface Exporter {
     write(exportable: AnnotationHolder): Promise<void>;
 
     close(err?: Error): Promise<void>;
-
 }
 
 export interface Writable {
-
     write(data: string): Promise<void>;
-
 }
 
 /**
@@ -99,7 +92,6 @@ export interface Writable {
  *
  */
 export interface Writer extends Writable {
-
     init(): Promise<void>;
 
     write(data: string): Promise<void>;
@@ -112,7 +104,6 @@ export interface Writer extends Writable {
      * @param err
      */
     close(err?: Error): Promise<void>;
-
 }
 
 /**

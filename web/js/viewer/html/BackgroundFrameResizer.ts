@@ -1,6 +1,6 @@
-import {Logger} from '../../logger/Logger';
-import {Preconditions} from '../../Preconditions';
-import {FrameResizer} from './FrameResizer';
+import { Logger } from '../../logger/Logger';
+import { Preconditions } from '../../Preconditions';
+import { FrameResizer } from './FrameResizer';
 
 const log = Logger.create();
 
@@ -16,7 +16,6 @@ const MAX_RESIZES = 25;
  * the document size so that the user never notices.
  */
 export class BackgroundFrameResizer {
-
     private readonly parent: HTMLElement;
     private readonly host: HTMLIFrameElement | Electron.WebviewTag;
 
@@ -27,25 +26,25 @@ export class BackgroundFrameResizer {
 
     private frameResizer: FrameResizer;
 
-    constructor(parent: HTMLElement, host: HTMLIFrameElement | Electron.WebviewTag) {
-
+    constructor(
+        parent: HTMLElement,
+        host: HTMLIFrameElement | Electron.WebviewTag
+    ) {
         this.parent = Preconditions.assertPresent(parent);
         this.host = Preconditions.assertPresent(host);
 
         this.frameResizer = new FrameResizer(parent, host);
-
     }
 
     public start() {
-
-        this.resizeParentInBackground()
-            .catch(err => log.error("Could not resize in background: ", err));
+        this.resizeParentInBackground().catch(err =>
+            log.error('Could not resize in background: ', err)
+        );
     }
 
     private async resizeParentInBackground() {
-
         if (this.resizes > MAX_RESIZES) {
-            log.info("Hit MAX_RESIZES: " + MAX_RESIZES);
+            log.info('Hit MAX_RESIZES: ' + MAX_RESIZES);
             await this.doBackgroundResize(true);
             return;
         } else {
@@ -53,7 +52,6 @@ export class BackgroundFrameResizer {
         }
 
         setTimeout(() => this.resizeParentInBackground(), this.timeoutInterval);
-
     }
 
     /**
@@ -64,11 +62,8 @@ export class BackgroundFrameResizer {
      * just force it one last time.
      */
     private async doBackgroundResize(force: boolean) {
-
         ++this.resizes;
 
         return this.frameResizer.resize(force);
-
     }
-
 }

@@ -7,7 +7,6 @@ const INITIAL_SIZES: number[] = [70, 30];
  * bars (one left, and one right).
  */
 export class Splitter {
-
     private readonly left: CSSSelector | HTMLElement;
     private readonly right: CSSSelector | HTMLElement;
 
@@ -16,10 +15,11 @@ export class Splitter {
 
     private sizes: number[];
 
-    constructor(left: CSSSelector | HTMLElement,
-                right: CSSSelector | HTMLElement,
-                sidebarSide: Side = 'right') {
-
+    constructor(
+        left: CSSSelector | HTMLElement,
+        right: CSSSelector | HTMLElement,
+        sidebarSide: Side = 'right'
+    ) {
         this.left = left;
         this.right = right;
         this.sidebarSide = sidebarSide;
@@ -27,25 +27,21 @@ export class Splitter {
         this.split = Split([this.left, this.right], {
             sizes: INITIAL_SIZES,
             minSize: 0,
-            gutterSize: 7
+            gutterSize: 7,
         });
 
         this.sizes = INITIAL_SIZES;
-
     }
 
     public toggle() {
-
         if (this.isCollapsed()) {
             this.expand();
         } else {
             this.collapse();
         }
-
     }
 
     public collapse() {
-
         // update the current sizes before we collapse.
         this.sizes = this.split.getSizes();
 
@@ -56,7 +52,6 @@ export class Splitter {
         if (this.sidebarSide === 'right') {
             this.split.collapse(1);
         }
-
     }
 
     public isCollapsed() {
@@ -65,9 +60,7 @@ export class Splitter {
 
     private expand() {
         this.split.setSizes(this.sizes);
-
     }
-
 }
 
 export type Side = 'left' | 'right';

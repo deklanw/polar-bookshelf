@@ -1,21 +1,37 @@
-import {Datastore, DatastoreConsistency, DatastoreID, DocMetaMutation, DocMetaSnapshotBatch, DocMetaSnapshotEvent, DocMetaSnapshotEventListener, ErrorListener, SnapshotProgress, SnapshotResult, SynchronizationEvent} from "./Datastore";
-import {Directories} from './Directories';
-import {DocMetaFileRef, DocMetaFileRefs} from './DocMetaRef';
-import {DatastoreMutation, DefaultDatastoreMutation} from './DatastoreMutation';
-import {DiskDeleteResult} from './DiskDatastore';
-import {NULL_FUNCTION} from '../util/Functions';
-import {Datastores} from './Datastores';
-import {IEventDispatcher, SimpleReactor} from '../reactor/SimpleReactor';
-import {ProgressTrackers} from "../util/ProgressTrackers";
-import {IDocInfo} from '../metadata/DocInfo';
-import {DocMetas} from '../metadata/DocMetas';
-import {AsyncProviders} from '../util/Providers';
+import {
+    Datastore,
+    DatastoreConsistency,
+    DatastoreID,
+    DocMetaMutation,
+    DocMetaSnapshotBatch,
+    DocMetaSnapshotEvent,
+    DocMetaSnapshotEventListener,
+    ErrorListener,
+    SnapshotProgress,
+    SnapshotResult,
+    SynchronizationEvent,
+} from './Datastore';
+import { Directories } from './Directories';
+import { DocMetaFileRef, DocMetaFileRefs } from './DocMetaRef';
+import {
+    DatastoreMutation,
+    DefaultDatastoreMutation,
+} from './DatastoreMutation';
+import { DiskDeleteResult } from './DiskDatastore';
+import { NULL_FUNCTION } from '../util/Functions';
+import { Datastores } from './Datastores';
+import { IEventDispatcher, SimpleReactor } from '../reactor/SimpleReactor';
+import { ProgressTrackers } from '../util/ProgressTrackers';
+import { IDocInfo } from '../metadata/DocInfo';
+import { DocMetas } from '../metadata/DocMetas';
+import { AsyncProviders } from '../util/Providers';
 
 /**
  */
 export class SnapshotManager {
-
-    private readonly docMetaSnapshotEventDispatcher: IEventDispatcher<DocMetaSnapshotEvent> = new SimpleReactor();
+    private readonly docMetaSnapshotEventDispatcher: IEventDispatcher<
+        DocMetaSnapshotEvent
+    > = new SimpleReactor();
 
     private readonly datastore: Datastore;
 
@@ -73,12 +89,15 @@ export class SnapshotManager {
     //
     // }
 
-    public addDocMetaSnapshotEventListener(docMetaSnapshotEventListener: DocMetaSnapshotEventListener) {
-        this.docMetaSnapshotEventDispatcher.addEventListener(docMetaSnapshotEventListener);
+    public addDocMetaSnapshotEventListener(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener
+    ) {
+        this.docMetaSnapshotEventDispatcher.addEventListener(
+            docMetaSnapshotEventListener
+        );
     }
 
     public stop() {
         this.docMetaSnapshotEventDispatcher.clear();
     }
-
 }

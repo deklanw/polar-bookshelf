@@ -1,60 +1,53 @@
-import {StreamProtocolCallback} from './StreamInterceptors';
+import { StreamProtocolCallback } from './StreamInterceptors';
 import InterceptStreamProtocolRequest = Electron.InterceptStreamProtocolRequest;
 
 export class Protocols {
-
     /**
      * Instead of callbacks uses a promise.
      */
-    public static async interceptBufferProtocol(protocol: Electron.Protocol,
-                                                scheme: string,
-                                                handler: any) {
-
+    public static async interceptBufferProtocol(
+        protocol: Electron.Protocol,
+        scheme: string,
+        handler: any
+    ) {
         return new Promise((resolve, reject) => {
-
-            protocol.interceptBufferProtocol(scheme, handler, (error) => {
-
+            protocol.interceptBufferProtocol(scheme, handler, error => {
                 if (error) {
                     reject(error);
                 }
 
                 resolve();
-
             });
-
         });
-
     }
 
     /**
      * Instead of callbacks uses a promise.
      */
-    public static async interceptStreamProtocol(protocol: Electron.Protocol,
-                                                scheme: string,
-                                                handler: StreamProtocolHandler) {
-
+    public static async interceptStreamProtocol(
+        protocol: Electron.Protocol,
+        scheme: string,
+        handler: StreamProtocolHandler
+    ) {
         return new Promise((resolve, reject) => {
+            protocol.interceptStreamProtocol(
+                scheme,
+                <any>handler,
+                (error: Error) => {
+                    if (error) {
+                        reject(error);
+                    }
 
-            protocol.interceptStreamProtocol(scheme, <any> handler, (error: Error) => {
-
-                if (error) {
-                    reject(error);
+                    resolve();
                 }
-
-                resolve();
-
-            });
-
+            );
         });
-
     }
-
 
     /**
      * Parse the content-type header and include information about the charset too.
      */
     public static parseContentType(contentType: string | string[]) {
-
         // https://www.w3schools.com/html/html_charset.asp
 
         // html4 is ISO-8859-1 and HTML5 is UTF-8
@@ -63,7 +56,7 @@ export class Protocols {
 
         // text/html; charset=utf-8
 
-        let mimeType = "text/html";
+        let mimeType = 'text/html';
 
         let value: string;
 
@@ -76,7 +69,7 @@ export class Protocols {
             value = contentType;
         }
 
-        if (! value) {
+        if (!value) {
             value = mimeType;
         }
 
@@ -84,25 +77,23 @@ export class Protocols {
         let match;
 
         // noinspection TsLint
-        if (match = value.match("^([a-zA-Z]+/[a-zA-Z+]+)")) {
+        if ((match = value.match('^([a-zA-Z]+/[a-zA-Z+]+)'))) {
             mimeType = match[1];
         }
 
         // noinspection TsLint
-        if (match = value.match("; charset=([^ ;]+)")) {
+        if ((match = value.match('; charset=([^ ;]+)'))) {
             charset = match[1];
         }
 
         return {
             mimeType,
-            charset
+            charset,
         };
-
     }
-
 }
 
-
-export interface StreamProtocolHandler {
-    (request: InterceptStreamProtocolRequest, callback: StreamProtocolCallback): void;
-}
+export type StreamProtocolHandler = (
+    request: InterceptStreamProtocolRequest,
+    callback: StreamProtocolCallback
+) => void;

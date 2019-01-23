@@ -1,19 +1,23 @@
-import {Point} from '../../../Point';
-import {Rect} from '../../../Rect';
-import {Objects} from '../../../util/Objects';
-import {Rects} from '../../../Rects';
-import {RectText} from './RectText';
-import {TextNodes} from '../selection/TextNodes';
+import { Point } from '../../../Point';
+import { Rect } from '../../../Rect';
+import { Objects } from '../../../util/Objects';
+import { Rects } from '../../../Rects';
+import { RectText } from './RectText';
+import { TextNodes } from '../selection/TextNodes';
 
 export class RectTexts {
-
     /**
      *
      * @param textNodes
      */
     public static toRectTexts(textNodes: Node[]) {
-        return textNodes.map(RectTexts.toRectText)
-                        .filter(current => current.boundingPageRect.width > 0 && current.boundingPageRect.height > 0);
+        return textNodes
+            .map(RectTexts.toRectText)
+            .filter(
+                current =>
+                    current.boundingPageRect.width > 0 &&
+                    current.boundingPageRect.height > 0
+            );
     }
 
     /**
@@ -24,7 +28,6 @@ export class RectTexts {
      * @return {RectText}
      */
     public static toRectText(textNode: Node) {
-
         const range = TextNodes.getRange(textNode);
 
         // FIXME: this is wrong and we are using teh wrong scroll position.
@@ -33,7 +36,7 @@ export class RectTexts {
 
         const scrollPoint = new Point({
             x: win.scrollX,
-            y: win.scrollY
+            y: win.scrollY,
         });
 
         const boundingClientRect = range.getBoundingClientRect();
@@ -47,9 +50,7 @@ export class RectTexts {
             clientRects: range.getClientRects(),
             boundingClientRect,
             boundingPageRect,
-            text: textNode.textContent
+            text: textNode.textContent,
         });
-
     }
-
 }

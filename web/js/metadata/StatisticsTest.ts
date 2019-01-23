@@ -1,17 +1,14 @@
-import {assert} from 'chai';
-import {assertJSON} from '../test/Assertions';
-import {PagemarkRects} from './PagemarkRects';
-import {Rects} from '../Rects';
-import {MockDocMetas} from './DocMetas';
-import {TestingTime} from '../test/TestingTime';
-import {Statistics} from './Statistics';
+import { assert } from 'chai';
+import { assertJSON } from '../test/Assertions';
+import { PagemarkRects } from './PagemarkRects';
+import { Rects } from '../Rects';
+import { MockDocMetas } from './DocMetas';
+import { TestingTime } from '../test/TestingTime';
+import { Statistics } from './Statistics';
 
 describe('Statistics', function() {
-
     describe('computeDocumentsAddedRate', function() {
-
-        it("basic", function() {
-
+        it('basic', function() {
             TestingTime.freeze();
 
             const docInfos = [];
@@ -32,21 +29,18 @@ describe('Statistics', function() {
 
             assertJSON(dateStats, [
                 {
-                    "date": "2012-03-02",
-                    "value": 3
+                    date: '2012-03-02',
+                    value: 3,
                 },
                 {
-                    "date": "2012-03-03",
-                    "value": 2
+                    date: '2012-03-03',
+                    value: 2,
                 },
                 {
-                    "date": "2012-03-04",
-                    "value": 2
-                }
+                    date: '2012-03-04',
+                    value: 2,
+                },
             ]);
-
         });
-
     });
-
 });

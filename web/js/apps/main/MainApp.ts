@@ -1,33 +1,33 @@
-import {app, BrowserWindow, session} from 'electron';
-import {WebserverConfig} from '../../backend/webserver/WebserverConfig';
-import {FileRegistry} from '../../backend/webserver/FileRegistry';
-import {ProxyServerConfig} from '../../backend/proxyserver/ProxyServerConfig';
-import {CacheRegistry} from '../../backend/proxyserver/CacheRegistry';
-import {Directories} from '../../datastore/Directories';
-import {CaptureController} from '../../capture/controller/CaptureController';
-import {DialogWindowService} from '../../ui/dialog_window/DialogWindowService';
-import {DefaultFileLoader} from './loaders/DefaultFileLoader';
-import {Webserver} from '../../backend/webserver/Webserver';
-import {AnalyticsFileLoader} from './loaders/AnalyticsFileLoader';
-import {MainAppController} from './MainAppController';
-import {MainAppMenu} from './MainAppMenu';
-import {Cmdline} from '../../electron/Cmdline';
-import {Logger} from '../../logger/Logger';
-import {Datastore} from '../../datastore/Datastore';
-import {ScreenshotService} from '../../screenshots/ScreenshotService';
-import {MainAppService} from './ipc/MainAppService';
-import {AppLauncher} from './AppLauncher';
-import {DocInfoBroadcasterService} from '../../datastore/advertiser/DocInfoBroadcasterService';
-import {CachingStreamInterceptorService} from '../../backend/interceptor/CachingStreamInterceptorService';
-import {GA} from "../../ga/GA";
-import {Version} from "../../util/Version";
-import {Files} from '../../util/Files';
-import {WebserverCerts} from '../../backend/webserver/WebserverCerts';
-import process from "process";
-import {AppPath} from '../../electron/app_path/AppPath';
-import {MainAPI} from './MainAPI';
-import {MainAppExceptionHandlers} from './MainAppExceptionHandlers';
-import {FileImportClient} from '../repository/FileImportClient';
+import { app, BrowserWindow, session } from 'electron';
+import { WebserverConfig } from '../../backend/webserver/WebserverConfig';
+import { FileRegistry } from '../../backend/webserver/FileRegistry';
+import { ProxyServerConfig } from '../../backend/proxyserver/ProxyServerConfig';
+import { CacheRegistry } from '../../backend/proxyserver/CacheRegistry';
+import { Directories } from '../../datastore/Directories';
+import { CaptureController } from '../../capture/controller/CaptureController';
+import { DialogWindowService } from '../../ui/dialog_window/DialogWindowService';
+import { DefaultFileLoader } from './loaders/DefaultFileLoader';
+import { Webserver } from '../../backend/webserver/Webserver';
+import { AnalyticsFileLoader } from './loaders/AnalyticsFileLoader';
+import { MainAppController } from './MainAppController';
+import { MainAppMenu } from './MainAppMenu';
+import { Cmdline } from '../../electron/Cmdline';
+import { Logger } from '../../logger/Logger';
+import { Datastore } from '../../datastore/Datastore';
+import { ScreenshotService } from '../../screenshots/ScreenshotService';
+import { MainAppService } from './ipc/MainAppService';
+import { AppLauncher } from './AppLauncher';
+import { DocInfoBroadcasterService } from '../../datastore/advertiser/DocInfoBroadcasterService';
+import { CachingStreamInterceptorService } from '../../backend/interceptor/CachingStreamInterceptorService';
+import { GA } from '../../ga/GA';
+import { Version } from '../../util/Version';
+import { Files } from '../../util/Files';
+import { WebserverCerts } from '../../backend/webserver/WebserverCerts';
+import process from 'process';
+import { AppPath } from '../../electron/app_path/AppPath';
+import { MainAPI } from './MainAPI';
+import { MainAppExceptionHandlers } from './MainAppExceptionHandlers';
+import { FileImportClient } from '../repository/FileImportClient';
 
 declare var global: any;
 
@@ -40,7 +40,6 @@ const WEBSERVER_PORT = 8500;
 const PROXYSERVER_PORT = 8600;
 
 export class MainApp {
-
     private readonly datastore: Datastore;
 
     constructor(datastore: Datastore) {
@@ -48,7 +47,6 @@ export class MainApp {
     }
 
     public async start(): Promise<MainAppStarted> {
-
         MainAppExceptionHandlers.register();
 
         // share the disk datastore with the remote.
@@ -73,23 +71,26 @@ export class MainApp {
 
         const dialogWindowService = new DialogWindowService();
 
-        const defaultFileLoader = new DefaultFileLoader(fileRegistry, cacheRegistry);
+        const defaultFileLoader = new DefaultFileLoader(
+            fileRegistry,
+            cacheRegistry
+        );
 
         const screenshotService = new ScreenshotService();
         screenshotService.start();
 
         await directories.init();
 
-        log.info("Electron app path is: " + app.getAppPath());
+        log.info('Electron app path is: ' + app.getAppPath());
 
         // *** start the webserver
 
         const webserver = new Webserver(webserverConfig, fileRegistry);
         await webserver.start();
 
-        log.info("App loaded from: ", app.getAppPath());
-        log.info("Stash dir: ", directories.stashDir);
-        log.info("Logs dir: ", directories.logsDir);
+        log.info('App loaded from: ', app.getAppPath());
+        log.info('Stash dir: ', directories.stashDir);
+        log.info('Logs dir: ', directories.logsDir);
 
         // NOTE: removing the next three lines removes the colors in the toolbar.
         // const appIcon = new Tray(app_icon);
@@ -111,8 +112,10 @@ export class MainApp {
         //
         // });
 
-        const cacheInterceptorService =
-            new CachingStreamInterceptorService(cacheRegistry, mainSession.protocol);
+        const cacheInterceptorService = new CachingStreamInterceptorService(
+            cacheRegistry,
+            mainSession.protocol
+        );
 
         await cacheInterceptorService.start();
 
@@ -127,7 +130,7 @@ export class MainApp {
 
         await new DocInfoBroadcasterService().start();
 
-        log.info("Running with process.args: ", JSON.stringify(process.argv));
+        log.info('Running with process.args: ', JSON.stringify(process.argv));
 
         const mainAppController = new MainAppController(fileLoader, webserver);
 
@@ -148,104 +151,81 @@ export class MainApp {
         this.sendAnalytics();
 
         app.on('open-file', async (event, path) => {
-
-            log.info("Open file called for: ", path);
-            FileImportClient.send({files: [path]});
-
+            log.info('Open file called for: ', path);
+            FileImportClient.send({ files: [path] });
         });
 
         app.on('second-instance', async (event, commandLine) => {
-
-            log.info("Someone opened a second instance.");
+            log.info('Someone opened a second instance.');
 
             const fileArg = Cmdline.getDocArg(commandLine);
 
             if (fileArg) {
-
-                FileImportClient.send({files: [fileArg]});
-
+                FileImportClient.send({ files: [fileArg] });
             } else {
                 mainAppController.activateMainWindow();
             }
-
         });
 
         // quit when all windows are closed.
         app.on('window-all-closed', function() {
-
             // determine if we need to quit:
-            log.info("No windows left. Quitting app.");
+            log.info('No windows left. Quitting app.');
 
             const forcedExit = () => {
-
                 try {
-
-                    log.info("Forcing app quit...");
+                    log.info('Forcing app quit...');
                     app.quit();
-                    log.info("Forcing process exit...");
+                    log.info('Forcing process exit...');
                     process.exit();
-
                 } catch (e) {
-                    log.error("Unable to force exit: ", e);
+                    log.error('Unable to force exit: ', e);
                 }
-
             };
 
             const gracefulExit = () => {
-
                 try {
                     mainAppController.exitApp();
                 } catch (e) {
-                    log.error("Failed graceful exit: ", e);
+                    log.error('Failed graceful exit: ', e);
                     forcedExit();
-
                 }
-
             };
 
             gracefulExit();
-
-
         });
 
         app.on('activate', async function() {
-
             // On OS X it's common to re-create a window in the app when the
             // dock icon is clicked and there are no other windows open. The way
             // we handle this now is that if there are no windows open we re-create
             // the document repository so they can select one. Otherwise we just
             // re-focus the most recently used window.
 
-            const visibleWindows = BrowserWindow.getAllWindows()
-                .filter(current => current.isVisible());
+            const visibleWindows = BrowserWindow.getAllWindows().filter(
+                current => current.isVisible()
+            );
 
             if (visibleWindows.length === 0) {
-
-                AppLauncher.launchRepositoryApp()
-                    .catch(err => log.error("Could not launch repository app: ", err));
-
+                AppLauncher.launchRepositoryApp().catch(err =>
+                    log.error('Could not launch repository app: ', err)
+                );
             }
-
         });
 
-        return {mainWindow, mainAppController};
-
+        return { mainWindow, mainAppController };
     }
 
     private sendAnalytics() {
-
         // send off analytics so we know who's using the platform.
 
         const appAnalytics = GA.getAppAnalytics();
 
         appAnalytics.set('version', Version.get());
-
     }
-
 }
 
 export interface MainAppStarted {
     mainWindow: BrowserWindow;
     mainAppController: MainAppController;
 }
-

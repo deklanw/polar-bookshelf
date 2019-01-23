@@ -2,7 +2,6 @@
  * A tag like deck:foo
  */
 export interface TypedTag {
-
     /**
      */
     readonly name: string;
@@ -10,6 +9,4 @@ export interface TypedTag {
     /**
      */
     readonly value: string;
-
 }
-

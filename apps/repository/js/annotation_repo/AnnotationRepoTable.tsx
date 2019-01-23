@@ -1,28 +1,38 @@
 import * as React from 'react';
-import ReactTable from "react-table";
-import {Logger} from '../../../../web/js/logger/Logger';
-import {Tag} from '../../../../web/js/tags/Tag';
-import {Tags} from '../../../../web/js/tags/Tags';
-import {DateTimeTableCell} from '../DateTimeTableCell';
-import {IDocInfo} from '../../../../web/js/metadata/DocInfo';
-import {SyncBarProgress} from '../../../../web/js/ui/sync_bar/SyncBar';
-import {IEventDispatcher, SimpleReactor} from '../../../../web/js/reactor/SimpleReactor';
-import {PersistenceLayerManager} from '../../../../web/js/datastore/PersistenceLayerManager';
-import {RepoAnnotation} from '../RepoAnnotation';
-import {RepoDocMetaManager} from '../RepoDocMetaManager';
-import {RepoDocMetaLoader} from '../RepoDocMetaLoader';
-import {PersistenceLayerManagers} from '../../../../web/js/datastore/PersistenceLayerManagers';
-import {RepoDocMetaLoaders} from '../RepoDocMetaLoaders';
-import {ExtendedReactTable, IReactTableState} from '../util/ExtendedReactTable';
-import {AnnotationIcon} from '../../../../web/js/ui/standard_icons/AnnotationIcon';
+import ReactTable from 'react-table';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { Tag } from '../../../../web/js/tags/Tag';
+import { Tags } from '../../../../web/js/tags/Tags';
+import { DateTimeTableCell } from '../DateTimeTableCell';
+import { IDocInfo } from '../../../../web/js/metadata/DocInfo';
+import { SyncBarProgress } from '../../../../web/js/ui/sync_bar/SyncBar';
+import {
+    IEventDispatcher,
+    SimpleReactor,
+} from '../../../../web/js/reactor/SimpleReactor';
+import { PersistenceLayerManager } from '../../../../web/js/datastore/PersistenceLayerManager';
+import { RepoAnnotation } from '../RepoAnnotation';
+import { RepoDocMetaManager } from '../RepoDocMetaManager';
+import { RepoDocMetaLoader } from '../RepoDocMetaLoader';
+import { PersistenceLayerManagers } from '../../../../web/js/datastore/PersistenceLayerManagers';
+import { RepoDocMetaLoaders } from '../RepoDocMetaLoaders';
+import {
+    ExtendedReactTable,
+    IReactTableState,
+} from '../util/ExtendedReactTable';
+import { AnnotationIcon } from '../../../../web/js/ui/standard_icons/AnnotationIcon';
 
 const log = Logger.create();
 
-export default class AnnotationRepoTable extends ExtendedReactTable<IProps, IState> {
-
+export default class AnnotationRepoTable extends ExtendedReactTable<
+    IProps,
+    IState
+> {
     private readonly persistenceLayerManager: PersistenceLayerManager;
 
-    private readonly syncBarProgress: IEventDispatcher<SyncBarProgress> = new SimpleReactor();
+    private readonly syncBarProgress: IEventDispatcher<
+        SyncBarProgress
+    > = new SimpleReactor();
 
     constructor(props: IProps, context: any) {
         super(props, context);
@@ -35,44 +45,40 @@ export default class AnnotationRepoTable extends ExtendedReactTable<IProps, ISta
 
         this.init();
         this.refresh();
-
     }
 
     public init() {
-
-        PersistenceLayerManagers.onPersistenceManager(this.props.persistenceLayerManager, (persistenceLayer) => {
-
-            this.releaser.register(
-                persistenceLayer.addEventListener(() => this.refresh()));
-
-        });
+        PersistenceLayerManagers.onPersistenceManager(
+            this.props.persistenceLayerManager,
+            persistenceLayer => {
+                this.releaser.register(
+                    persistenceLayer.addEventListener(() => this.refresh())
+                );
+            }
+        );
 
         this.releaser.register(
-            RepoDocMetaLoaders.addThrottlingEventListener(this.props.repoDocMetaLoader, () => this.refresh()));
-
+            RepoDocMetaLoaders.addThrottlingEventListener(
+                this.props.repoDocMetaLoader,
+                () => this.refresh()
+            )
+        );
     }
 
-    public onSelected(selected: number,
-                      repoAnnotation: RepoAnnotation) {
-
-        this.setState({...this.state, selected});
+    public onSelected(selected: number, repoAnnotation: RepoAnnotation) {
+        this.setState({ ...this.state, selected });
         this.props.onSelected(repoAnnotation);
-
     }
 
     public render() {
         const { data } = this.state;
 
         return (
-
             <div id="doc-repo-table">
-
                 <div id="doc-table">
-
-                <ReactTable
-                    data={data}
-                    columns={
-                        [
+                    <ReactTable
+                        data={data}
+                        columns={[
                             {
                                 Header: '',
                                 accessor: 'type',
@@ -80,14 +86,14 @@ export default class AnnotationRepoTable extends ExtendedReactTable<IProps, ISta
 
                                 Cell: (row: any) => {
                                     return (
-
                                         <div className="text-center">
-                                            <AnnotationIcon type={row.original.type} color={row.original.color}/>
+                                            <AnnotationIcon
+                                                type={row.original.type}
+                                                color={row.original.color}
+                                            />
                                         </div>
-
                                     );
-                                }
-
+                                },
                             },
                             {
                                 Header: '',
@@ -96,14 +102,12 @@ export default class AnnotationRepoTable extends ExtendedReactTable<IProps, ISta
                                     const id = 'annotation-title' + row.index;
                                     return (
                                         <div id={id}>
-
-                                            <div>{row.original.text || 'no text'}</div>
-
+                                            <div>
+                                                {row.original.text || 'no text'}
+                                            </div>
                                         </div>
-
                                     );
-                                }
-
+                                },
                             },
                             {
                                 Header: 'Created',
@@ -113,9 +117,11 @@ export default class AnnotationRepoTable extends ExtendedReactTable<IProps, ISta
                                 maxWidth: 100,
                                 defaultSortDesc: true,
                                 Cell: (row: any) => (
-                                    <DateTimeTableCell className="doc-col-last-updated" datetime={row.original.created}/>
-                                )
-
+                                    <DateTimeTableCell
+                                        className="doc-col-last-updated"
+                                        datetime={row.original.created}
+                                    />
+                                ),
                             },
                             {
                                 id: 'tags',
@@ -124,108 +130,110 @@ export default class AnnotationRepoTable extends ExtendedReactTable<IProps, ISta
                                 show: true,
                                 width: 200,
                                 Cell: (row: any) => {
-
                                     // TODO: use <FormattedTags>
 
-                                    const tags: {[id: string]: Tag} = row.original.tags;
+                                    const tags: { [id: string]: Tag } =
+                                        row.original.tags;
 
                                     const formatted = Object.values(tags)
                                         .map(tag => tag.label)
                                         .sort()
-                                        .join(", ");
+                                        .join(', ');
 
-                                    return (
-                                        <div>{formatted}</div>
-                                    );
-
-                                }
+                                    return <div>{formatted}</div>;
+                                },
                             },
-
                         ]}
-
-                    defaultPageSize={50}
-                    noDataText="No annotations available."
-                    className="-striped -highlight"
-                    defaultSorted={[
-                        {
-                            id: "created",
-                            desc: true
-                        }
-                    ]}
-                    // sorted={[{
-                    //     id: 'added',
-                    //     desc: true
-                    // }]}
-                    getTrProps={(state: any, rowInfo: any) => {
-                        return {
-
-                            onClick: (e: any) => {
-
-                                const repoAnnotation = rowInfo.original as RepoAnnotation;
-                                this.onSelected(rowInfo.viewIndex as number, repoAnnotation);
-
+                        defaultPageSize={50}
+                        noDataText="No annotations available."
+                        className="-striped -highlight"
+                        defaultSorted={[
+                            {
+                                id: 'created',
+                                desc: true,
                             },
+                        ]}
+                        // sorted={[{
+                        //     id: 'added',
+                        //     desc: true
+                        // }]}
+                        getTrProps={(state: any, rowInfo: any) => {
+                            return {
+                                onClick: (e: any) => {
+                                    const repoAnnotation = rowInfo.original as RepoAnnotation;
+                                    this.onSelected(
+                                        rowInfo.viewIndex as number,
+                                        repoAnnotation
+                                    );
+                                },
 
-                            style: {
-                                background: rowInfo && rowInfo.viewIndex === this.state.selected ? '#00afec' : 'white',
-                                color: rowInfo && rowInfo.viewIndex === this.state.selected ? 'white' : 'black',
+                                style: {
+                                    background:
+                                        rowInfo &&
+                                        rowInfo.viewIndex ===
+                                            this.state.selected
+                                            ? '#00afec'
+                                            : 'white',
+                                    color:
+                                        rowInfo &&
+                                        rowInfo.viewIndex ===
+                                            this.state.selected
+                                            ? 'white'
+                                            : 'black',
+                                },
+                            };
+                        }}
+                        getTdProps={(
+                            state: any,
+                            rowInfo: any,
+                            column: any,
+                            instance: any
+                        ) => {
+                            const singleClickColumns: string[] = [];
+
+                            if (!singleClickColumns.includes(column.id)) {
+                                return {
+                                    onDoubleClick: (e: any) => {
+                                        // this.onDocumentLoadRequested(rowInfo.original.fingerprint,
+                                        // rowInfo.original.filename,
+                                        // rowInfo.original.hashcode);
+                                    },
+                                };
                             }
 
-                        };
-                    }}
-                    getTdProps={(state: any, rowInfo: any, column: any, instance: any) => {
+                            if (singleClickColumns.includes(column.id)) {
+                                return {
+                                    onClick: (
+                                        e: any,
+                                        handleOriginal?: () => void
+                                    ) => {
+                                        //
+                                        // this.handleToggleField(rowInfo.original,
+                                        // column.id) .catch(err =>
+                                        // log.error("Could not handle toggle: ",
+                                        // err));
 
+                                        if (handleOriginal) {
+                                            // needed for react table to function
+                                            // properly.
+                                            handleOriginal();
+                                        }
+                                    },
+                                };
+                            }
 
-                        const singleClickColumns: string[] = [];
-
-                        if (! singleClickColumns.includes(column.id)) {
-                            return {
-                                onDoubleClick: (e: any) => {
-                                    // this.onDocumentLoadRequested(rowInfo.original.fingerprint,
-                                    // rowInfo.original.filename,
-                                    // rowInfo.original.hashcode);
-                                }
-                            };
-                        }
-
-                        if (singleClickColumns.includes(column.id)) {
-
-                            return {
-
-                                onClick: ((e: any, handleOriginal?: () => void) => {
-                                    //
-                                    // this.handleToggleField(rowInfo.original,
-                                    // column.id) .catch(err =>
-                                    // log.error("Could not handle toggle: ",
-                                    // err));
-
-                                    if (handleOriginal) {
-                                        // needed for react table to function
-                                        // properly.
-                                        handleOriginal();
-                                    }
-
-                                })
-
-                            };
-
-                        }
-
-                        return {};
-
-                    }}
-
-                />
-
+                            return {};
+                        }}
+                    />
                 </div>
-
             </div>
-
         );
     }
 
     public refresh() {
-        const data = Object.values(this.props.repoDocMetaManager!.repoAnnotationIndex);
+        const data = Object.values(
+            this.props.repoDocMetaManager!.repoAnnotationIndex
+        );
         this.doRefresh(this.filter(data));
     }
 
@@ -234,23 +242,17 @@ export default class AnnotationRepoTable extends ExtendedReactTable<IProps, ISta
     }
 
     private doRefresh(data: RepoAnnotation[]) {
-
-        const state: IState = {...this.state, data};
+        const state: IState = { ...this.state, data };
 
         setTimeout(() => {
-
             // The react table will not update when I change the state from
             // within the event listener
             this.setState(state);
-
         }, 1);
-
     }
-
 }
 
 interface IProps {
-
     readonly persistenceLayerManager: PersistenceLayerManager;
 
     readonly updatedDocInfoEventDispatcher: IEventDispatcher<IDocInfo>;
@@ -260,12 +262,8 @@ interface IProps {
     readonly repoDocMetaLoader: RepoDocMetaLoader;
 
     readonly onSelected: (repoAnnotation: RepoAnnotation) => void;
-
 }
 
 interface IState extends IReactTableState {
-
     data: RepoAnnotation[];
-
 }
-

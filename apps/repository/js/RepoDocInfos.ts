@@ -1,22 +1,19 @@
-import {isPresent, Preconditions} from '../../../web/js/Preconditions';
-import {IDocInfo} from '../../../web/js/metadata/DocInfo';
-import {Optional} from '../../../web/js/util/ts/Optional';
-import {RepoDocInfo} from './RepoDocInfo';
-import {ISODateTimeString} from '../../../web/js/metadata/ISODateTimeStrings';
-import {DocInfos} from '../../../web/js/metadata/DocInfos';
+import { isPresent, Preconditions } from '../../../web/js/Preconditions';
+import { IDocInfo } from '../../../web/js/metadata/DocInfo';
+import { Optional } from '../../../web/js/util/ts/Optional';
+import { RepoDocInfo } from './RepoDocInfo';
+import { ISODateTimeString } from '../../../web/js/metadata/ISODateTimeStrings';
+import { DocInfos } from '../../../web/js/metadata/DocInfos';
 
 export class RepoDocInfos {
-
     public static isValid(repoDocInfo: RepoDocInfo) {
         return isPresent(repoDocInfo.filename);
     }
 
     public static convert(docInfo: IDocInfo): RepoDocInfo {
-
-        Preconditions.assertPresent(docInfo, "docInfo");
+        Preconditions.assertPresent(docInfo, 'docInfo');
 
         return {
-
             fingerprint: docInfo.fingerprint,
 
             // TODO: we should map this to also filter out '' and ' '
@@ -49,43 +46,33 @@ export class RepoDocInfos {
                 .validateBoolean()
                 .getOrElse(false),
 
-            tags: Optional.of(docInfo.tags)
-                .getOrElse({}),
+            tags: Optional.of(docInfo.tags).getOrElse({}),
 
             url: docInfo.url,
 
-            nrAnnotations: Optional.of(docInfo.nrAnnotations)
-                .getOrElse(0),
+            nrAnnotations: Optional.of(docInfo.nrAnnotations).getOrElse(0),
 
             hashcode: docInfo.hashcode,
 
-            docInfo
-
+            docInfo,
         };
-
     }
 
     private static toISODateTimeString(current: string) {
-
-
         // this is a pragmatic workaround for JSON
         // serialization issues with typescript.
 
-        if ( typeof current === 'object') {
-
+        if (typeof current === 'object') {
             // this is a bug fix/workaround for corrupt stores that
             // accidentally had and ISODateTime stored in them.
 
-            const obj = <any> current;
+            const obj = <any>current;
 
             if (isPresent(obj.value) && typeof obj.value === 'string') {
                 return obj.value;
             }
-
         }
 
         return current;
-
     }
-
 }

@@ -1,15 +1,15 @@
-import {Latch} from './Latch';
-import {AsyncWorkQueue} from './AsyncWorkQueue';
+import { Latch } from './Latch';
+import { AsyncWorkQueue } from './AsyncWorkQueue';
 
 export class AsyncWorkQueues {
-
     /**
      * Await a list of promises concurrently.
      *
      */
-    public static async awaitPromises<T>(promises: ReadonlyArray<Promise<T>>,
-                                         concurrency: number = 25): Promise<ReadonlyArray<T>> {
-
+    public static async awaitPromises<T>(
+        promises: ReadonlyArray<Promise<T>>,
+        concurrency: number = 25
+    ): Promise<ReadonlyArray<T>> {
         const results: T[] = [];
 
         const work = promises.map(current => async () => {
@@ -22,7 +22,5 @@ export class AsyncWorkQueues {
         await asyncWorkQueue.execute();
 
         return results;
-
     }
-
 }

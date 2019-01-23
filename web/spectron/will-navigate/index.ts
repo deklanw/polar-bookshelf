@@ -1,7 +1,7 @@
-import {shell} from 'electron';
-import {SpectronMain} from '../../js/test/SpectronMain';
-import {BrowserWindow} from "electron";
-import {Logger} from '../../js/logger/Logger';
+import { shell } from 'electron';
+import { SpectronMain } from '../../js/test/SpectronMain';
+import { BrowserWindow } from 'electron';
+import { Logger } from '../../js/logger/Logger';
 
 const log = Logger.create();
 
@@ -13,18 +13,15 @@ const BROWSER_OPTIONS = {
 
     webPreferences: {
         webSecurity: false,
-    }
-
+    },
 };
 
-let options = {
-
+const options = {
     windowFactory: async () => {
-
-        let mainWindow = new BrowserWindow(BROWSER_OPTIONS);
+        const mainWindow = new BrowserWindow(BROWSER_OPTIONS);
 
         mainWindow.webContents.on('will-navigate', function(e, url) {
-            log.info("Attempt to navigate to new URL: ", url);
+            log.info('Attempt to navigate to new URL: ', url);
             // required to force the URLs clicked to open in a new browser.  The
             // user probably / certainly wants to use their main browser.
             e.preventDefault();
@@ -33,15 +30,11 @@ let options = {
 
         mainWindow.loadURL('about:blank');
         return mainWindow;
-
-    }
-
+    },
 };
 
 SpectronMain.run(async state => {
-
     state.window.loadFile(__dirname + '/app.html');
 
     await state.testResultWriter.write(true);
-
 }, options);

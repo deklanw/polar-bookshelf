@@ -1,11 +1,11 @@
-import {Point} from '../../Point';
-import {MouseDirection} from './Popup';
-import {Simulate} from 'react-dom/test-utils';
+import { Point } from '../../Point';
+import { MouseDirection } from './Popup';
+import { Simulate } from 'react-dom/test-utils';
 import mouseMove = Simulate.mouseMove;
-import {Logger} from '../../logger/Logger';
-import {isPresent} from '../../Preconditions';
-import {Selections} from '../../highlights/text/selection/Selections';
-import {Ranges} from '../../highlights/text/selection/Ranges';
+import { Logger } from '../../logger/Logger';
+import { isPresent } from '../../Preconditions';
+import { Selections } from '../../highlights/text/selection/Selections';
+import { Ranges } from '../../highlights/text/selection/Ranges';
 
 const log = Logger.create();
 
@@ -13,10 +13,10 @@ const log = Logger.create();
  * Listens for when a new text selection has been created
  */
 export class ActiveSelections {
-
-    public static addEventListener(listener: ActiveSelectionListener,
-                                   target: HTMLElement = document.body): void {
-
+    public static addEventListener(
+        listener: ActiveSelectionListener,
+        target: HTMLElement = document.body
+    ): void {
         let originPoint: Point | undefined;
 
         let activeSelection: ActiveSelection | undefined;
@@ -35,41 +35,36 @@ export class ActiveSelections {
         //   on events.
 
         const handleDestroyedSelection = () => {
-
             listener({ ...activeSelection!, type: 'destroyed' });
             activeSelection = undefined;
 
             eventFired = 'destroyed';
-
         };
 
         target.addEventListener('mousedown', (event: MouseEvent) => {
-
             if (!activeSelection) {
                 originPoint = this.eventToPoint(event);
             }
-
         });
 
         target.addEventListener('mouseup', (event: MouseEvent) => {
-
             const handleMouseEvent = () => {
-
                 let hasActiveTextSelection: boolean = false;
                 eventFired = 'none';
 
                 try {
-
                     const view: Window = event.view;
                     const selection = view.getSelection();
 
-                    hasActiveTextSelection = this.hasActiveTextSelection(selection);
+                    hasActiveTextSelection = this.hasActiveTextSelection(
+                        selection
+                    );
 
                     const point = this.eventToPoint(event);
                     const element = this.targetElementForEvent(event);
 
-                    if (! element) {
-                        log.warn("No target element: ", event.target);
+                    if (!element) {
+                        log.warn('No target element: ', event.target);
                         return;
                     }
 
@@ -78,8 +73,8 @@ export class ActiveSelections {
                     }
 
                     if (hasActiveTextSelection) {
-
-                        const mouseDirection: MouseDirection = point.y - originPoint!.y < 0 ? 'up' : 'down';
+                        const mouseDirection: MouseDirection =
+                            point.y - originPoint!.y < 0 ? 'up' : 'down';
 
                         const range = selection.getRangeAt(0);
 
@@ -92,23 +87,19 @@ export class ActiveSelections {
                             boundingClientRect,
                             selection,
                             view,
-                            type: 'created'
+                            type: 'created',
                         };
 
                         listener(activeSelection);
 
                         eventFired = 'created';
-
                     }
-
                 } finally {
                     // console.log(`mouseup: hasActiveTextSelection: ${hasActiveTextSelection}, eventFired: ${eventFired}`);
                 }
-
             };
 
             this.withTimeout(() => handleMouseEvent());
-
         });
 
         // TODO: I played with closing the annotation bar on right click but
@@ -139,7 +130,6 @@ export class ActiveSelections {
         //     this.withTimeout(() => handleMouseEvent());
         //
         // });
-
     }
 
     // needs to be called via setTimeout becuase if we click 'on' the
@@ -152,26 +142,23 @@ export class ActiveSelections {
         setTimeout(() => callback(), 1);
     }
 
-    private static targetElementForEvent(event: MouseEvent): HTMLElement | undefined {
-
+    private static targetElementForEvent(
+        event: MouseEvent
+    ): HTMLElement | undefined {
         if (event.target instanceof Node) {
-
             if (event.target instanceof HTMLElement) {
                 return event.target;
             } else {
                 return event.target.parentElement!;
             }
-
         } else {
-            log.warn("Event target is not node: ", event.target);
+            log.warn('Event target is not node: ', event.target);
         }
 
         return undefined;
-
     }
 
     private static hasActiveTextSelection(selection: Selection) {
-
         const ranges = Selections.toRanges(selection);
 
         for (const range of ranges) {
@@ -181,29 +168,19 @@ export class ActiveSelections {
         }
 
         return false;
-
     }
 
     private static eventToPoint(event: MouseEvent) {
-
         return {
             x: event.offsetX,
-            y: event.offsetY
+            y: event.offsetY,
         };
-
     }
-
-
 }
 
-export interface ActiveSelectionListener {
-    // noinspection TsLint
-    (event: ActiveSelectionEvent): void;
-}
-
+export type ActiveSelectionListener = (event: ActiveSelectionEvent) => void;
 
 export interface ActiveSelection {
-
     readonly element: HTMLElement;
     readonly originPoint: Point;
     readonly mouseDirection: MouseDirection;
@@ -217,11 +194,8 @@ export interface ActiveSelection {
     readonly view: Window;
 
     readonly type: ActiveSelectionType;
-
 }
 
 export type ActiveSelectionType = 'created' | 'destroyed';
 
-export interface ActiveSelectionEvent extends ActiveSelection {
-
-}
+export interface ActiveSelectionEvent extends ActiveSelection {}

@@ -1,17 +1,16 @@
-import {assertJSON} from '../../../../test/Assertions';
-import {NotesSync} from './NotesSync';
-import {NoteDescriptor} from './NoteDescriptor';
-import {AddNoteClient} from './clients/AddNoteClient';
-import {FindNotesClient} from './clients/FindNotesClient';
-import {Abortable} from '../Abortable';
-import {SyncProgress} from '../SyncProgress';
-import {SyncProgressListener} from '../SyncProgressListener';
-import {SyncQueue} from '../SyncQueue';
-import {StoreMediaFileClient} from './clients/StoreMediaFileClient';
-import {CanAddNotesClient} from './clients/CanAddNotesClient';
+import { assertJSON } from '../../../../test/Assertions';
+import { NotesSync } from './NotesSync';
+import { NoteDescriptor } from './NoteDescriptor';
+import { AddNoteClient } from './clients/AddNoteClient';
+import { FindNotesClient } from './clients/FindNotesClient';
+import { Abortable } from '../Abortable';
+import { SyncProgress } from '../SyncProgress';
+import { SyncProgressListener } from '../SyncProgressListener';
+import { SyncQueue } from '../SyncQueue';
+import { StoreMediaFileClient } from './clients/StoreMediaFileClient';
+import { CanAddNotesClient } from './clients/CanAddNotesClient';
 
 describe('NotesSync', function() {
-
     let notesSync: NotesSync;
 
     let abortable: Abortable;
@@ -26,19 +25,16 @@ describe('NotesSync', function() {
     let syncQueue: SyncQueue;
 
     beforeEach(function() {
-
         abortable = {
-            aborted: false
+            aborted: false,
         };
 
         syncQueue = new SyncQueue(abortable, syncProgressListener);
 
         notesSync = new NotesSync(syncQueue);
-
     });
 
-    it("full initial sync", async function() {
-
+    it('full initial sync', async function() {
         // ****
         // create mocks where we have no initial notes, and we allow
         // a new note to be created.
@@ -49,12 +45,12 @@ describe('NotesSync', function() {
 
         const noteDescriptors: NoteDescriptor[] = [
             {
-                guid: "101",
-                deckName: "test",
-                modelName: "test",
+                guid: '101',
+                deckName: 'test',
+                modelName: 'test',
                 fields: {},
-                tags: []
-            }
+                tags: [],
+            },
         ];
 
         const notesSynchronized = notesSync.enqueue(noteDescriptors);
@@ -62,11 +58,9 @@ describe('NotesSync', function() {
         await syncQueue.execute();
 
         assertJSON(notesSynchronized.created, noteDescriptors);
-
     });
 
-    it("sync with pre-existing notes that are skipped", async function() {
-
+    it('sync with pre-existing notes that are skipped', async function() {
         // ****
         // create mocks where we have no initial notes, and we allow
         // a new note to be created.
@@ -75,12 +69,12 @@ describe('NotesSync', function() {
 
         const noteDescriptors: NoteDescriptor[] = [
             {
-                guid: "101",
-                deckName: "test",
-                modelName: "test",
+                guid: '101',
+                deckName: 'test',
+                modelName: 'test',
                 fields: {},
-                tags: []
-            }
+                tags: [],
+            },
         ];
 
         const notesSynchronized = notesSync.enqueue(noteDescriptors);
@@ -88,7 +82,5 @@ describe('NotesSync', function() {
         await syncQueue.execute();
 
         assertJSON(notesSynchronized.created, []);
-
     });
-
 });

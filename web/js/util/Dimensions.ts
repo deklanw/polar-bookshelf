@@ -1,10 +1,9 @@
 /**
  * Simple dimension of a Rect.
  */
-import {Preconditions} from '../Preconditions';
+import { Preconditions } from '../Preconditions';
 
 export class Dimensions {
-
     /**
      * This width of this rect.
      */
@@ -16,7 +15,6 @@ export class Dimensions {
     public height: number;
 
     constructor(obj: IDimensions) {
-
         /**
          * This width of this rect.
          *
@@ -25,9 +23,8 @@ export class Dimensions {
         this.width = obj.width;
         this.height = obj.height;
 
-        Preconditions.assertNumber(this.height, "height");
-        Preconditions.assertNumber(this.width, "width");
-
+        Preconditions.assertNumber(this.height, 'height');
+        Preconditions.assertNumber(this.width, 'width');
     }
 
     get area() {
@@ -37,11 +34,9 @@ export class Dimensions {
     public toString() {
         return `${this.width}x${this.height}`;
     }
-
 }
 
 export interface IDimensions {
-
     /**
      * This width of this rect.
      */
@@ -51,5 +46,4 @@ export interface IDimensions {
      * This height of this rect.
      */
     readonly height: number;
-
 }

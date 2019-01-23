@@ -4,7 +4,6 @@
  * Not sure this is 100% needed in 2018 Javascript though.
  */
 export class StringBuffer {
-
     private readonly backing: string[] = [];
 
     public append(...data: string[]): this {
@@ -15,5 +14,4 @@ export class StringBuffer {
     public toString(): string {
         return this.backing.join('');
     }
-
 }

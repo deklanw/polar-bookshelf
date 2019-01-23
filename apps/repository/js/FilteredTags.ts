@@ -1,7 +1,6 @@
-import {Tag} from '../../../web/js/tags/Tag';
+import { Tag } from '../../../web/js/tags/Tag';
 
 export class FilteredTags {
-
     private tags: Tag[] = [];
 
     public get(): Tag[] {
@@ -11,6 +10,4 @@ export class FilteredTags {
     public set(tags: Tag[]) {
         this.tags = tags;
     }
-
 }
-

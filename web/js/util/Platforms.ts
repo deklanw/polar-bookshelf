@@ -1,5 +1,4 @@
 export class Platforms {
-
     /*
      *
      * The variable to use would be process.platform
@@ -13,9 +12,7 @@ export class Platforms {
      * var isWin = process.platform === "win32";
      */
     public static get(): Platform {
-
         switch (process.platform.toLowerCase()) {
-
             case 'win32':
                 return Platform.WINDOWS;
 
@@ -24,13 +21,10 @@ export class Platforms {
 
             case 'linux':
                 return Platform.LINUX;
-
         }
 
         return Platform.UNKNOWN;
-
     }
-
 }
 
 export enum Platform {

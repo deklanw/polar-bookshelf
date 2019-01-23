@@ -1,7 +1,7 @@
-import {Logger} from "../../logger/Logger";
-import {Model} from '../../model/Model';
-import {IPCEngines} from '../../ipc/handler/IPCEngines';
-import {CreateAnnotationHandler} from './handlers/CreateAnnotationHandler';
+import { Logger } from '../../logger/Logger';
+import { Model } from '../../model/Model';
+import { IPCEngines } from '../../ipc/handler/IPCEngines';
+import { CreateAnnotationHandler } from './handlers/CreateAnnotationHandler';
 
 const log = Logger.create();
 
@@ -12,7 +12,6 @@ const log = Logger.create();
  * @ElectronRendererContext
  */
 export class FlashcardsController {
-
     private readonly model: Model;
 
     constructor(model: Model) {
@@ -20,13 +19,13 @@ export class FlashcardsController {
     }
 
     public start() {
+        const ipcEngine = IPCEngines.rendererProcess();
 
-        let ipcEngine = IPCEngines.rendererProcess();
-
-        ipcEngine.registry.registerPath('/api/annotations/create-annotation', new CreateAnnotationHandler(this.model));
+        ipcEngine.registry.registerPath(
+            '/api/annotations/create-annotation',
+            new CreateAnnotationHandler(this.model)
+        );
 
         ipcEngine.start();
-
     }
-
 }

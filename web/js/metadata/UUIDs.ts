@@ -1,14 +1,12 @@
-import {UUID} from './UUID';
-import {Sequences} from '../util/Sequences';
+import { UUID } from './UUID';
+import { Sequences } from '../util/Sequences';
 
 export class UUIDs {
-
     public static create(): UUID {
         return Sequences.create();
     }
 
     public static compare(u0?: UUID, u1?: UUID) {
-
         if (u0 === undefined && u1 !== undefined) {
             return -1;
         }
@@ -23,7 +21,7 @@ export class UUIDs {
 
         // TODO: It's better to NOT use localeCompare but couldn't find an
         // easy workaround and since the chars are just ASCII we should be fine.
-        return u0!.localeCompare(u1!, "en-us");
+        return u0!.localeCompare(u1!, 'en-us');
     }
 
     /**
@@ -32,6 +30,5 @@ export class UUIDs {
      */
     public static isUpdated(existing?: UUID, comparison?: UUID): boolean {
         return this.compare(existing, comparison) < 0;
-   }
-
+    }
 }

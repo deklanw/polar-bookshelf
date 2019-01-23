@@ -4,7 +4,7 @@
 
 import * as firebase from './lib/firebase';
 import firebaseui from './lib/firebaseui';
-import {Objects} from '../util/Objects';
+import { Objects } from '../util/Objects';
 
 // noinspection TsLint: max-line-length
 const SIGN_IN_SUCCESS_URL = 'http://localhost:8005/content.html';
@@ -12,34 +12,31 @@ const TOS_URL = 'https://getpolarized.io/terms-of-service.html';
 const PRIVACY_POLICY_URL = 'https://getpolarized.io/terms-of-service.html';
 
 export class FirebaseUIAuth {
-
     /**
      * Start the login and render the login box to the given selector.
      *
      * @param containerSelector
      */
-    public static login(partialOpts: Partial<FirebaseUIAuthOptions> = {}): firebaseui.auth.AuthUI {
-
+    public static login(
+        partialOpts: Partial<FirebaseUIAuthOptions> = {}
+    ): firebaseui.auth.AuthUI {
         const opts = Objects.defaults(partialOpts, {
             containerSelector: '#firebaseui-auth-container',
-            signInSuccessUrl: SIGN_IN_SUCCESS_URL
+            signInSuccessUrl: SIGN_IN_SUCCESS_URL,
         });
 
         // FirebaseUI config.
         const uiConfig = {
-
             // popupMode: true,
             // signInFlow: 'popup',
 
             callbacks: {
-
-                signInSuccessWithAuthResult: (authResult: any,
-                                              redirectUrl: string) => {
-
+                signInSuccessWithAuthResult: (
+                    authResult: any,
+                    redirectUrl: string
+                ) => {
                     return true;
-
                 },
-
             },
             queryParameterForWidgetMode: 'mode',
 
@@ -62,8 +59,7 @@ export class FirebaseUIAuth {
             // Privacy policy url/callback.
             privacyPolicyUrl: () => {
                 window.location.assign(PRIVACY_POLICY_URL);
-            }
-
+            },
         };
 
         // Initialize the FirebaseUI Widget using Firebase.
@@ -72,9 +68,7 @@ export class FirebaseUIAuth {
         ui.start(opts.containerSelector, uiConfig);
 
         return ui;
-
     }
-
 }
 
 export interface FirebaseUIAuthOptions {

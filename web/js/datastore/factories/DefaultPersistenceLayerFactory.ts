@@ -1,8 +1,8 @@
-import {DefaultPersistenceLayer} from '../DefaultPersistenceLayer';
-import {Logger} from '../../logger/Logger';
-import {Datastores} from '../Datastores';
-import {AdvertisingPersistenceLayer} from '../advertiser/AdvertisingPersistenceLayer';
-import {ListenablePersistenceLayer} from '../ListenablePersistenceLayer';
+import { DefaultPersistenceLayer } from '../DefaultPersistenceLayer';
+import { Logger } from '../../logger/Logger';
+import { Datastores } from '../Datastores';
+import { AdvertisingPersistenceLayer } from '../advertiser/AdvertisingPersistenceLayer';
+import { ListenablePersistenceLayer } from '../ListenablePersistenceLayer';
 
 const log = Logger.create();
 
@@ -11,22 +11,20 @@ const log = Logger.create();
  * and lower IPC but requires node integration.
  */
 export class DefaultPersistenceLayerFactory {
-
     public static async create(): Promise<ListenablePersistenceLayer> {
-
-        log.info("Using persistence layer from renderer process.");
+        log.info('Using persistence layer from renderer process.');
 
         const datastore = Datastores.create();
         await datastore.init();
 
         const defaultPersistenceLayer = new DefaultPersistenceLayer(datastore);
-        const advertisingPersistenceLayer = new AdvertisingPersistenceLayer(defaultPersistenceLayer);
+        const advertisingPersistenceLayer = new AdvertisingPersistenceLayer(
+            defaultPersistenceLayer
+        );
 
         // note that we need to always pre-init before we return.
         await advertisingPersistenceLayer.init();
 
         return advertisingPersistenceLayer;
-
     }
-
 }

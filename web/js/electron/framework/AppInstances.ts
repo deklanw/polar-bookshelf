@@ -1,4 +1,4 @@
-import {ipcMain} from 'electron';
+import { ipcMain } from 'electron';
 
 /**
  * AppInstance and AppInstances provided a simple way for main and the renderer
@@ -7,16 +7,11 @@ import {ipcMain} from 'electron';
  * @ElectronMainContext
  */
 export class AppInstances {
-
     public static waitForStarted(name: string) {
         return new Promise<void>(resolve => {
-
             ipcMain.once('app-instance-started:' + name, () => {
                 resolve();
             });
-
         });
-
     }
-
 }

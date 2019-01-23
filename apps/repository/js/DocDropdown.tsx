@@ -1,28 +1,31 @@
 import * as React from 'react';
-import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Tooltip} from 'reactstrap';
-import {ConfirmPopover} from '../../../web/js/ui/confirm/ConfirmPopover';
-import {TextInputPopover} from '../../../web/js/ui/text_input/TextInputPopover';
-import {RepoDocInfo} from './RepoDocInfo';
-import {Logger} from '../../../web/js/logger/Logger';
-import {IStyleMap} from '../../../web/js/react/IStyleMap';
-import {clipboard, shell} from 'electron';
-import {Directories} from '../../../web/js/datastore/Directories';
-import {FilePaths} from '../../../web/js/util/FilePaths';
-import {Toaster} from '../../../web/js/ui/toaster/Toaster';
+import {
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    Tooltip,
+} from 'reactstrap';
+import { ConfirmPopover } from '../../../web/js/ui/confirm/ConfirmPopover';
+import { TextInputPopover } from '../../../web/js/ui/text_input/TextInputPopover';
+import { RepoDocInfo } from './RepoDocInfo';
+import { Logger } from '../../../web/js/logger/Logger';
+import { IStyleMap } from '../../../web/js/react/IStyleMap';
+import { clipboard, shell } from 'electron';
+import { Directories } from '../../../web/js/datastore/Directories';
+import { FilePaths } from '../../../web/js/util/FilePaths';
+import { Toaster } from '../../../web/js/ui/toaster/Toaster';
 
 const log = Logger.create();
 
 const Styles: IStyleMap = {
-
     DropdownMenu: {
         zIndex: 999,
-        fontSize: '14px'
+        fontSize: '14px',
     },
-
 };
 
 export class DocDropdown extends React.Component<IProps, IState> {
-
     private open: boolean = false;
     private selected: SelectedOption = 'none';
 
@@ -39,15 +42,11 @@ export class DocDropdown extends React.Component<IProps, IState> {
             open: this.open,
             selected: this.selected,
         };
-
     }
 
     public render() {
-
         return (
-
             <div className="text-right">
-
                 {/*TODO: I experimented with bringing up a tooltip after the user*/}
                 {/*selects an item but there's no way to auto-hide after it was */}
                 {/*selected with a display.  I might be able to implement one*/}
@@ -55,39 +54,59 @@ export class DocDropdown extends React.Component<IProps, IState> {
                 {/*give it a message and then show and then hide the tooltip after */}
                 {/*this event but this will take a while.*/}
                 {/*<Tooltip placement="left"*/}
-                         {/*isOpen={this.state.open && this.state.message !== undefined}*/}
-                         {/*autohide={true}*/}
-                         {/*hide={4000}*/}
-                         {/*target={this.props.id}>*/}
-                    {/*Hello world!*/}
+                {/*isOpen={this.state.open && this.state.message !== undefined}*/}
+                {/*autohide={true}*/}
+                {/*hide={4000}*/}
+                {/*target={this.props.id}>*/}
+                {/*Hello world!*/}
                 {/*</Tooltip>*/}
 
-                <Dropdown id={this.props.id} isOpen={this.state.open} toggle={this.toggle}>
-
-                    <DropdownToggle color="link"
-                                    className="doc-dropdown-button btn text-muted pl-1 pr-1"
-                                    id={this.props.id + '-dropdown-toggle'}>
-                        <i className="fas fa-ellipsis-h"></i>
+                <Dropdown
+                    id={this.props.id}
+                    isOpen={this.state.open}
+                    toggle={this.toggle}
+                >
+                    <DropdownToggle
+                        color="link"
+                        className="doc-dropdown-button btn text-muted pl-1 pr-1"
+                        id={this.props.id + '-dropdown-toggle'}
+                    >
+                        <i className="fas fa-ellipsis-h" />
                     </DropdownToggle>
 
                     <DropdownMenu style={Styles.DropdownMenu}>
-
                         <DropdownItem onClick={() => this.select('set-title')}>
                             Set Title
                         </DropdownItem>
 
-                        <DropdownItem disabled={! this.props.repoDocInfo.url}
-                                      onClick={() => this.onCopyURL(this.props.repoDocInfo.url!)}>
+                        <DropdownItem
+                            disabled={!this.props.repoDocInfo.url}
+                            onClick={() =>
+                                this.onCopyURL(this.props.repoDocInfo.url!)
+                            }
+                        >
                             Copy Original URL
                         </DropdownItem>
 
-                        <DropdownItem disabled={! this.props.repoDocInfo.filename}
-                                      onClick={() => this.onShowFile(this.props.repoDocInfo.filename!)}>
+                        <DropdownItem
+                            disabled={!this.props.repoDocInfo.filename}
+                            onClick={() =>
+                                this.onShowFile(
+                                    this.props.repoDocInfo.filename!
+                                )
+                            }
+                        >
                             Show File
                         </DropdownItem>
 
-                        <DropdownItem disabled={! this.props.repoDocInfo.filename}
-                                      onClick={() => this.onCopyFilePath(this.props.repoDocInfo.filename!)}>
+                        <DropdownItem
+                            disabled={!this.props.repoDocInfo.filename}
+                            onClick={() =>
+                                this.onCopyFilePath(
+                                    this.props.repoDocInfo.filename!
+                                )
+                            }
+                        >
                             Copy File Path
                         </DropdownItem>
 
@@ -95,65 +114,61 @@ export class DocDropdown extends React.Component<IProps, IState> {
 
                         <DropdownItem divider />
 
-                        <DropdownItem className="text-danger" onClick={() => this.select('delete')}>
+                        <DropdownItem
+                            className="text-danger"
+                            onClick={() => this.select('delete')}
+                        >
                             Delete
                         </DropdownItem>
-
                     </DropdownMenu>
-
-
                 </Dropdown>
 
-                <TextInputPopover open={this.state.selected === 'set-title'}
-                                  target={this.props.id + '-dropdown-toggle'}
-                                  title="Enter title for document:"
-                                  defaultValue={this.props.repoDocInfo.title}
-                                  onCancel={() => this.select('none')}
-                                  onComplete={this.onSetTitle}/>
+                <TextInputPopover
+                    open={this.state.selected === 'set-title'}
+                    target={this.props.id + '-dropdown-toggle'}
+                    title="Enter title for document:"
+                    defaultValue={this.props.repoDocInfo.title}
+                    onCancel={() => this.select('none')}
+                    onComplete={this.onSetTitle}
+                />
 
-                <ConfirmPopover open={this.state.selected === 'delete'}
-                                target={this.props.id + '-dropdown-toggle'}
-                                title="Are you sure you want to delete this document? "
-                                subtitle="The document and all annotations will be lost."
-                                onCancel={() => this.select('none')}
-                                onConfirm={this.onDelete}/>
-
+                <ConfirmPopover
+                    open={this.state.selected === 'delete'}
+                    target={this.props.id + '-dropdown-toggle'}
+                    title="Are you sure you want to delete this document? "
+                    subtitle="The document and all annotations will be lost."
+                    onCancel={() => this.select('none')}
+                    onConfirm={this.onDelete}
+                />
             </div>
         );
-
     }
 
     private onShowFile(filename: string) {
-
         const directories = new Directories();
         const path = FilePaths.join(directories.stashDir, filename);
         shell.showItemInFolder(path);
     }
 
     private onCopyFilePath(filename: string) {
-
         const directories = new Directories();
         const path = FilePaths.join(directories.stashDir, filename);
 
         this.copyText(path);
-        Toaster.success("File path copied to clipboard!");
-
+        Toaster.success('File path copied to clipboard!');
     }
 
     private onCopyURL(url: string) {
         this.copyText(url);
-        Toaster.success("URL copied to clipboard!");
-
+        Toaster.success('URL copied to clipboard!');
     }
 
     private copyText(text: string) {
-
         if (clipboard) {
             clipboard.writeText(text);
         } else {
-            log.warn("No clipboard with which to copy text: ", text);
+            log.warn('No clipboard with which to copy text: ', text);
         }
-
     }
 
     private onSetTitle(title: string) {
@@ -166,17 +181,14 @@ export class DocDropdown extends React.Component<IProps, IState> {
         this.props.onDelete(this.props.repoDocInfo);
     }
 
-
     private toggle() {
-
         if (this.selected !== 'none') {
             this.open = false;
         } else {
-            this.open = ! this.state.open;
+            this.open = !this.state.open;
         }
 
         this.refresh();
-
     }
 
     private select(selected: SelectedOption) {
@@ -185,14 +197,11 @@ export class DocDropdown extends React.Component<IProps, IState> {
     }
 
     private refresh() {
-
         this.setState({
             open: this.open,
-            selected: this.selected
+            selected: this.selected,
         });
-
     }
-
 }
 
 interface IProps {
@@ -203,12 +212,9 @@ interface IProps {
 }
 
 interface IState {
-
     open: boolean;
     selected: SelectedOption;
     message?: string;
-
 }
 
 type SelectedOption = 'set-title' | 'delete' | 'none';
-

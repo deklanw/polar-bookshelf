@@ -1,6 +1,6 @@
-import {ActiveSelection} from '../../ui/popup/ActiveSelections';
-import {HighlightColor} from '../../metadata/BaseHighlight';
-import {AnnotationDescriptor} from '../../metadata/AnnotationDescriptor';
+import { ActiveSelection } from '../../ui/popup/ActiveSelections';
+import { HighlightColor } from '../../metadata/BaseHighlight';
+import { AnnotationDescriptor } from '../../metadata/AnnotationDescriptor';
 
 export interface HighlightCreatedEvent {
     readonly activeSelection: ActiveSelection;

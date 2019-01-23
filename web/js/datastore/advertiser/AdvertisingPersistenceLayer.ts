@@ -1,11 +1,11 @@
-import {DocMetaRef} from '../DocMetaRef';
-import {DocInfoAdvertisement} from './DocInfoAdvertisement';
-import {DocInfoAdvertiser} from './DocInfoAdvertiser';
-import {DocInfoAdvertisementListenerService} from './DocInfoAdvertisementListenerService';
-import {PersistenceLayerEvent} from '../PersistenceLayerEvent';
-import {PersistenceLayer} from '../PersistenceLayer';
-import {ListenablePersistenceLayer} from '../ListenablePersistenceLayer';
-import {AbstractAdvertisingPersistenceLayer} from './AbstractAdvertisingPersistenceLayer';
+import { DocMetaRef } from '../DocMetaRef';
+import { DocInfoAdvertisement } from './DocInfoAdvertisement';
+import { DocInfoAdvertiser } from './DocInfoAdvertiser';
+import { DocInfoAdvertisementListenerService } from './DocInfoAdvertisementListenerService';
+import { PersistenceLayerEvent } from '../PersistenceLayerEvent';
+import { PersistenceLayer } from '../PersistenceLayer';
+import { ListenablePersistenceLayer } from '../ListenablePersistenceLayer';
+import { AbstractAdvertisingPersistenceLayer } from './AbstractAdvertisingPersistenceLayer';
 
 /**
  * A PersistenceLayer that allows the user to receive advertisements regarding
@@ -16,7 +16,6 @@ import {AbstractAdvertisingPersistenceLayer} from './AbstractAdvertisingPersiste
 export class AdvertisingPersistenceLayer
     extends AbstractAdvertisingPersistenceLayer
     implements ListenablePersistenceLayer {
-
     private readonly docInfoAdvertisementListenerService = new DocInfoAdvertisementListenerService();
 
     constructor(delegate: PersistenceLayer) {
@@ -24,14 +23,13 @@ export class AdvertisingPersistenceLayer
     }
 
     public async init(): Promise<void> {
-
-        this.docInfoAdvertisementListenerService
-            .addEventListener((adv) => this.onDocInfoAdvertisement(adv));
+        this.docInfoAdvertisementListenerService.addEventListener(adv =>
+            this.onDocInfoAdvertisement(adv)
+        );
 
         this.docInfoAdvertisementListenerService.start();
 
         return this.delegate.init();
-
     }
 
     public async stop(): Promise<void> {
@@ -40,28 +38,21 @@ export class AdvertisingPersistenceLayer
     }
 
     protected broadcastEvent(event: PersistenceLayerEvent): void {
-
         DocInfoAdvertiser.send({
             docInfo: event.docInfo,
-            advertisementType: event.eventType
+            advertisementType: event.eventType,
         });
-
     }
 
     private onDocInfoAdvertisement(docInfoAdvertisement: DocInfoAdvertisement) {
-
         this.dispatchEvent({
-
-           docMetaRef: <DocMetaRef> {
-               fingerprint: docInfoAdvertisement.docInfo.fingerprint,
-               filename: docInfoAdvertisement.docInfo.filename,
-               docInfo: docInfoAdvertisement.docInfo
-           },
-           docInfo: docInfoAdvertisement.docInfo,
-           eventType: docInfoAdvertisement.advertisementType
-
-       });
-
+            docMetaRef: <DocMetaRef>{
+                fingerprint: docInfoAdvertisement.docInfo.fingerprint,
+                filename: docInfoAdvertisement.docInfo.filename,
+                docInfo: docInfoAdvertisement.docInfo,
+            },
+            docInfo: docInfoAdvertisement.docInfo,
+            eventType: docInfoAdvertisement.advertisementType,
+        });
     }
-
 }

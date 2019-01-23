@@ -1,11 +1,13 @@
-
 export class DocumentReadyStates {
-
-    static async waitFor(doc: Document,
-                         requiredReadyState: DocumentReadyState): Promise<ReadyStateResolution> {
-
-        return this.waitForChanger(doc, requiredReadyState, new DocumentReadyStateChanger(doc));
-
+    public static async waitFor(
+        doc: Document,
+        requiredReadyState: DocumentReadyState
+    ): Promise<ReadyStateResolution> {
+        return this.waitForChanger(
+            doc,
+            requiredReadyState,
+            new DocumentReadyStateChanger(doc)
+        );
     }
 
     /**
@@ -19,43 +21,49 @@ export class DocumentReadyStates {
      * but we're already complete it will return immediately.
      *
      */
-    public static async waitForChanger(doc: Document,
-                                       requiredReadyState: DocumentReadyState,
-                                       readyStateChanger: ReadyStateChanger): Promise<ReadyStateResolution> {
-
-
+    public static async waitForChanger(
+        doc: Document,
+        requiredReadyState: DocumentReadyState,
+        readyStateChanger: ReadyStateChanger
+    ): Promise<ReadyStateResolution> {
         return new Promise<ReadyStateResolution>((resolve, reject) => {
-
             // always perform two checks.  First using the awaitState and then
             // using the current state. Promises can only be resolved once so even
             // if we call resolve() twice it won't be an issue.
-            readyStateChanger.awaitState(requiredReadyState)
+            readyStateChanger
+                .awaitState(requiredReadyState)
                 .then(() => {
                     resolve(ReadyStateResolution.EVENT);
                 })
                 .catch(err => reject(err));
 
-            if (this.meetsRequiredState(requiredReadyState, readyStateChanger.readyState)) {
+            if (
+                this.meetsRequiredState(
+                    requiredReadyState,
+                    readyStateChanger.readyState
+                )
+            ) {
                 resolve(ReadyStateResolution.DIRECT);
             }
-
         });
-
     }
 
-    public static meetsRequiredState(requiredReadyState: DocumentReadyState, currentReadyState: DocumentReadyState) {
-
-        const requiredReadyStateCode = this.toReadyStateCode(requiredReadyState);
+    public static meetsRequiredState(
+        requiredReadyState: DocumentReadyState,
+        currentReadyState: DocumentReadyState
+    ) {
+        const requiredReadyStateCode = this.toReadyStateCode(
+            requiredReadyState
+        );
         const currentReadyStateCode = this.toReadyStateCode(currentReadyState);
 
         return currentReadyStateCode >= requiredReadyStateCode;
-
     }
 
-    public static toReadyStateCode(readyState: DocumentReadyState): ReadyStateCode {
-
+    public static toReadyStateCode(
+        readyState: DocumentReadyState
+    ): ReadyStateCode {
         switch (readyState) {
-
             case 'loading':
                 return 1;
 
@@ -64,11 +72,8 @@ export class DocumentReadyStates {
 
             case 'complete':
                 return 3;
-
         }
-
     }
-
 }
 
 /**
@@ -76,73 +81,64 @@ export class DocumentReadyStates {
  */
 export enum ReadyStateResolution {
     DIRECT = 'direct',
-    EVENT = 'event'
+    EVENT = 'event',
 }
 
-type ReadyStateCode = 1 | 2 | 3 ;
+type ReadyStateCode = 1 | 2 | 3;
 
 /**
  * Interface which allows us to test the transitions between states.
  */
 interface ReadyStateChanger {
-
     readonly readyState: DocumentReadyState;
 
-    awaitState(requiredReadyState: DocumentReadyState): Promise<void>
-
+    awaitState(requiredReadyState: DocumentReadyState): Promise<void>;
 }
 
 export class DocumentReadyStateChanger implements ReadyStateChanger {
-
-    readonly readyState: DocumentReadyState;
+    public readonly readyState: DocumentReadyState;
 
     private readonly doc: Document;
 
     constructor(doc: Document) {
         this.doc = doc;
-        this.readyState = doc.readyState
+        this.readyState = doc.readyState;
     }
 
-    awaitState(requiredReadyState: DocumentReadyState): Promise<void> {
-
+    public awaitState(requiredReadyState: DocumentReadyState): Promise<void> {
         // TODO: implementing this as an observable would definitely be better.
         // the interface for the mock and the document would be the same I
         // think and would make testing simpler.
         return new Promise<void>(resolve => {
-
-            let listener: () => void = () => {
-
-                if(DocumentReadyStates.meetsRequiredState(requiredReadyState, this.doc.readyState)) {
+            const listener: () => void = () => {
+                if (
+                    DocumentReadyStates.meetsRequiredState(
+                        requiredReadyState,
+                        this.doc.readyState
+                    )
+                ) {
                     resolve();
                     this.doc.removeEventListener('readystatechange', listener);
                 }
-
             };
 
             this.doc.addEventListener('readystatechange', listener);
-
-        })
-
-
+        });
     }
-
 }
 
 export class MockReadyStateChanger implements ReadyStateChanger {
+    public readonly readyState: DocumentReadyState;
 
-    readonly readyState: DocumentReadyState;
-
-    resolve: () => void = () => {};
+    public resolve: () => void = () => {};
 
     constructor(readyState: DocumentReadyState) {
         this.readyState = readyState;
     }
 
-    awaitState(requiredReadyState: DocumentReadyState): Promise<void> {
-
+    public awaitState(requiredReadyState: DocumentReadyState): Promise<void> {
         return new Promise<void>(resolve => {
             this.resolve = resolve;
-        })
-
+        });
     }
 }

@@ -1,14 +1,13 @@
-import {Hashcodes} from '../Hashcodes';
-import {TextHighlight} from './TextHighlight';
-import {Text} from './Text';
-import {Arrays} from '../util/Arrays';
-import {TextRect} from './TextRect';
-import {IRect} from '../util/rects/IRect';
-import {ISODateTimeStrings} from './ISODateTimeStrings';
-import {HighlightColor} from './BaseHighlight';
+import { Hashcodes } from '../Hashcodes';
+import { TextHighlight } from './TextHighlight';
+import { Text } from './Text';
+import { Arrays } from '../util/Arrays';
+import { TextRect } from './TextRect';
+import { IRect } from '../util/rects/IRect';
+import { ISODateTimeStrings } from './ISODateTimeStrings';
+import { HighlightColor } from './BaseHighlight';
 
 export class TextHighlightRecords {
-
     /**
      * Create a TextHighlight by specifying all required rows.
      *
@@ -18,11 +17,12 @@ export class TextHighlightRecords {
      * @return an object with an "id" for a unique hash and a "value" of the
      * TextHighlight to use.
      */
-    public static create(rects: IRect[],
-                         textSelections: TextRect[],
-                         text: Text,
-                         color: HighlightColor = 'yellow'): TextHighlightRecord {
-
+    public static create(
+        rects: IRect[],
+        textSelections: TextRect[],
+        text: Text,
+        color: HighlightColor = 'yellow'
+    ): TextHighlightRecord {
         const id = Hashcodes.createID(rects);
 
         const created = ISODateTimeStrings.create();
@@ -40,13 +40,11 @@ export class TextHighlightRecords {
             questions: {},
             flashcards: {},
             guid: id,
-            color
+            color,
         });
 
-        return {id, value: textHighlight};
-
+        return { id, value: textHighlight };
     }
-
 }
 
 export interface TextHighlightRecord {

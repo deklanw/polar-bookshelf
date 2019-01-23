@@ -1,40 +1,28 @@
 import * as React from 'react';
-import {Button} from 'reactstrap';
-import {HighlightColor} from '../../metadata/BaseHighlight';
-import {IStyleMap} from '../../react/IStyleMap';
+import { Button } from 'reactstrap';
+import { HighlightColor } from '../../metadata/BaseHighlight';
+import { IStyleMap } from '../../react/IStyleMap';
 
 const Styles: IStyleMap = {
-
     icon: {
         fontSize: '16px',
         color: '#a4a4a4',
-        width: '16px'
-    }
-
+        width: '16px',
+    },
 };
 
 /**
  */
 export class FlashcardIcon extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
     }
 
     public render() {
-
-        return (
-
-            <i style={Styles.icon} className="fas fa-bolt"></i>
-
-        );
-
+        return <i style={Styles.icon} className="fas fa-bolt" />;
     }
-
 }
 
-interface IProps {
-}
+interface IProps {}
 
-interface IState {
-}
+interface IState {}

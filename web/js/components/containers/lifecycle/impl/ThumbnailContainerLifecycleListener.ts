@@ -1,16 +1,14 @@
-import {Container} from '../../Container';
-import {AbstractContainerLifecycleListener} from './AbstractContainerLifecycleListener';
+import { Container } from '../../Container';
+import { AbstractContainerLifecycleListener } from './AbstractContainerLifecycleListener';
 
 /**
  * Listens to the lifecycle of .thumbnail
  */
 export class ThumbnailContainerLifecycleListener extends AbstractContainerLifecycleListener {
-
     /**
      */
     constructor(container: Container) {
         super(container);
-
     }
 
     /**
@@ -19,10 +17,8 @@ export class ThumbnailContainerLifecycleListener extends AbstractContainerLifecy
      * @param event
      * @return {ContainerLifecycleState | null}
      */
-    getStateFromEvent(event: any) {
-
+    public getStateFromEvent(event: any) {
         return this._createContainerLifecycleEvent(true);
-
     }
 
     /**
@@ -30,10 +26,7 @@ export class ThumbnailContainerLifecycleListener extends AbstractContainerLifecy
      *
      * @return {ContainerLifecycleState}
      */
-    getState() {
-
+    public getState() {
         return this._createContainerLifecycleEvent(true);
-
     }
-
 }

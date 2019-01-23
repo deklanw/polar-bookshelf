@@ -1,4 +1,3 @@
-
 export interface Hashcode {
     readonly enc: HashEncoding;
     alg: HashAlgorithm;
@@ -6,11 +5,9 @@ export interface Hashcode {
 }
 
 export enum HashEncoding {
-    BASE58CHECK = 'base58check'
+    BASE58CHECK = 'base58check',
 }
 
 export enum HashAlgorithm {
-    KECCAK256 = 'keccak256'
+    KECCAK256 = 'keccak256',
 }
-
-

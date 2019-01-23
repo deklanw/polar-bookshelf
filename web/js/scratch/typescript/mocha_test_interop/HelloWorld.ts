@@ -1,7 +1,5 @@
 export class HelloWorld {
-
-    getMessage(): string {
-        return "hello world";
+    public getMessage(): string {
+        return 'hello world';
     }
-
 }

@@ -1,7 +1,7 @@
-import {app, BrowserWindow} from 'electron';
-import {MainTestResultWriter} from './results/writer/MainTestResultWriter';
-import {Logger} from '../logger/Logger';
-import {SpectronBrowserWindowOptions} from './SpectronBrowserWindowOptions';
+import { app, BrowserWindow } from 'electron';
+import { MainTestResultWriter } from './results/writer/MainTestResultWriter';
+import { Logger } from '../logger/Logger';
+import { SpectronBrowserWindowOptions } from './SpectronBrowserWindowOptions';
 
 const log = Logger.create();
 
@@ -10,7 +10,6 @@ const log = Logger.create();
  * 'ready', sets up windows, etc.
  */
 export class SpectronMain2 {
-
     private readonly options: Readonly<ISpectronMainOptions>;
 
     private constructor(options: Readonly<ISpectronMainOptions>) {
@@ -25,22 +24,16 @@ export class SpectronMain2 {
     }
 
     public setup(): Promise<BrowserWindow> {
-
         return new Promise(resolve => {
-
             app.on('ready', async () => {
-
-                log.info("Ready!  Creating main window!!");
+                log.info('Ready!  Creating main window!!');
 
                 const mainWindow = await this.options.windowFactory();
 
-                log.info("Done.. resolving");
+                log.info('Done.. resolving');
                 resolve(mainWindow);
-
             });
-
         });
-
     }
 
     public async start(callback: StateCallback): Promise<void> {
@@ -48,7 +41,6 @@ export class SpectronMain2 {
         const testResultWriter = new MainTestResultWriter(window);
 
         return callback(new SpectronMainState(this, window, testResultWriter));
-
     }
 
     /**
@@ -56,14 +48,16 @@ export class SpectronMain2 {
      * and just print error messages to the console.
      */
     public run(callback: StateCallback) {
-        this.start(callback)
-            .catch(err => log.error("Could not run spectron:", err));
+        this.start(callback).catch(err =>
+            log.error('Could not run spectron:', err)
+        );
     }
 
-    public static create(options: ISpectronMainOptions = new SpectronMainOptions().build()) {
+    public static create(
+        options: ISpectronMainOptions = new SpectronMainOptions().build()
+    ) {
         return new SpectronMain2(options);
     }
-
 }
 
 async function defaultWindowFactory(): Promise<BrowserWindow> {
@@ -74,14 +68,17 @@ async function defaultWindowFactory(): Promise<BrowserWindow> {
 }
 
 export class SpectronMainState {
-
     public readonly spectronMain: SpectronMain2;
 
     public readonly window: BrowserWindow;
 
     public readonly testResultWriter: MainTestResultWriter;
 
-    constructor(spectronMain: SpectronMain2, window: BrowserWindow, testResultWriter: MainTestResultWriter) {
+    constructor(
+        spectronMain: SpectronMain2,
+        window: BrowserWindow,
+        testResultWriter: MainTestResultWriter
+    ) {
         this.spectronMain = spectronMain;
         this.window = window;
         this.testResultWriter = testResultWriter;
@@ -93,11 +90,9 @@ export class SpectronMainState {
     public async createWindow() {
         return this.spectronMain.createWindow();
     }
-
 }
 
 export class SpectronMainOptions implements ISpectronMainOptions {
-
     public windowFactory: WindowFactory = defaultWindowFactory;
 
     /**
@@ -109,11 +104,9 @@ export class SpectronMainOptions implements ISpectronMainOptions {
     public build(): Readonly<SpectronMainOptions> {
         return Object.freeze(this);
     }
-
 }
 
 export interface ISpectronMainOptions {
-
     windowFactory: WindowFactory;
 
     /**

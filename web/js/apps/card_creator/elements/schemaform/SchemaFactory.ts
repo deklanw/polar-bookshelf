@@ -1,24 +1,19 @@
 export class SchemaFactory {
-
-    static create(): any {
-
+    public static create(): any {
         return {
-            "title": "Flashcard",
-            "description": "",
-            "type": "object",
-            "required": [
-                "front",
-                "back"
-            ],
-            "properties": {
-                "front": {
-                    "type": 'string',
-                    "title": "Front"
+            title: 'Flashcard',
+            description: '',
+            type: 'object',
+            required: ['front', 'back'],
+            properties: {
+                front: {
+                    type: 'string',
+                    title: 'Front',
                 },
-                "back": {
-                    "type": "string",
-                    "title": "Back"
-                }
+                back: {
+                    type: 'string',
+                    title: 'Back',
+                },
                 // },
                 // "age": {
                 //     "type": "integer",
@@ -38,10 +33,7 @@ export class SchemaFactory {
                 //     "title": "Telephone",
                 //     "minLength": 10
                 // }
-            }
-
+            },
         };
-
     }
-
 }

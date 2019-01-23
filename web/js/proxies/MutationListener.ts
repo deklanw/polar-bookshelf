@@ -1,7 +1,6 @@
-import {MutationType} from './MutationType';
+import { MutationType } from './MutationType';
 
 export abstract class MutationListener {
-
     /**
      * Listen to a mutation and we're given a list of names and types.
      *
@@ -11,9 +10,10 @@ export abstract class MutationListener {
      * @param value The new value of the field or undefined if it's a delete operation.
      * @return True if the mutation should continue.
      */
-    public abstract onMutation(mutationType: MutationType,
-                               target: any,
-                               property: string,
-                               value: any | undefined): void;
-
+    public abstract onMutation(
+        mutationType: MutationType,
+        target: any,
+        property: string,
+        value: any | undefined
+    ): void;
 }

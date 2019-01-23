@@ -1,9 +1,12 @@
-import {DocMetaMutation, DocMetaSnapshotEvent, DocMetaSnapshotEventListener} from './Datastore';
-import {DocMetaComparisonIndex} from './DocMetaComparisonIndex';
-import {IDocInfo} from '../metadata/DocInfo';
+import {
+    DocMetaMutation,
+    DocMetaSnapshotEvent,
+    DocMetaSnapshotEventListener,
+} from './Datastore';
+import { DocMetaComparisonIndex } from './DocMetaComparisonIndex';
+import { IDocInfo } from '../metadata/DocInfo';
 
 export class DocMetaSnapshotEventListeners {
-
     /**
      * Create a new listener that takes inputs and creates a de-duplicated
      * listener that only emits new or updated documents by the UUID or deleted
@@ -14,9 +17,10 @@ export class DocMetaSnapshotEventListeners {
      * and we will just get the earliest one.
      *
      */
-    public static createDeduplicatedListener(outputListener: DocMetaSnapshotEventListener,
-                                             docMetaComparisonIndex = new DocMetaComparisonIndex()): EventDeduplicator {
-
+    public static createDeduplicatedListener(
+        outputListener: DocMetaSnapshotEventListener,
+        docMetaComparisonIndex = new DocMetaComparisonIndex()
+    ): EventDeduplicator {
         if (!docMetaComparisonIndex) {
             docMetaComparisonIndex = new DocMetaComparisonIndex();
         }
@@ -30,17 +34,19 @@ export class DocMetaSnapshotEventListeners {
         // BOTH, committed, or written levels...
 
         const listener = async (docMetaSnapshotEvent: DocMetaSnapshotEvent) => {
-
             const acceptedDocMetaMutations: DocMetaMutation[] = [];
 
             for (const docMetaMutation of docMetaSnapshotEvent.docMetaMutations) {
-
                 const docInfo = await docMetaMutation.docInfoProvider();
 
-                if (docMetaComparisonIndex.handleDocMetaMutation(docMetaMutation, docInfo)) {
+                if (
+                    docMetaComparisonIndex.handleDocMetaMutation(
+                        docMetaMutation,
+                        docInfo
+                    )
+                ) {
                     acceptedDocMetaMutations.push(docMetaMutation);
                 }
-
             }
 
             // always emit the listener even if we've accepted no mutations
@@ -52,22 +58,22 @@ export class DocMetaSnapshotEventListeners {
                 ...docMetaSnapshotEvent,
                 docMetaMutations: acceptedDocMetaMutations,
             });
-
         };
 
         return {
-            handleDocMetaMutation: docMetaComparisonIndex.handleDocMetaMutation.bind(docMetaComparisonIndex),
+            handleDocMetaMutation: docMetaComparisonIndex.handleDocMetaMutation.bind(
+                docMetaComparisonIndex
+            ),
             listener,
         };
-
     }
-
 }
 
 export interface EventDeduplicator {
-
-    handleDocMetaMutation(docMetaMutation: DocMetaMutation, docInfo: IDocInfo): boolean;
+    handleDocMetaMutation(
+        docMetaMutation: DocMetaMutation,
+        docInfo: IDocInfo
+    ): boolean;
 
     listener: DocMetaSnapshotEventListener;
-
 }

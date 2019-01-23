@@ -1,27 +1,34 @@
-import {Datastore, DocMetaSnapshotEvent, FileMeta, FileRef, InitResult,
-        DocMetaSnapshotEventListener, SnapshotResult, DatastoreID,
-        AbstractDatastore,
-    ErrorListener} from './Datastore';
-import {Directories} from './Directories';
-import {DocMetaFileRef, DocMetaRef} from './DocMetaRef';
-import {DeleteResult} from './Datastore';
-import {Preconditions} from '../Preconditions';
-import {Backend} from './Backend';
-import {DatastoreFile} from './DatastoreFile';
-import {Optional} from '../util/ts/Optional';
-import {IDocInfo, DocInfo} from '../metadata/DocInfo';
-import {DatastoreMutation} from './DatastoreMutation';
-import {Datastores} from './Datastores';
-import {PersistenceLayers} from './PersistenceLayers';
-import {PersistenceLayer} from './PersistenceLayer';
-import {DocMeta} from '../metadata/DocMeta';
-import {FileHandle} from '../util/Files';
+import {
+    Datastore,
+    DocMetaSnapshotEvent,
+    FileMeta,
+    FileRef,
+    InitResult,
+    DocMetaSnapshotEventListener,
+    SnapshotResult,
+    DatastoreID,
+    AbstractDatastore,
+    ErrorListener,
+} from './Datastore';
+import { Directories } from './Directories';
+import { DocMetaFileRef, DocMetaRef } from './DocMetaRef';
+import { DeleteResult } from './Datastore';
+import { Preconditions } from '../Preconditions';
+import { Backend } from './Backend';
+import { DatastoreFile } from './DatastoreFile';
+import { Optional } from '../util/ts/Optional';
+import { IDocInfo, DocInfo } from '../metadata/DocInfo';
+import { DatastoreMutation } from './DatastoreMutation';
+import { Datastores } from './Datastores';
+import { PersistenceLayers } from './PersistenceLayers';
+import { PersistenceLayer } from './PersistenceLayer';
+import { DocMeta } from '../metadata/DocMeta';
+import { FileHandle } from '../util/Files';
 
 /**
  * A PersistenceLayer that just forwards events to the given delegate.
  */
 export class DelegatedPersistenceLayer implements PersistenceLayer {
-
     public readonly datastore: Datastore;
 
     private readonly delegate: PersistenceLayer;
@@ -31,15 +38,22 @@ export class DelegatedPersistenceLayer implements PersistenceLayer {
         this.datastore = delegate.datastore;
     }
 
-    public addDocMetaSnapshotEventListener(docMetaSnapshotEventListener: DocMetaSnapshotEventListener): void {
-        this.delegate.addDocMetaSnapshotEventListener(docMetaSnapshotEventListener);
+    public addDocMetaSnapshotEventListener(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener
+    ): void {
+        this.delegate.addDocMetaSnapshotEventListener(
+            docMetaSnapshotEventListener
+        );
     }
 
     public async contains(fingerprint: string): Promise<boolean> {
         return this.delegate.contains(fingerprint);
     }
 
-    public async containsFile(backend: Backend, ref: FileRef): Promise<boolean> {
+    public async containsFile(
+        backend: Backend,
+        ref: FileRef
+    ): Promise<boolean> {
         return this.delegate.containsFile(backend, ref);
     }
 
@@ -47,7 +61,10 @@ export class DelegatedPersistenceLayer implements PersistenceLayer {
         return this.delegate.deactivate();
     }
 
-    public async delete(docMetaFileRef: DocMetaFileRef, datastoreMutation?: DatastoreMutation<boolean>): Promise<DeleteResult> {
+    public async delete(
+        docMetaFileRef: DocMetaFileRef,
+        datastoreMutation?: DatastoreMutation<boolean>
+    ): Promise<DeleteResult> {
         return this.delegate.delete(docMetaFileRef, datastoreMutation);
     }
 
@@ -59,7 +76,10 @@ export class DelegatedPersistenceLayer implements PersistenceLayer {
         return this.delegate.getDocMetaFiles();
     }
 
-    public async getFile(backend: Backend, ref: FileRef): Promise<Optional<DatastoreFile>> {
+    public async getFile(
+        backend: Backend,
+        ref: FileRef
+    ): Promise<Optional<DatastoreFile>> {
         return this.delegate.getFile(backend, ref);
     }
 
@@ -67,7 +87,10 @@ export class DelegatedPersistenceLayer implements PersistenceLayer {
         return this.delegate.init();
     }
 
-    public async snapshot(listener: DocMetaSnapshotEventListener, errorListener?: ErrorListener): Promise<SnapshotResult> {
+    public async snapshot(
+        listener: DocMetaSnapshotEventListener,
+        errorListener?: ErrorListener
+    ): Promise<SnapshotResult> {
         return this.delegate.snapshot(listener, errorListener);
     }
 
@@ -79,11 +102,18 @@ export class DelegatedPersistenceLayer implements PersistenceLayer {
         return this.delegate.stop();
     }
 
-    public async write(fingerprint: string, docMeta: DocMeta, datastoreMutation?: DatastoreMutation<DocInfo>): Promise<DocInfo> {
+    public async write(
+        fingerprint: string,
+        docMeta: DocMeta,
+        datastoreMutation?: DatastoreMutation<DocInfo>
+    ): Promise<DocInfo> {
         return this.delegate.write(fingerprint, docMeta, datastoreMutation);
     }
 
-    public async writeDocMeta(docMeta: DocMeta, datastoreMutation?: DatastoreMutation<DocInfo>): Promise<DocInfo> {
+    public async writeDocMeta(
+        docMeta: DocMeta,
+        datastoreMutation?: DatastoreMutation<DocInfo>
+    ): Promise<DocInfo> {
         return this.delegate.writeDocMeta(docMeta, datastoreMutation);
     }
 
@@ -91,8 +121,12 @@ export class DelegatedPersistenceLayer implements PersistenceLayer {
         return this.delegate.synchronizeDocs(...docMetaRefs);
     }
 
-    public async writeFile(backend: Backend, ref: FileRef, data: FileHandle | Buffer | string, meta?: FileMeta): Promise<DatastoreFile> {
+    public async writeFile(
+        backend: Backend,
+        ref: FileRef,
+        data: FileHandle | Buffer | string,
+        meta?: FileMeta
+    ): Promise<DatastoreFile> {
         return this.delegate.writeFile(backend, ref, data, meta);
     }
-
 }

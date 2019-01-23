@@ -1,12 +1,10 @@
-
-import {TestResultReader} from '../TestResultReader';
-import {Results} from '../../../util/Results';
-import {TApplication} from '../../Spectron';
+import { TestResultReader } from '../TestResultReader';
+import { Results } from '../../../util/Results';
+import { TApplication } from '../../Spectron';
 
 declare var window: any;
 
 export class WebDriverTestResultReader implements TestResultReader {
-
     private readonly app: TApplication;
 
     constructor(app: TApplication) {
@@ -14,28 +12,24 @@ export class WebDriverTestResultReader implements TestResultReader {
     }
 
     public async read<T>(): Promise<T> {
+        const result = await this.app.client.executeAsync(
+            (done: (val: any) => void) => {
+                function poll() {
+                    if (
+                        window.SPECTRON_TEST_RESULT !== null &&
+                        window.SPECTRON_TEST_RESULT !== undefined
+                    ) {
+                        done(window.SPECTRON_TEST_RESULT);
+                        return;
+                    }
 
-        const result = await this.app.client.executeAsync((done: (val: any) => void ) => {
-
-            function poll() {
-
-                if (window.SPECTRON_TEST_RESULT !== null &&
-                    window.SPECTRON_TEST_RESULT !== undefined) {
-
-                    done(window.SPECTRON_TEST_RESULT);
-                    return;
-
+                    setTimeout(poll, 250);
                 }
 
-                setTimeout(poll, 250);
+                poll();
             }
-
-            poll();
-
-        });
+        );
 
         return Results.create<T>(result).get();
-
     }
-
 }

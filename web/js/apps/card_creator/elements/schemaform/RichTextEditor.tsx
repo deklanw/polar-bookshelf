@@ -1,23 +1,21 @@
 // const React = require("react");
 const ReactSummernote = require('react-summernote');
 import React, { Component } from 'react';
-//import ReactSummernote from 'summernote-react';
+// import ReactSummernote from 'summernote-react';
 
-//import {ReactSummernote} from 'react-summernote';
+// import {ReactSummernote} from 'react-summernote';
 
 export class RichTextEditor extends React.Component {
-
     constructor(props = {}) {
         super(props);
     }
 
-    onChange(content: any) {
+    public onChange(content: any) {
         console.log('this', this);
         console.log('onChange', content);
     }
 
-    onImageUpload(images: any[], insertImage: Function) {
-
+    public onImageUpload(images: any[], insertImage: Function) {
         console.log('onImageUpload', images);
         /* FileList does not support ordinary array methods */
         for (let i = 0; i < images.length; i++) {
@@ -32,11 +30,9 @@ export class RichTextEditor extends React.Component {
 
             reader.readAsDataURL(images[i]);
         }
+    }
 
-    };
-
-    render() {
-
+    public render() {
         // https://github.com/summernote/react-summernote/issues/38
         //
 

@@ -1,21 +1,23 @@
-import {PersistenceLayer} from "./PersistenceLayer";
-import {IEventDispatcher, SimpleReactor} from '../reactor/SimpleReactor';
-import {SynchronizationEvent} from './Datastore';
-import {RemotePersistenceLayerFactory} from './factories/RemotePersistenceLayerFactory';
-import {CloudAwareDatastore} from './CloudAwareDatastore';
-import {CloudPersistenceLayerFactory} from "./factories/CloudPersistenceLayerFactory";
-import {IProvider} from "../util/Providers";
-import {ListenablePersistenceLayer} from './ListenablePersistenceLayer';
-import {Logger} from "../logger/Logger";
-import {RendererAnalytics} from '../ga/RendererAnalytics';
+import { PersistenceLayer } from './PersistenceLayer';
+import { IEventDispatcher, SimpleReactor } from '../reactor/SimpleReactor';
+import { SynchronizationEvent } from './Datastore';
+import { RemotePersistenceLayerFactory } from './factories/RemotePersistenceLayerFactory';
+import { CloudAwareDatastore } from './CloudAwareDatastore';
+import { CloudPersistenceLayerFactory } from './factories/CloudPersistenceLayerFactory';
+import { IProvider } from '../util/Providers';
+import { ListenablePersistenceLayer } from './ListenablePersistenceLayer';
+import { Logger } from '../logger/Logger';
+import { RendererAnalytics } from '../ga/RendererAnalytics';
 
 const log = Logger.create();
 
 const RESET_KEY = 'polar-persistence-layer-reset';
 
-export class PersistenceLayerManager implements IProvider<ListenablePersistenceLayer> {
-
-    private readonly persistenceLayerManagerEventDispatcher: IEventDispatcher<PersistenceLayerManagerEvent> = new SimpleReactor();
+export class PersistenceLayerManager
+    implements IProvider<ListenablePersistenceLayer> {
+    private readonly persistenceLayerManagerEventDispatcher: IEventDispatcher<
+        PersistenceLayerManagerEvent
+    > = new SimpleReactor();
 
     private persistenceLayer?: ListenablePersistenceLayer;
 
@@ -25,14 +27,16 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
     private current?: PersistenceLayerType;
 
     public async start(): Promise<void> {
-
         let type = PersistenceLayerTypes.get();
 
         if (this.requiresReset()) {
+            log.info(
+                'Going go reset and deactivate current datastore: ' + type
+            );
 
-            log.info("Going go reset and deactivate current datastore: " + type);
-
-            const deactivatePersistenceLayer = this.createPersistenceLayer(type);
+            const deactivatePersistenceLayer = this.createPersistenceLayer(
+                type
+            );
 
             await deactivatePersistenceLayer.deactivate();
 
@@ -41,11 +45,9 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
             // now go with local
             type = 'local';
             PersistenceLayerTypes.set(type);
-
         }
 
         await this.change(type);
-
     }
 
     public get(): ListenablePersistenceLayer {
@@ -62,7 +64,6 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
      * @param type
      */
     public async change(type: PersistenceLayerType) {
-
         if (this.current === type) {
             return false;
         }
@@ -70,10 +71,13 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
         PersistenceLayerTypes.set(type);
 
         if (this.persistenceLayer) {
+            log.info('Stopping persistence layer...');
 
-            log.info("Stopping persistence layer...");
-
-            this.dispatchEvent({type, persistenceLayer: this.persistenceLayer, state: 'stopping'});
+            this.dispatchEvent({
+                type,
+                persistenceLayer: this.persistenceLayer,
+                state: 'stopping',
+            });
 
             // Create a backup first.  This only applies to the DiskDatastore
             // but this way we have a backup before we go online to the cloud
@@ -82,34 +86,47 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
 
             await this.persistenceLayer.stop();
 
-            log.info("Stopped persistence layer...");
+            log.info('Stopped persistence layer...');
 
-            this.dispatchEvent({type, persistenceLayer: this.persistenceLayer, state: 'stopped'});
-
+            this.dispatchEvent({
+                type,
+                persistenceLayer: this.persistenceLayer,
+                state: 'stopped',
+            });
         }
 
         this.current = type;
 
         this.persistenceLayer = this.createPersistenceLayer(type);
 
-        this.dispatchEvent({type, persistenceLayer: this.persistenceLayer, state: 'changed'});
+        this.dispatchEvent({
+            type,
+            persistenceLayer: this.persistenceLayer,
+            state: 'changed',
+        });
 
-        log.info("Changed to persistence layer: " + type);
+        log.info('Changed to persistence layer: ' + type);
 
         await this.persistenceLayer.init();
 
-        this.dispatchEvent({type, persistenceLayer: this.persistenceLayer, state: 'initialized'});
+        this.dispatchEvent({
+            type,
+            persistenceLayer: this.persistenceLayer,
+            state: 'initialized',
+        });
 
-        log.info("Initialized persistence layer: " + type);
+        log.info('Initialized persistence layer: ' + type);
 
-        RendererAnalytics.event({category: 'persistence-layer', action: 'changed-to-' + type});
+        RendererAnalytics.event({
+            category: 'persistence-layer',
+            action: 'changed-to-' + type,
+        });
 
         return true;
-
     }
 
     public reset() {
-        log.info("Datastore reset");
+        log.info('Datastore reset');
         window.localStorage.setItem(RESET_KEY, 'true');
     }
 
@@ -121,8 +138,9 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
         return window.localStorage.removeItem(RESET_KEY);
     }
 
-    private createPersistenceLayer(type: PersistenceLayerType): ListenablePersistenceLayer {
-
+    private createPersistenceLayer(
+        type: PersistenceLayerType
+    ): ListenablePersistenceLayer {
         if (type === 'local') {
             return RemotePersistenceLayerFactory.create();
         }
@@ -131,24 +149,29 @@ export class PersistenceLayerManager implements IProvider<ListenablePersistenceL
             return CloudPersistenceLayerFactory.create();
         }
 
-        throw new Error("Unknown type: " + type);
-
+        throw new Error('Unknown type: ' + type);
     }
 
-    public addEventListener(listener: PersistenceLayerManagerEventListener,
-                            fireWithExisting?: 'changed' | 'initialized') {
-
+    public addEventListener(
+        listener: PersistenceLayerManagerEventListener,
+        fireWithExisting?: 'changed' | 'initialized'
+    ) {
         if (fireWithExisting && this.get()) {
-            listener({type: this.current!, persistenceLayer: this.get(), state: fireWithExisting});
+            listener({
+                type: this.current!,
+                persistenceLayer: this.get(),
+                state: fireWithExisting,
+            });
         }
 
-        return this.persistenceLayerManagerEventDispatcher.addEventListener(listener);
+        return this.persistenceLayerManagerEventDispatcher.addEventListener(
+            listener
+        );
     }
 
     private dispatchEvent(event: PersistenceLayerManagerEvent): void {
         this.persistenceLayerManagerEventDispatcher.dispatchEvent(event);
     }
-
 }
 
 export type PersistenceLayerType = 'local' | 'cloud';
@@ -165,27 +188,29 @@ export type PersistenceLayerType = 'local' | 'cloud';
  * - stopped         - stopped
  *
  */
-export type PersistenceLayerState = 'changed' | 'initialized' | 'stopping' | 'stopped';
+export type PersistenceLayerState =
+    | 'changed'
+    | 'initialized'
+    | 'stopping'
+    | 'stopped';
 
 export interface PersistenceLayerManagerEvent {
-
     readonly type: PersistenceLayerType;
     readonly state: PersistenceLayerState;
     readonly persistenceLayer: ListenablePersistenceLayer;
-
 }
 
-export type PersistenceLayerManagerEventListener = (event: PersistenceLayerManagerEvent) => void;
+export type PersistenceLayerManagerEventListener = (
+    event: PersistenceLayerManagerEvent
+) => void;
 
 export class PersistenceLayerTypes {
-
     private static readonly KEY = 'polar-persistence-layer';
 
     public static get(): PersistenceLayerType {
-
         const currentType = window.localStorage.getItem(this.KEY);
 
-        if (! currentType) {
+        if (!currentType) {
             return 'local';
         }
 
@@ -193,13 +218,10 @@ export class PersistenceLayerTypes {
             return currentType;
         }
 
-        throw new Error("Unknown type: " + currentType);
-
+        throw new Error('Unknown type: ' + currentType);
     }
 
     public static set(type: PersistenceLayerType) {
         window.localStorage.setItem(this.KEY, type);
     }
-
 }
-

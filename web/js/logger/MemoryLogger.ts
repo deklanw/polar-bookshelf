@@ -1,9 +1,9 @@
-import {ILogger} from './ILogger';
-import {Strings} from '../util/Strings';
-import {FixedBuffer} from '../util/FixedBuffer';
-import {LogLevelName, LogMessage} from './Logging';
-import {EventListener, Releaseable} from '../reactor/EventListener';
-import {ISODateTimeStrings} from '../metadata/ISODateTimeStrings';
+import { ILogger } from './ILogger';
+import { Strings } from '../util/Strings';
+import { FixedBuffer } from '../util/FixedBuffer';
+import { LogLevelName, LogMessage } from './Logging';
+import { EventListener, Releaseable } from '../reactor/EventListener';
+import { ISODateTimeStrings } from '../metadata/ISODateTimeStrings';
 
 const capacity = Strings.toNumber(process.env.POLAR_LOG_CAPACITY, 250);
 
@@ -16,7 +16,6 @@ const buffer = new FixedBuffer<LogMessage>(capacity);
  * components.
  */
 export class MemoryLogger implements ILogger {
-
     public readonly name: string = 'memory-logger';
 
     public notice(msg: string, ...args: any[]) {
@@ -24,38 +23,40 @@ export class MemoryLogger implements ILogger {
     }
 
     public info(msg: string, ...args: any[]) {
-        buffer.write(createLogMessage( 'info', msg, args));
+        buffer.write(createLogMessage('info', msg, args));
     }
 
     public warn(msg: string, ...args: any[]) {
-        buffer.write(createLogMessage( 'warn', msg, args));
+        buffer.write(createLogMessage('warn', msg, args));
     }
 
     public error(msg: string, ...args: any[]) {
-        buffer.write(createLogMessage( 'error', msg, args));
+        buffer.write(createLogMessage('error', msg, args));
     }
 
     public verbose(msg: string, ...args: any[]) {
-        buffer.write(createLogMessage( 'verbose', msg, args));
+        buffer.write(createLogMessage('verbose', msg, args));
     }
 
     public debug(msg: string, ...args: any[]) {
-        buffer.write(createLogMessage( 'debug', msg, args));
+        buffer.write(createLogMessage('debug', msg, args));
     }
 
     public getOutput(): string {
-        return buffer.toView().join("\n");
+        return buffer.toView().join('\n');
     }
 
     public toJSON() {
-        return JSON.stringify(buffer.toView(), null, "  ");
+        return JSON.stringify(buffer.toView(), null, '  ');
     }
 
     public async sync(): Promise<void> {
         // noop
     }
 
-    public static addEventListener(eventListener: EventListener<LogMessage>): Releaseable {
+    public static addEventListener(
+        eventListener: EventListener<LogMessage>
+    ): Releaseable {
         return buffer.addEventListener(eventListener);
     }
 
@@ -65,23 +66,20 @@ export class MemoryLogger implements ILogger {
 
     public static clear(): void {
         buffer.clear();
-        buffer.write(createLogMessage( 'info', "Log messages cleared", []));
+        buffer.write(createLogMessage('info', 'Log messages cleared', []));
     }
-
 }
 
-function createLogMessage(level: LogLevelName,
-                          msg: string,
-                          args: ReadonlyArray<any>): LogMessage {
-
+function createLogMessage(
+    level: LogLevelName,
+    msg: string,
+    args: ReadonlyArray<any>
+): LogMessage {
     return {
         timestamp: ISODateTimeStrings.create(),
         idx: IDX_GENERATOR++,
         level,
         msg,
-        args
+        args,
     };
-
 }
-
-

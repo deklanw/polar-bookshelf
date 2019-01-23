@@ -1,50 +1,50 @@
-import {ipcMain, ipcRenderer, remote} from 'electron';
-import {SpectronRenderer} from '../../../js/test/SpectronRenderer';
-import {PingService} from '../../../js/ipc/handler/ping/PingService';
-import {IPCEngines} from '../../../js/ipc/handler/IPCEngines';
-import {SyncPipes} from '../../../js/ipc/pipes/SyncPipes';
-import {IPCClients} from '../../../js/ipc/handler/IPCClients';
-import {BrowserWindowReference} from '../../../js/ui/dialog_window/BrowserWindowReference';
+import { ipcMain, ipcRenderer, remote } from 'electron';
+import { SpectronRenderer } from '../../../js/test/SpectronRenderer';
+import { PingService } from '../../../js/ipc/handler/ping/PingService';
+import { IPCEngines } from '../../../js/ipc/handler/IPCEngines';
+import { SyncPipes } from '../../../js/ipc/pipes/SyncPipes';
+import { IPCClients } from '../../../js/ipc/handler/IPCClients';
+import { BrowserWindowReference } from '../../../js/ui/dialog_window/BrowserWindowReference';
 
-SpectronRenderer.run(async (state) => {
-
+SpectronRenderer.run(async state => {
     await new PingService(IPCEngines.rendererProcess()).start();
 
-    ipcRenderer.on('/client', (event: Electron.Event, message: any) => {
-    });
+    ipcRenderer.on('/client', (event: Electron.Event, message: any) => {});
 
     ipcRenderer.on('/ipc-trace', (event: Electron.Event, message: any) => {
-        console.log("Got IPC trace in client: ", message);
+        console.log('Got IPC trace in client: ', message);
     });
 
-    ipcRenderer.on('/start-ipc', async (event: Electron.Event, message: any) => {
+    ipcRenderer.on(
+        '/start-ipc',
+        async (event: Electron.Event, message: any) => {
+            console.log('Start IPC Sender: ', event.sender.id);
 
-        console.log("Start IPC Sender: ", event.sender.id);
+            console.log('Got start IPC message.  Going to call IPC execute.');
 
-        console.log("Got start IPC message.  Going to call IPC execute.");
+            console.log('Sending test...');
 
-        console.log("Sending test...");
+            ipcRenderer.sendTo(1, '/test', 'hello');
 
-        ipcRenderer.sendTo(1, '/test', 'hello');
+            console.log('Sending test...done');
 
-        console.log("Sending test...done");
+            const target_window: number = message.target_window;
 
-        let target_window: number = message.target_window;
+            console.log('Using target window: ' + target_window);
 
-        console.log("Using target window: " + target_window);
+            const ipcClient = IPCClients.fromRendererToRenderer(
+                new BrowserWindowReference(message.target_window)
+            );
 
-        let ipcClient = IPCClients.fromRendererToRenderer(new BrowserWindowReference(message.target_window));
+            console.log('Executing ping...');
 
-        console.log("Executing ping...");
+            await ipcClient.execute('/ping', 'hello');
 
-        await ipcClient.execute('/ping', 'hello');
+            console.log('Executing ping...done');
 
-        console.log("Executing ping...done");
+            state.testResultWriter.write(true);
+        }
+    );
 
-        state.testResultWriter.write(true);
-
-    });
-
-    await SyncPipes.fromRendererToMain('client').sync()
-
+    await SyncPipes.fromRendererToMain('client').sync();
 });

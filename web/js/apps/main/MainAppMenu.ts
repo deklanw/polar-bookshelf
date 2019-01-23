@@ -1,38 +1,36 @@
-import {MainAppController} from './MainAppController';
-import {app, BrowserWindow, dialog, Menu, shell} from "electron";
-import {ElectronContextMenu} from '../../contextmenu/electron/ElectronContextMenu';
-import {Version} from '../../util/Version';
-import {AppLauncher} from './AppLauncher';
-import {Logger} from '../../logger/Logger';
-import {Promises} from '../../util/Promises';
-import {ManualUpdates} from '../../updates/ManualUpdates';
-import {Platform, Platforms} from '../../util/Platforms';
-import {AnnotationSidebarClient} from '../../annotation_sidebar/AnnotationSidebarClient';
-import {BrowserWindowRegistry} from '../../electron/framework/BrowserWindowRegistry';
-import {Menus} from './Menus';
-import {isPresent} from '../../Preconditions';
-import {Directories} from '../../datastore/Directories';
-import {Messenger} from '../../electron/messenger/Messenger';
+import { MainAppController } from './MainAppController';
+import { app, BrowserWindow, dialog, Menu, shell } from 'electron';
+import { ElectronContextMenu } from '../../contextmenu/electron/ElectronContextMenu';
+import { Version } from '../../util/Version';
+import { AppLauncher } from './AppLauncher';
+import { Logger } from '../../logger/Logger';
+import { Promises } from '../../util/Promises';
+import { ManualUpdates } from '../../updates/ManualUpdates';
+import { Platform, Platforms } from '../../util/Platforms';
+import { AnnotationSidebarClient } from '../../annotation_sidebar/AnnotationSidebarClient';
+import { BrowserWindowRegistry } from '../../electron/framework/BrowserWindowRegistry';
+import { Menus } from './Menus';
+import { isPresent } from '../../Preconditions';
+import { Directories } from '../../datastore/Directories';
+import { Messenger } from '../../electron/messenger/Messenger';
 
 const log = Logger.create();
 
 const WINDOW_TYPE = 'type';
 
 export class MainAppMenu {
-
     private readonly mainAppController: MainAppController;
     private mode: MainMenuMode;
 
-    constructor(mainAppController: MainAppController,
-                mode: MainMenuMode = MainMenuMode.DOC_REPO_APP) {
-
+    constructor(
+        mainAppController: MainAppController,
+        mode: MainMenuMode = MainMenuMode.DOC_REPO_APP
+    ) {
         this.mainAppController = mainAppController;
         this.mode = mode;
-
     }
 
     public setup(): void {
-
         const menu = Menu.buildFromTemplate(this.createMenuTemplate());
 
         Menu.setApplicationMenu(menu);
@@ -41,71 +39,70 @@ export class MainAppMenu {
         new ElectronContextMenu();
 
         this.registerEventListeners();
-
     }
 
     /**
      * Register event listeners so we can hide/disable/etc menus.
      */
     private registerEventListeners() {
+        app.on(
+            'browser-window-focus',
+            (event: Electron.Event, browserWindow: BrowserWindow) => {
+                const meta = BrowserWindowRegistry.get(browserWindow.id);
 
-        app.on('browser-window-focus', (event: Electron.Event, browserWindow: BrowserWindow) => {
+                const isViewer: boolean =
+                    isPresent(meta) &&
+                    meta!.tags &&
+                    meta!.tags[WINDOW_TYPE] === 'viewer';
 
-            const meta = BrowserWindowRegistry.get(browserWindow.id);
+                const menu = Menu.getApplicationMenu()!;
 
-            const isViewer: boolean
-                = isPresent(meta) &&
-                meta!.tags &&
-                meta!.tags[WINDOW_TYPE] === 'viewer';
+                // **** handle toggle-annotation-sidebar
 
-            const menu = Menu.getApplicationMenu()!;
+                function handleToggleAnnotationSidebar() {
+                    const viewMenu = Menus.find(menu.items, 'view');
+                    const viewMenuItems = Menus.submenu(viewMenu);
+                    const toggleAnnotationSidebar = Menus.find(
+                        viewMenuItems,
+                        'toggle-annotation-sidebar'
+                    );
 
-            // **** handle toggle-annotation-sidebar
+                    Menus.setVisible(toggleAnnotationSidebar!, isViewer);
+                }
 
-            function handleToggleAnnotationSidebar() {
-                const viewMenu = Menus.find(menu.items, 'view');
-                const viewMenuItems = Menus.submenu(viewMenu);
-                const toggleAnnotationSidebar = Menus.find(viewMenuItems, 'toggle-annotation-sidebar');
+                handleToggleAnnotationSidebar();
 
-                Menus.setVisible(toggleAnnotationSidebar!, isViewer);
+                // **** handle sync-flashcards-to-anki
+
+                function handleSyncFlashcardsToAnki() {
+                    const toolsMenu = Menus.find(menu.items, 'tools');
+                    const toolsMenuItems = Menus.submenu(toolsMenu);
+                    const syncFlashcardsToAnkiMenuItem = Menus.find(
+                        toolsMenuItems,
+                        'sync-flashcards-to-anki'
+                    );
+
+                    Menus.setVisible(syncFlashcardsToAnkiMenuItem!, !isViewer);
+                }
+
+                handleSyncFlashcardsToAnki();
+
+                // **** handle annotate menu
+
+                const annotateMenu = Menus.find(menu.items, 'annotate');
+
+                if (annotateMenu) {
+                    const annotateMenuItems = Menus.submenu(annotateMenu!)!;
+
+                    annotateMenuItems.forEach(current => {
+                        Menus.setEnabled(current, isViewer);
+                    });
+                }
             }
-
-            handleToggleAnnotationSidebar();
-
-            // **** handle sync-flashcards-to-anki
-
-            function handleSyncFlashcardsToAnki() {
-
-                const toolsMenu = Menus.find(menu.items, 'tools');
-                const toolsMenuItems = Menus.submenu(toolsMenu);
-                const syncFlashcardsToAnkiMenuItem = Menus.find(toolsMenuItems, 'sync-flashcards-to-anki');
-
-                Menus.setVisible(syncFlashcardsToAnkiMenuItem!, ! isViewer);
-
-            }
-
-            handleSyncFlashcardsToAnki();
-
-            // **** handle annotate menu
-
-            const annotateMenu = Menus.find(menu.items, 'annotate');
-
-            if (annotateMenu) {
-
-                const annotateMenuItems = Menus.submenu(annotateMenu!)!;
-
-                annotateMenuItems.forEach(current => {
-                    Menus.setEnabled(current, isViewer);
-                });
-
-            }
-
-        });
-
+        );
     }
 
     private createMenuTemplate(): any {
-
         const menuTemplate: any[] = [
             this.createFileMenuTemplate(),
             this.createEditMenuTemplate(),
@@ -113,7 +110,7 @@ export class MainAppMenu {
             this.createViewMenuTemplate(),
             this.createToolsMenuTemplate(),
             this.createWindowMenuTemplate(),
-            this.createHelpMenuTemplate()
+            this.createHelpMenuTemplate(),
         ];
 
         if (Platforms.get() === Platform.MACOS) {
@@ -121,7 +118,6 @@ export class MainAppMenu {
         }
 
         return menuTemplate;
-
     }
 
     private platformSupportsUpdates() {
@@ -130,14 +126,10 @@ export class MainAppMenu {
     }
 
     private createAboutMessage() {
-
         const dataDir = Directories.getDataDir().path;
         const version = Version.get();
 
-        return '' +
-            `version:  ${version}\n` +
-            `data dir: ${dataDir}\n`
-            ;
+        return '' + `version:  ${version}\n` + `data dir: ${dataDir}\n`;
     }
 
     /**
@@ -146,95 +138,94 @@ export class MainAppMenu {
      *
      */
     private createAppMenuTemplate() {
-
         return {
             label: 'Polar',
             id: 'polar',
             platform: 'darwin',
             submenu: [
-
-                {role: 'about'},
-                {type: 'separator'},
-                {role: 'hide'},
-                {role: 'hideothers'},
-                {role: 'unhide'},
-                {type: 'separator'},
-                {role: 'quit'}
-
-            ]
-
+                { role: 'about' },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'hideothers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { role: 'quit' },
+            ],
         };
-
     }
 
     private createMacOSMenuTemplate() {
-
         return {
             label: 'Polar',
             submenu: [
-
                 {
                     label: 'About Polar',
-                    click: () => this.showHelpAboutDialog()
+                    click: () => this.showHelpAboutDialog(),
                 },
                 {
-                    type: 'separator'
+                    type: 'separator',
                 },
 
                 { role: 'hide', label: 'Hide Polar' },
                 { role: 'hideOthers' },
                 { role: 'unhide' },
-                { type: 'separator'},
+                { type: 'separator' },
                 {
                     label: 'Quit',
                     accelerator: 'CmdOrCtrl+Q',
-                    click: this.mainAppController.cmdExit.bind(this.mainAppController)
+                    click: this.mainAppController.cmdExit.bind(
+                        this.mainAppController
+                    ),
                 },
-            ]
+            ],
         };
-
     }
 
     private createFileMenuTemplate() {
-
         const isMacOS = Platforms.get() === Platform.MACOS;
 
         return {
             label: 'File',
             // accelerator: 'Ctrl+F',
             submenu: [
-
                 {
                     label: 'Import from Disk',
                     accelerator: 'CmdOrCtrl+I',
                     click: () => {
-                        this.mainAppController.cmdImport()
-                            .catch((err: Error) => log.error("Could not import from disk: ", err));
-                    }
-
+                        this.mainAppController
+                            .cmdImport()
+                            .catch((err: Error) =>
+                                log.error('Could not import from disk: ', err)
+                            );
+                    },
                 },
                 {
                     label: 'Capture Web Page',
                     accelerator: 'CommandOrControl+N',
                     click: () => {
-                        this.mainAppController.cmdCaptureWebPageWithBrowser()
-                            .catch((err: Error) => log.error("Could not capture page: ", err));
-                    }
-
+                        this.mainAppController
+                            .cmdCaptureWebPageWithBrowser()
+                            .catch((err: Error) =>
+                                log.error('Could not capture page: ', err)
+                            );
+                    },
                 },
 
                 {
-                    type: 'separator'
+                    type: 'separator',
                 },
 
                 {
                     label: 'Print',
                     accelerator: 'CmdOrCtrl+P',
-                    click: (item: Electron.MenuItem, focusedWindow: BrowserWindow) => {
+                    click: (
+                        item: Electron.MenuItem,
+                        focusedWindow: BrowserWindow
+                    ) => {
                         if (focusedWindow) {
                             focusedWindow.webContents.print();
                         }
-                    }
+                    },
                 },
                 // { role: 'hide', visible: isMacOS },
                 // { role: 'hideOthers', visible: isMacOS },
@@ -242,20 +233,18 @@ export class MainAppMenu {
                 // { type: 'separator', visible: isMacOS},
 
                 {
-                    type: 'separator'
+                    type: 'separator',
                 },
                 {
                     role: 'quit',
                     label: 'Quit',
-                    visible: ! isMacOS,
+                    visible: !isMacOS,
                     accelerator: 'CmdOrCtrl+Q',
-                    click: () => this.mainAppController.cmdExit()
+                    click: () => this.mainAppController.cmdExit(),
                 },
-            ]
+            ],
         };
-
     }
-
 
     private createEditMenuTemplate() {
         return {
@@ -267,7 +256,7 @@ export class MainAppMenu {
                 // { type: 'separator' },
                 // { label: 'Find', accelerator: 'CmdOrCtrl+f', click: () => InPageSearch.execute() },
                 { type: 'separator' },
-                { role: 'cut'},
+                { role: 'cut' },
                 { role: 'copy' },
                 { role: 'paste' },
                 { role: 'pasteandmatchstyle' },
@@ -281,29 +270,28 @@ export class MainAppMenu {
                 //         { label: 'Triple', },
                 //     ]
                 // },
-            ]
+            ],
         };
     }
 
     private createAnnotateMenuTemplate() {
-
         // TODO: create pagemark
         //       Mark current page read
         //       Create new pagemark
         //
 
         return {
-           id: 'annotate',
-           label: 'Annotate',
-           enabled: false,
-           visible: false,
-           submenu: [
-                { role: 'undo', enabled: false, visible: 'false'},
+            id: 'annotate',
+            label: 'Annotate',
+            enabled: false,
+            visible: false,
+            submenu: [
+                { role: 'undo', enabled: false, visible: 'false' },
                 { role: 'redo' },
                 // { type: 'separator' },
                 // { label: 'Find', accelerator: 'CmdOrCtrl+f', click: () => InPageSearch.execute() },
                 { type: 'separator' },
-                { role: 'cut'},
+                { role: 'cut' },
                 { role: 'copy' },
                 { role: 'paste' },
                 { role: 'pasteandmatchstyle' },
@@ -317,10 +305,9 @@ export class MainAppMenu {
                 //         { label: 'Triple', },
                 //     ]
                 // },
-            ]
+            ],
         };
     }
-
 
     private createViewMenuTemplate() {
         return {
@@ -330,11 +317,14 @@ export class MainAppMenu {
                 {
                     label: 'Reload',
                     accelerator: 'CmdOrCtrl+R',
-                    click: (item: Electron.MenuItem, focusedWindow: BrowserWindow) => {
+                    click: (
+                        item: Electron.MenuItem,
+                        focusedWindow: BrowserWindow
+                    ) => {
                         if (focusedWindow) {
                             focusedWindow.webContents.reloadIgnoringCache();
                         }
-                    }
+                    },
                 },
                 // {
                 //     label: 'Annotations Sidebar',
@@ -351,7 +341,8 @@ export class MainAppMenu {
                     accelerator: 'F10',
                     label: 'Toggle Annotation Sidebar',
                     visible: false,
-                    click: () => AnnotationSidebarClient.toggleAnnotationSidebar()
+                    click: () =>
+                        AnnotationSidebarClient.toggleAnnotationSidebar(),
                 },
 
                 {
@@ -363,13 +354,18 @@ export class MainAppMenu {
                             return 'F11';
                         }
                     })(),
-                    click: (item: Electron.MenuItem, focusedWindow: BrowserWindow) => {
+                    click: (
+                        item: Electron.MenuItem,
+                        focusedWindow: BrowserWindow
+                    ) => {
                         if (focusedWindow) {
-                            focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                            focusedWindow.setFullScreen(
+                                !focusedWindow.isFullScreen()
+                            );
                         }
-                    }
+                    },
                 },
-            ]
+            ],
         };
     }
 
@@ -377,10 +373,7 @@ export class MainAppMenu {
         return {
             label: 'Window',
             role: 'window',
-            submenu: [
-                { role: 'minimize' },
-                { role: 'close' },
-            ]
+            submenu: [{ role: 'minimize' }, { role: 'close' }],
         };
     }
 
@@ -391,27 +384,29 @@ export class MainAppMenu {
             submenu: [
                 {
                     label: 'Document Repository',
-                    click: () => Promises.executeLogged(AppLauncher.launchRepositoryApp)
+                    click: () =>
+                        Promises.executeLogged(AppLauncher.launchRepositoryApp),
                 },
                 {
                     id: 'sync-flashcards-to-anki',
                     label: 'Sync Flashcards to Anki',
                     click: () => {
-                        Messenger.postMessage( {
-                           message: {
-                               type: "start-anki-sync"
-                           }
-                        }).catch(err => log.error("Could not post message", err));
-                    }
+                        Messenger.postMessage({
+                            message: {
+                                type: 'start-anki-sync',
+                            },
+                        }).catch(err =>
+                            log.error('Could not post message', err)
+                        );
+                    },
                 },
-                {type: 'separator'},
+                { type: 'separator' },
                 {
                     label: 'Toggle Developer Tools',
-                    click: this.mainAppController.cmdToggleDevTools
+                    click: this.mainAppController.cmdToggleDevTools,
                 },
-            ]
+            ],
         };
-
     }
 
     private createHelpMenuTemplate() {
@@ -423,49 +418,83 @@ export class MainAppMenu {
             submenu: [
                 {
                     label: 'About',
-                    click: () => this.showHelpAboutDialog()
+                    click: () => this.showHelpAboutDialog(),
                 },
-                { label: 'Documentation',
-                    click: () => shell.openExternal('https://getpolarized.io/docs/') },
+                {
+                    label: 'Documentation',
+                    click: () =>
+                        shell.openExternal('https://getpolarized.io/docs/'),
+                },
                 {
                     id: 'check-for-updates',
                     label: 'Check for updates',
                     // only show on Windows and MacOS as all other platforms have
                     // their own dist system (for now).
                     visible: this.platformSupportsUpdates(),
-                    click: ManualUpdates.checkForUpdates
+                    click: ManualUpdates.checkForUpdates,
                 },
 
-                {type: 'separator'},
+                { type: 'separator' },
 
-                { label: 'Donate',
-                    click: () => shell.openExternal('https://opencollective.com/polar-bookshelf/donate') },
+                {
+                    label: 'Donate',
+                    click: () =>
+                        shell.openExternal(
+                            'https://opencollective.com/polar-bookshelf/donate'
+                        ),
+                },
 
-                {type: 'separator'},
-                { label: 'Discord',
-                    click: () => shell.openExternal('https://discord.gg/GT8MhA6') },
+                { type: 'separator' },
+                {
+                    label: 'Discord',
+                    click: () =>
+                        shell.openExternal('https://discord.gg/GT8MhA6'),
+                },
 
-                { label: 'Reddit',
-                    click: () => shell.openExternal('https://www.reddit.com/r/PolarBookshelf/') },
+                {
+                    label: 'Reddit',
+                    click: () =>
+                        shell.openExternal(
+                            'https://www.reddit.com/r/PolarBookshelf/'
+                        ),
+                },
 
-                { label: 'Learn More',
-                    click: () => shell.openExternal('https://github.com/burtonator/polar-bookshelf') },
-                {type: 'separator'},
-                { label: 'Cookie Policy',
-                    click: () => shell.openExternal('https://getpolarized.io/cookie-policy.html') },
+                {
+                    label: 'Learn More',
+                    click: () =>
+                        shell.openExternal(
+                            'https://github.com/burtonator/polar-bookshelf'
+                        ),
+                },
+                { type: 'separator' },
+                {
+                    label: 'Cookie Policy',
+                    click: () =>
+                        shell.openExternal(
+                            'https://getpolarized.io/cookie-policy.html'
+                        ),
+                },
 
-                { label: 'Terms of Service',
-                    click: () => shell.openExternal('https://getpolarized.io/terms-of-service.html') },
+                {
+                    label: 'Terms of Service',
+                    click: () =>
+                        shell.openExternal(
+                            'https://getpolarized.io/terms-of-service.html'
+                        ),
+                },
 
-                { label: 'Privacy Policy',
-                    click: () => shell.openExternal('https://getpolarized.io/privacy-policy.html') },
-
-            ]
+                {
+                    label: 'Privacy Policy',
+                    click: () =>
+                        shell.openExternal(
+                            'https://getpolarized.io/privacy-policy.html'
+                        ),
+                },
+            ],
         };
     }
 
     private showHelpAboutDialog() {
-
         dialog.showMessageBox(BrowserWindow.getFocusedWindow()!, {
             type: 'info',
             buttons: ['OK'],
@@ -474,15 +503,12 @@ export class MainAppMenu {
             detail: '',
             // icon: APP_ICON
         });
-
     }
-
 }
-
 
 // TODO: this is a short term work around to enable selected options from JUST
 // the editor window.
 export enum MainMenuMode {
     DOC_REPO_APP,
-    VIEWER_APP
+    VIEWER_APP,
 }

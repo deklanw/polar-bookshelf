@@ -1,7 +1,6 @@
-import {isPresent} from '../../Preconditions';
+import { isPresent } from '../../Preconditions';
 
 export class Optional<T> {
-
     constructor(value: T | undefined | null, name?: string) {
         this.value = value;
         this.name = name;
@@ -14,52 +13,43 @@ export class Optional<T> {
 
     private readonly value: T | null | undefined = undefined;
 
-    public map<V>(mapFunction: MapFunction<NonNullable<T>, V>): Optional<NonNullable<V>> {
-
+    public map<V>(
+        mapFunction: MapFunction<NonNullable<T>, V>
+    ): Optional<NonNullable<V>> {
         if (this.isPresent()) {
-
             const mapped = mapFunction(this.value!);
 
             if (Optional.present(mapped)) {
                 return new Optional<NonNullable<V>>(mapped!, this.name);
             }
-
         }
 
         return new Optional<NonNullable<V>>(undefined, this.name);
-
     }
 
     public when(consumeFunction: ConsumeFunction<NonNullable<T>>) {
-
         if (this.isPresent()) {
             consumeFunction(this.value!);
         }
-
     }
 
     public filter(filterFunction: FilterFunction<NonNullable<T>>): Optional<T> {
-
         if (this.isPresent() && filterFunction(this.value!)) {
             return new Optional(this.value);
         }
 
         return new Optional<T>(undefined, this.name);
-
     }
 
     public get(): NonNullable<T> {
-
         if (this.isPresent()) {
             return this.value!;
         } else {
-            throw new Error("The value is undefined");
+            throw new Error('The value is undefined');
         }
-
     }
 
     public getOrElse(value: NonNullable<T>): NonNullable<T> {
-
         if (this.isPresent()) {
             return this.value!;
         }
@@ -71,7 +61,6 @@ export class Optional<T> {
      * Get the value or return undefined if it is absent.
      */
     public getOrUndefined(): T | undefined {
-
         if (this.value === null) {
             return undefined;
         }
@@ -83,16 +72,12 @@ export class Optional<T> {
         return this.value !== undefined && this.value !== null;
     }
 
-
     /**
      *
      * @see {validateTypeof}
      */
     public validateString(): Optional<string> {
-
-        return this.validateTypeof('string')
-            .map(current => current as any);
-
+        return this.validateTypeof('string').map(current => current as any);
     }
 
     /**
@@ -100,10 +85,7 @@ export class Optional<T> {
      * @see {validateTypeof}
      */
     public validateBoolean(): Optional<boolean> {
-
-        return this.validateTypeof('boolean')
-            .map(current => current as any);
-
+        return this.validateTypeof('boolean').map(current => current as any);
     }
 
     /**
@@ -111,10 +93,7 @@ export class Optional<T> {
      * @see {validateTypeof}
      */
     public validateNumber(): Optional<number> {
-
-        return this.validateTypeof('number')
-            .map(current => current as any);
-
+        return this.validateTypeof('number').map(current => current as any);
     }
 
     /**
@@ -135,16 +114,17 @@ export class Optional<T> {
      *
      */
     public validateTypeof(typeOf: JavascriptType): Optional<T> {
-
         if (this.isPresent() && typeof this.value === typeOf) {
             return this;
         }
 
         return Optional.empty();
-
     }
 
-    public static of<T>(value: T | null | undefined, name?: string): Optional<T> {
+    public static of<T>(
+        value: T | null | undefined,
+        name?: string
+    ): Optional<T> {
         return new Optional<T>(value, name);
     }
 
@@ -153,10 +133,10 @@ export class Optional<T> {
      * we could use lodash or a stream-like API but it's a bit easier to just
      * do it this way.
      */
-    public static first<T>(...values: Array<T | null | undefined | Optional<T>>): Optional<T> {
-
+    public static first<T>(
+        ...values: Array<T | null | undefined | Optional<T>>
+    ): Optional<T> {
         for (const value of values) {
-
             let val: T | null | undefined;
 
             if (value instanceof Optional) {
@@ -168,7 +148,6 @@ export class Optional<T> {
             if (isPresent(val)) {
                 return Optional.of(val);
             }
-
         }
 
         return Optional.empty();
@@ -185,7 +164,6 @@ export class Optional<T> {
     public static present(obj?: any) {
         return obj !== undefined && obj !== null;
     }
-
 }
 
 /**

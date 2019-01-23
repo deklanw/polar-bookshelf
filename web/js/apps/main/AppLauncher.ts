@@ -1,38 +1,49 @@
-import {BrowserWindow} from "electron";
-import {BROWSER_WINDOW_OPTIONS, MainAppBrowserWindowFactory} from './MainAppBrowserWindowFactory';
-import {ResourcePaths} from '../../electron/webresource/ResourcePaths';
-import {SingletonBrowserWindow} from '../../electron/framework/SingletonBrowserWindow';
-import {Logger} from "../../logger/Logger";
-import {Dictionaries} from "../../util/Dictionaries";
+import { BrowserWindow } from 'electron';
+import {
+    BROWSER_WINDOW_OPTIONS,
+    MainAppBrowserWindowFactory,
+} from './MainAppBrowserWindowFactory';
+import { ResourcePaths } from '../../electron/webresource/ResourcePaths';
+import { SingletonBrowserWindow } from '../../electron/framework/SingletonBrowserWindow';
+import { Logger } from '../../logger/Logger';
+import { Dictionaries } from '../../util/Dictionaries';
 
-const log =  Logger.create();
+const log = Logger.create();
 
 export class AppLauncher {
-
     /**
      * Launch the repository app or focus it if it's already created.
      */
     public static async launchRepositoryApp(): Promise<BrowserWindow> {
+        const browserWindowTag = { name: 'app', value: 'repository' };
 
-        const browserWindowTag = {name: 'app', value: 'repository'};
+        const browserWindow = await SingletonBrowserWindow.getInstance(
+            browserWindowTag,
+            async () => {
+                const url = ResourcePaths.resourceURLFromRelativeURL(
+                    '/apps/repository/index.html',
+                    false
+                );
+                log.info('Loading app from URL: ' + url);
 
-        const browserWindow = await SingletonBrowserWindow.getInstance(browserWindowTag, async () => {
-            const url = ResourcePaths.resourceURLFromRelativeURL('/apps/repository/index.html', false);
-            log.info("Loading app from URL: " + url);
+                const browserWindowOptions = Dictionaries.copyOf(
+                    BROWSER_WINDOW_OPTIONS
+                );
 
-            const browserWindowOptions = Dictionaries.copyOf(BROWSER_WINDOW_OPTIONS);
+                // use a 'polar-app' session so we don't use the default session
+                // which is intercepted.
+                browserWindowOptions.webPreferences!.partition =
+                    'persist:polar-app';
 
-            // use a 'polar-app' session so we don't use the default session
-            // which is intercepted.
-            browserWindowOptions.webPreferences!.partition = 'persist:polar-app';
-
-            return await MainAppBrowserWindowFactory.createWindow(browserWindowOptions, url);
-        });
+                return await MainAppBrowserWindowFactory.createWindow(
+                    browserWindowOptions,
+                    url
+                );
+            }
+        );
 
         browserWindow.focus();
 
         return browserWindow;
-
     }
-
 }

@@ -1,9 +1,8 @@
-import {SerializedObject} from './SerializedObject';
-import {Preconditions} from '../Preconditions';
-import {ImageType} from './ImageType';
+import { SerializedObject } from './SerializedObject';
+import { Preconditions } from '../Preconditions';
+import { ImageType } from './ImageType';
 
 export class Image extends SerializedObject {
-
     /**
      * The type of this image.  This is optional because for a remote URL
      * we might not know the type.
@@ -40,7 +39,6 @@ export class Image extends SerializedObject {
     public readonly rel?: string;
 
     constructor(opts: any) {
-
         super(opts);
 
         this.type = opts.type;
@@ -50,19 +48,14 @@ export class Image extends SerializedObject {
         this.rel = opts.rel;
 
         this.init(opts);
-
     }
 
-
     public validate(): void {
-
         super.validate();
 
         // Preconditions.assertNotNull(this.type, "type");
-        Preconditions.assertNotNull(this.src, "src");
-
+        Preconditions.assertNotNull(this.src, 'src');
     }
-
 }
 
 export interface ImageOpts {

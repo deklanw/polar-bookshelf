@@ -1,6 +1,6 @@
-import {Request, Response} from 'node-fetch';
+import { Request, Response } from 'node-fetch';
 
-import {default as node_fetch} from 'node-fetch';
+import { default as node_fetch } from 'node-fetch';
 
 declare var window: any;
 
@@ -15,8 +15,10 @@ let response: Response | undefined;
  * implementation directly without needing a backend server to implement the
  * methods.
  */
-export default function fetch(url: string | Request, init?: RequestInit): Promise<Response> {
-
+export default function fetch(
+    url: string | Request,
+    init?: RequestInit
+): Promise<Response> {
     if (MockFetch.response) {
         return Promise.resolve(MockFetch.response);
     }
@@ -26,21 +28,18 @@ export default function fetch(url: string | Request, init?: RequestInit): Promis
     }
 
     return node_fetch(url, init);
-
 }
 
 export class MockFetch {
-
     public static response?: Response;
-
 }
 
 // we have to use a custom RequestInit to be compatible with node_fetch and window.fetch
 export interface RequestInit {
-    body?: string ;
+    body?: string;
     cache?: RequestCache;
     credentials?: RequestCredentials;
-    headers?: {[key: string]: string};
+    headers?: { [key: string]: string };
     integrity?: string;
     keepalive?: boolean;
     method?: string;

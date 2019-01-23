@@ -1,5 +1,4 @@
-import {INamedWebRequestEvent, WebRequestReactor} from './WebRequestReactor';
-
+import { INamedWebRequestEvent, WebRequestReactor } from './WebRequestReactor';
 
 /**
  * Allows us to listen to all web requests and also register ourselves multiple
@@ -8,23 +7,18 @@ import {INamedWebRequestEvent, WebRequestReactor} from './WebRequestReactor';
  *
  */
 export class BaseWebRequestsListener {
-
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * Called when we receive an event.  All the events give us a 'details'
      * object.
      */
-    onWebRequestEvent(event: INamedWebRequestEvent) {
-
-    }
+    public onWebRequestEvent(event: INamedWebRequestEvent) {}
 
     /**
      *
      */
-    register(webRequestReactor: WebRequestReactor) {
+    public register(webRequestReactor: WebRequestReactor) {
         webRequestReactor.register(this.onWebRequestEvent.bind(this));
     }
-
 }

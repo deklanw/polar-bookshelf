@@ -1,12 +1,10 @@
-import {TraceEvent} from '../../proxies/TraceEvent';
-import {Preconditions} from '../../Preconditions';
-import {PageMeta} from '../../metadata/PageMeta';
-import {DocMeta} from '../../metadata/DocMeta';
-import {Container} from '../../components/containers/Container';
+import { TraceEvent } from '../../proxies/TraceEvent';
+import { Preconditions } from '../../Preconditions';
+import { PageMeta } from '../../metadata/PageMeta';
+import { DocMeta } from '../../metadata/DocMeta';
+import { Container } from '../../components/containers/Container';
 
 export class AnnotationEvent extends TraceEvent {
-
-
     /**
      * The ID for this annotation.
      *
@@ -47,9 +45,7 @@ export class AnnotationEvent extends TraceEvent {
      */
     public container: Container;
 
-
     constructor(opts: any = {}) {
-
         super(opts);
 
         this.id = opts.id;
@@ -59,14 +55,12 @@ export class AnnotationEvent extends TraceEvent {
         this.traceEvent = opts.traceEvent;
         this.container = opts.container;
 
-        if(this.value) {
+        if (this.value) {
             this.id = this.value.id;
         } else {
             this.id = this.previousValue.id;
         }
 
-        Preconditions.assertNotNull(this.pageMeta, "pageMeta");
-
+        Preconditions.assertNotNull(this.pageMeta, 'pageMeta');
     }
-
 }

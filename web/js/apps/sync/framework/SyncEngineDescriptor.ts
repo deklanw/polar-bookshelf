@@ -4,7 +4,6 @@
  *
  */
 export interface SyncEngineDescriptor {
-
     /**
      * A unique ID for this SyncEngine (use a GUID).
      */
@@ -13,5 +12,4 @@ export interface SyncEngineDescriptor {
     readonly name: string;
 
     readonly description?: string;
-
 }

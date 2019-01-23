@@ -1,19 +1,18 @@
-import {AnnotationType} from '../metadata/AnnotationType';
-import {Comment} from '../metadata/Comment';
-import {Screenshot} from '../metadata/Screenshot';
-import {Point} from '../Point';
-import {HighlightColor} from '../metadata/BaseHighlight';
-import {ISODateTimeString} from '../metadata/ISODateTimeStrings';
-import {PageMeta} from '../metadata/PageMeta';
-import {HTMLString} from '../util/HTMLString';
-import {Ref} from '../metadata/Refs';
+import { AnnotationType } from '../metadata/AnnotationType';
+import { Comment } from '../metadata/Comment';
+import { Screenshot } from '../metadata/Screenshot';
+import { Point } from '../Point';
+import { HighlightColor } from '../metadata/BaseHighlight';
+import { ISODateTimeString } from '../metadata/ISODateTimeStrings';
+import { PageMeta } from '../metadata/PageMeta';
+import { HTMLString } from '../util/HTMLString';
+import { Ref } from '../metadata/Refs';
 
 export interface DocAnnotation {
-
     id: string;
     annotationType: AnnotationType;
     html?: HTMLString;
-    fields?: {[name: string]: HTMLString};
+    fields?: { [name: string]: HTMLString };
     screenshot?: Screenshot;
     pageNum: number;
     position: Point;
@@ -32,18 +31,17 @@ export interface DocAnnotation {
     color?: HighlightColor;
 
     pageMeta: PageMeta;
-
 }
 
 /**
  * A map from ID to the actual DocAnnotation.
  */
 // noinspection TsLint: interface-over-type-literal
-export type DocAnnotationMap = {[id: string]: DocAnnotation};
+export interface DocAnnotationMap {
+    [id: string]: DocAnnotation;
+}
 
 /**
  * Annotations according to their position in the document.
  */
 export type SortedDocAnnotations = DocAnnotation[];
-
-

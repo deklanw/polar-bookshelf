@@ -1,8 +1,7 @@
-import {FileMeta, FileRef} from './Datastore';
-import {Backend} from './Backend';
+import { FileMeta, FileRef } from './Datastore';
+import { Backend } from './Backend';
 
 export interface DatastoreFile {
-
     readonly backend: Backend;
 
     readonly ref: FileRef;
@@ -16,5 +15,4 @@ export interface DatastoreFile {
     readonly url: string;
 
     readonly meta: FileMeta;
-
 }

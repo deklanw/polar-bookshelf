@@ -1,8 +1,7 @@
-import {Point} from '../../Point';
-import {Offset} from '../../util/Offset';
+import { Point } from '../../Point';
+import { Offset } from '../../util/Offset';
 
 export interface TriggerPopupEvent {
-
     readonly point: Point;
 
     readonly offset?: Offset;
@@ -17,5 +16,4 @@ export interface TriggerPopupEvent {
      * active.
      */
     readonly selection?: Selection;
-
 }

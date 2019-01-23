@@ -1,20 +1,14 @@
-import {TextWidget} from './TextWidget';
+import { TextWidget } from './TextWidget';
 
 export class SchemaUIFactory {
-
-    static create(): any {
-
+    public static create(): any {
         return {
-
             front: {
-                "ui:widget": TextWidget,
+                'ui:widget': TextWidget,
             },
             back: {
-                "ui:widget": TextWidget,
-            }
-
+                'ui:widget': TextWidget,
+            },
         };
-
     }
-
 }

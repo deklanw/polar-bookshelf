@@ -1,9 +1,8 @@
-import {IPCEngines} from '../../../ipc/handler/IPCEngines';
-import {LoadDocHandler} from './handlers/LoadDocHandler';
-import {MainAppController} from '../MainAppController';
+import { IPCEngines } from '../../../ipc/handler/IPCEngines';
+import { LoadDocHandler } from './handlers/LoadDocHandler';
+import { MainAppController } from '../MainAppController';
 
 export class MainAppService {
-
     private readonly mainAppController: MainAppController;
 
     constructor(mainAppController: MainAppController) {
@@ -11,13 +10,13 @@ export class MainAppService {
     }
 
     public start(): void {
-
         const ipcEngine = IPCEngines.mainProcess();
 
-        ipcEngine.registry.registerPath('/main/load-doc', new LoadDocHandler(this.mainAppController));
+        ipcEngine.registry.registerPath(
+            '/main/load-doc',
+            new LoadDocHandler(this.mainAppController)
+        );
 
         ipcEngine.start();
-
     }
-
 }

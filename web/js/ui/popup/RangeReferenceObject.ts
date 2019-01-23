@@ -1,7 +1,6 @@
 import Popper from 'popper.js';
 
 export class RangeReferenceObject implements Popper.ReferenceObject {
-
     public readonly clientHeight: number;
     public readonly clientWidth: number;
     private readonly range: Range;
@@ -18,5 +17,4 @@ export class RangeReferenceObject implements Popper.ReferenceObject {
     public getBoundingClientRect(): ClientRect {
         return this.range.getBoundingClientRect();
     }
-
 }

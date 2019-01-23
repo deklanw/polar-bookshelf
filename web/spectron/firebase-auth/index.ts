@@ -1,10 +1,12 @@
-import {app, BrowserWindow} from 'electron';
-import {ISpectronMainOptions, SpectronMain2} from '../../js/test/SpectronMain2';
-import {WebserverConfig} from '../../js/backend/webserver/WebserverConfig';
-import {Webserver} from '../../js/backend/webserver/Webserver';
-import {FileRegistry} from '../../js/backend/webserver/FileRegistry';
-import {SpectronBrowserWindowOptions} from '../../js/test/SpectronBrowserWindowOptions';
-
+import { app, BrowserWindow } from 'electron';
+import {
+    ISpectronMainOptions,
+    SpectronMain2,
+} from '../../js/test/SpectronMain2';
+import { WebserverConfig } from '../../js/backend/webserver/WebserverConfig';
+import { Webserver } from '../../js/backend/webserver/Webserver';
+import { FileRegistry } from '../../js/backend/webserver/FileRegistry';
+import { SpectronBrowserWindowOptions } from '../../js/test/SpectronBrowserWindowOptions';
 
 async function defaultWindowFactory(): Promise<BrowserWindow> {
     const mainWindow = new BrowserWindow(SpectronBrowserWindowOptions.create());
@@ -13,13 +15,11 @@ async function defaultWindowFactory(): Promise<BrowserWindow> {
     return mainWindow;
 }
 
-
 const options: ISpectronMainOptions = {
-    windowFactory: defaultWindowFactory
+    windowFactory: defaultWindowFactory,
 };
 
 SpectronMain2.create(options).run(async state => {
-
     const appDir = process.cwd();
     const webserverConfig = new WebserverConfig(appDir, 8005);
 
@@ -29,7 +29,7 @@ SpectronMain2.create(options).run(async state => {
     try {
         await webserver.start();
     } catch (e) {
-        console.warn("Webserver already running.");
+        console.warn('Webserver already running.');
     }
 
     const url = `http://localhost:8005/web/spectron/firebase-auth/content.html?primary=true`;
@@ -39,6 +39,4 @@ SpectronMain2.create(options).run(async state => {
     // secondWindow.loadURL(url);
 
     await state.testResultWriter.write(true);
-
 });
-

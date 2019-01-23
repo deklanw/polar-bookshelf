@@ -1,8 +1,8 @@
-import {Logger} from '../../logger/Logger';
-import {Elements} from '../../util/Elements';
-import {notNull} from '../../Preconditions';
-import {ProgressEvent} from './ProgressEvent';
-import {Strings} from '../../util/Strings';
+import { Logger } from '../../logger/Logger';
+import { Elements } from '../../util/Elements';
+import { notNull } from '../../Preconditions';
+import { ProgressEvent } from './ProgressEvent';
+import { Strings } from '../../util/Strings';
 
 const log = Logger.create();
 
@@ -12,44 +12,37 @@ const log = Logger.create();
  * future services.
  */
 export class ProgressLog {
-
-    constructor() {
-
-    }
+    constructor() {}
 
     /**
      * Called when we should update the progress of our app as it moves forward
      * and completes work.
      */
-    update(progressEvent: ProgressEvent) {
-
-        log.info("Got progress update: ", progressEvent.percentage);
+    public update(progressEvent: ProgressEvent) {
+        log.info('Got progress update: ', progressEvent.percentage);
 
         this.updateProgress(progressEvent);
         this.updateLogView(progressEvent);
-
     }
 
     private updateProgress(progressEvent: ProgressEvent) {
-
-        let progressElement = <HTMLProgressElement>document.querySelector("progress");
+        const progressElement = <HTMLProgressElement>(
+            document.querySelector('progress')
+        );
         progressElement.value = progressEvent.percentage;
-
     }
 
     private updateLogView(progressEvent: ProgressEvent) {
-
-        if(Strings.empty(progressEvent.message)) {
+        if (Strings.empty(progressEvent.message)) {
             return;
         }
 
-        let logElement = notNull(document.querySelector(".log"));
+        const logElement = notNull(document.querySelector('.log'));
 
-        let lineElement = Elements.createWrapperElementHTML(`<div class="">${progressEvent.message}</div>`);
+        const lineElement = Elements.createWrapperElementHTML(
+            `<div class="">${progressEvent.message}</div>`
+        );
 
         logElement.appendChild(lineElement);
-
     }
-
 }
-

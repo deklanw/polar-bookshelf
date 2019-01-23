@@ -1,14 +1,13 @@
 /**
  * Simple logger that just writes to the console.
  */
-import {ILogger} from '../ILogger';
-import {PackageManifest} from '../../util/PackageManifest';
+import { ILogger } from '../ILogger';
+import { PackageManifest } from '../../util/PackageManifest';
 
 /**
  * Annotates logs by including the version
  */
 export class VersionAnnotatingLogger implements ILogger {
-
     public readonly name: string;
     private readonly delegate: ILogger;
 
@@ -20,7 +19,6 @@ export class VersionAnnotatingLogger implements ILogger {
         const packageManifest = new PackageManifest();
         // this.versionAnnotation = `[${packageManifest.name()}-${packageManifest.version()}]`;
         this.versionAnnotation = `[${packageManifest.version()}]`;
-
     }
 
     public notice(msg: string, ...args: any[]) {
@@ -50,5 +48,4 @@ export class VersionAnnotatingLogger implements ILogger {
     public async sync(): Promise<void> {
         await this.delegate.sync();
     }
-
 }

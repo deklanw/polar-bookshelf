@@ -1,20 +1,16 @@
-import {isBoolean} from 'util';
+import { isBoolean } from 'util';
 
 /**
  * A class that can create an Iterator.
  */
 export interface Iterable<T> {
-
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#The_iterable_protocol
     [Symbol.iterator]: Iterator<T>;
-
 }
 
 export interface Iterator<T> {
-
     hasNext(): boolean;
     next(): T;
-
 }
 
 // NOTE: I don't think this is necessariy if I use the array iterator protocol

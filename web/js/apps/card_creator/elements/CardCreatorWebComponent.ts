@@ -1,9 +1,7 @@
-import {CardCreatorElement} from './CardCreatorElement';
+import { CardCreatorElement } from './CardCreatorElement';
 
 export class CardCreatorWebComponent {
-
-    static register() {
-
+    public static register() {
         // if (document.getElementById("card-creator-import")) {
         //     // we're already registered
         //     return;
@@ -18,12 +16,10 @@ export class CardCreatorWebComponent {
         // link.setAttribute("rel", "import");
         // link.setAttribute("href", "/apps/card-creator/webcomponent.html");
 
-        customElements.define("card-creator", CardCreatorElement, { extends: "div" });
+        customElements.define('card-creator', CardCreatorElement, {
+            extends: 'div',
+        });
 
-        console.log("FIXME: registered card creator.")
-
+        console.log('FIXME: registered card creator.');
     }
-
 }
-
-

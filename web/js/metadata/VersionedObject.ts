@@ -1,11 +1,10 @@
-import {Author} from './Author';
-import {SerializedObject} from './SerializedObject';
-import {Preconditions} from '../Preconditions';
-import {ISODateTimeString} from './ISODateTimeStrings';
-import {Ref} from './Refs';
+import { Author } from './Author';
+import { SerializedObject } from './SerializedObject';
+import { Preconditions } from '../Preconditions';
+import { ISODateTimeString } from './ISODateTimeStrings';
+import { Ref } from './Refs';
 
 export abstract class VersionedObject extends SerializedObject {
-
     /**
      * The unique ID for this object.  Every object needs to have a unique ID so
      * that we can reference it easily.  The ID should represent the immutable
@@ -42,7 +41,6 @@ export abstract class VersionedObject extends SerializedObject {
     public ref?: Ref;
 
     protected constructor(template: VersionedObject) {
-
         super(template);
 
         this.id = template.id;
@@ -52,30 +50,23 @@ export abstract class VersionedObject extends SerializedObject {
         this.author = template.author;
 
         this.init(template);
-
     }
 
     public setup() {
-
         super.setup();
 
-        if(!this.lastUpdated && this.created) {
+        if (!this.lastUpdated && this.created) {
             this.lastUpdated = this.created;
         }
-
     }
 
     public validate() {
-
         super.validate();
 
         this.created = Preconditions.assertNotNull(this.created);
         this.lastUpdated = Preconditions.assertNotNull(this.lastUpdated);
 
-        Preconditions.assertNotNull(this.id, "id");
-        Preconditions.assertNotNull(this.created, "created");
-
+        Preconditions.assertNotNull(this.id, 'id');
+        Preconditions.assertNotNull(this.created, 'created');
     }
-
 }
-

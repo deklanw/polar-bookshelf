@@ -1,16 +1,14 @@
-import {DecksSync} from './DecksSync';
-import {DeckDescriptor} from './DeckDescriptor';
-import {assertJSON} from '../../../../test/Assertions';
-import {DeckNamesAndIdsClient} from './clients/DeckNamesAndIdsClient';
-import {CreateDeckClient} from './clients/CreateDeckClient';
-import {Abortable} from '../Abortable';
-import {SyncProgressListener} from '../SyncProgressListener';
-import {SyncProgress} from '../SyncProgress';
-import {SyncQueue} from '../SyncQueue';
-
+import { DecksSync } from './DecksSync';
+import { DeckDescriptor } from './DeckDescriptor';
+import { assertJSON } from '../../../../test/Assertions';
+import { DeckNamesAndIdsClient } from './clients/DeckNamesAndIdsClient';
+import { CreateDeckClient } from './clients/CreateDeckClient';
+import { Abortable } from '../Abortable';
+import { SyncProgressListener } from '../SyncProgressListener';
+import { SyncProgress } from '../SyncProgress';
+import { SyncQueue } from '../SyncQueue';
 
 describe('DecksSync', function() {
-
     let decksSync: DecksSync;
 
     let abortable: Abortable;
@@ -25,9 +23,8 @@ describe('DecksSync', function() {
     let syncQueue: SyncQueue;
 
     beforeEach(function() {
-
         abortable = {
-            aborted: false
+            aborted: false,
         };
 
         syncQueue = new SyncQueue(abortable, syncProgressListener);
@@ -36,15 +33,13 @@ describe('DecksSync', function() {
 
         decksSync.createDeckClient = CreateDeckClient.createMock(1);
         decksSync.deckNamesAndIdsClient = DeckNamesAndIdsClient.createMock({});
-
     });
 
-    it("basic sync", async function() {
-
+    it('basic sync', async function() {
         const deckDescriptors: DeckDescriptor[] = [
             {
-                name: "Test Deck"
-            }
+                name: 'Test Deck',
+            },
         ];
 
         const createdDescriptors = decksSync.enqueue(deckDescriptors);
@@ -53,20 +48,18 @@ describe('DecksSync', function() {
 
         assertJSON(createdDescriptors, [
             {
-                "name": "Test Deck"
-            }
+                name: 'Test Deck',
+            },
         ]);
 
         assertJSON(syncProgress, {
-            "percentage": 100,
-            "state": "COMPLETED",
-            "taskResult": {
-                "value": {
-                    "message": "Creating missing deck: Test Deck"
-                }
-            }
+            percentage: 100,
+            state: 'COMPLETED',
+            taskResult: {
+                value: {
+                    message: 'Creating missing deck: Test Deck',
+                },
+            },
         });
-
     });
-
 });

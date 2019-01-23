@@ -1,28 +1,23 @@
-import {Tag} from '../../../web/js/tags/Tag';
-import {RepoDocInfo} from './RepoDocInfo';
+import { Tag } from '../../../web/js/tags/Tag';
+import { RepoDocInfo } from './RepoDocInfo';
 
 /**
  * A simple in-memory database of tags which can be built when we load the .json
  * data from disk.
  */
 export class TagsDB {
-
     /**
      * Stores the actual data we're indexing.  The key is the lowercase
      * representation of a tag
      */
-    private readonly index: {[id: string]: Tag} = {};
+    private readonly index: { [id: string]: Tag } = {};
 
     public register(...tags: Tag[]): void {
-
         tags.forEach(tag => {
-
-            if (! this.index[tag.id]) {
+            if (!this.index[tag.id]) {
                 this.index[tag.id] = tag;
             }
-
         });
-
     }
 
     /**
@@ -40,5 +35,4 @@ export class TagsDB {
     public updateDocInfoTags(repoDocInfo: RepoDocInfo, tags: Tag[]) {
         tags.forEach(current => this.register(current));
     }
-
 }

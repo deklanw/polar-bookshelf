@@ -1,77 +1,58 @@
 import * as React from 'react';
-import {Logger} from '../../../../web/js/logger/Logger';
-import {RepoSidebar} from '../RepoSidebar';
-import {RepoDocMetaManager} from '../RepoDocMetaManager';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { RepoSidebar } from '../RepoSidebar';
+import { RepoDocMetaManager } from '../RepoDocMetaManager';
 import NewDocumentRateChart from './NewDocumentRateChart';
 import TopTagsChart from './TopTagsChart';
 import TopTagsTable from './TopTagsTable';
-import {MessageBanner} from '../MessageBanner';
+import { MessageBanner } from '../MessageBanner';
 
 const log = Logger.create();
 
 export default class StatsApp extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
 
-        this.state = {
-        };
-
+        this.state = {};
     }
 
     public render() {
-
-        const docInfos =
-            Object.values(this.props.repoDocMetaManager.repoDocInfoIndex)
-                .map(current => current.docInfo);
+        const docInfos = Object.values(
+            this.props.repoDocMetaManager.repoDocInfoIndex
+        ).map(current => current.docInfo);
 
         return (
-
             <div id="doc-repository">
-
                 <header>
-
-                    <RepoSidebar/>
-
+                    <RepoSidebar />
                 </header>
 
-                <MessageBanner/>
+                <MessageBanner />
 
                 <div className="container-fluid border-top ml-1 mr-1">
-
                     <div className="row mt-2">
-
                         <div className="col-lg-12">
-                            <NewDocumentRateChart docInfos={docInfos}/>
+                            <NewDocumentRateChart docInfos={docInfos} />
                         </div>
-
                     </div>
 
                     <div className="row mt-2">
-
                         <div className="col-lg-8">
-                            <TopTagsChart docInfos={docInfos}/>
+                            <TopTagsChart docInfos={docInfos} />
                         </div>
 
                         <div className="col-lg-4">
-                            <TopTagsTable docInfos={docInfos}/>
+                            <TopTagsTable docInfos={docInfos} />
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         );
     }
-
 }
 
 export interface IProps {
     readonly repoDocMetaManager: RepoDocMetaManager;
 }
 
-export interface IState {
-
-}
+export interface IState {}

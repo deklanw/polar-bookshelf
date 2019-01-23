@@ -1,8 +1,8 @@
-import {ILogger} from './ILogger';
+import { ILogger } from './ILogger';
 
 import { init, captureException } from '@sentry/electron';
-import {isPresent} from '../Preconditions';
-import process from "process";
+import { isPresent } from '../Preconditions';
+import process from 'process';
 
 // This configures the Electron CrashReporter for native app crashes and
 // captures any uncaught JavaScript exceptions using the JavaScript SDKs under
@@ -15,7 +15,6 @@ let initialized: boolean = false;
 let ready: boolean = false;
 
 export class SentryLogger implements ILogger {
-
     public readonly name: string = 'sentry-logger';
 
     public notice(msg: string, ...args: any[]) {
@@ -27,22 +26,16 @@ export class SentryLogger implements ILogger {
     }
 
     public error(msg: string, ...args: any[]) {
-
         SentryLogger.initWhenNecessary();
 
         if (ready) {
-
             args.forEach(arg => {
-
-                if ( arg instanceof Error) {
-
+                if (arg instanceof Error) {
                     // This captures 'handles' exceptions as Sentry wouldn't actually
                     // capture these as they aren't surfaced to Electron.
                     captureException(arg);
                 }
-
             });
-
         }
     }
 
@@ -63,38 +56,32 @@ export class SentryLogger implements ILogger {
     }
 
     public static isEnabled() {
-
         if (isPresent(process.env.POLAR_SENTRY_ENABLED)) {
             return process.env.POLAR_SENTRY_ENABLED === 'true';
         }
 
-        return ! isPresent(process.env.SNAP);
+        return !isPresent(process.env.SNAP);
     }
 
     private static initWhenNecessary() {
-
         if (initialized) {
             return;
         }
 
         try {
-
             if (SentryLogger.isEnabled()) {
                 init({
-                    dsn: 'https://2e8b8ca6e6bf4bf58d735f2a405ecb20@sentry.io/1273707',
+                    dsn:
+                        'https://2e8b8ca6e6bf4bf58d735f2a405ecb20@sentry.io/1273707',
                     // more options...
                 });
             }
 
             ready = true;
-
         } catch (e) {
-            console.error("Unable to initialize sentry: ", e);
+            console.error('Unable to initialize sentry: ', e);
         } finally {
             initialized = true;
         }
-
     }
-
 }
-

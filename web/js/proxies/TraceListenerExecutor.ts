@@ -1,10 +1,9 @@
-import {TraceListener} from './TraceListener';
-import {MutationType} from './MutationType';
-import {TraceEvent} from './TraceEvent';
-import {FunctionalInterface} from '../util/FunctionalInterface';
+import { TraceListener } from './TraceListener';
+import { MutationType } from './MutationType';
+import { TraceEvent } from './TraceEvent';
+import { FunctionalInterface } from '../util/FunctionalInterface';
 
 export class TraceListenerExecutor {
-
     private traceListeners: TraceListener[];
 
     // TODO: use the proper type in the future once ported to TS.
@@ -30,7 +29,6 @@ export class TraceListenerExecutor {
      *       method.
      */
     public sync() {
-
         // REFACTOR: this should not be onMutation because the initial value is
         // not a mutation.
 
@@ -38,11 +36,12 @@ export class TraceListenerExecutor {
         const target = this.traceHandler.target;
 
         this.traceListeners.forEach(traceListener => {
-
-            traceListener = FunctionalInterface.create("onMutation", traceListener);
+            traceListener = FunctionalInterface.create(
+                'onMutation',
+                traceListener
+            );
 
             for (const key in target) {
-
                 if (target.hasOwnProperty(key)) {
                     const val = target[key];
 
@@ -51,16 +50,12 @@ export class TraceListenerExecutor {
                         mutationType: MutationType.INITIAL,
                         target,
                         property: key,
-                        value: val
+                        value: val,
                     });
 
                     traceListener.onMutation(traceEvent);
                 }
-
             }
-
         });
-
     }
-
 }

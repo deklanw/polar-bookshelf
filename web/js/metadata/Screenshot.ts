@@ -1,9 +1,8 @@
-import {Preconditions} from '../Preconditions';
-import {Image} from './Image';
-import {ISODateTimeString} from './ISODateTimeStrings';
+import { Preconditions } from '../Preconditions';
+import { Image } from './Image';
+import { ISODateTimeString } from './ISODateTimeStrings';
 
 export class Screenshot extends Image {
-
     /**
      * The unique ID for this object.
      */
@@ -16,23 +15,18 @@ export class Screenshot extends Image {
     public created: ISODateTimeString;
 
     constructor(opts: any) {
-
         super(opts);
 
         this.id = opts.id;
         this.created = opts.created;
 
         this.init(opts);
-
     }
 
     public validate() {
-
         super.validate();
 
-        Preconditions.assertPresent(this.id, "id");
-        Preconditions.assertPresent(this.created, "created");
-
+        Preconditions.assertPresent(this.id, 'id');
+        Preconditions.assertPresent(this.created, 'created');
     }
-
 }

@@ -1,5 +1,5 @@
-//import {Application} from 'spectron';
-import {Preconditions} from '../Preconditions';
+// import {Application} from 'spectron';
+import { Preconditions } from '../Preconditions';
 
 const TIMEOUT = 250;
 
@@ -7,48 +7,42 @@ const TIMEOUT = 250;
  * Keep a background monitor to read logs and then write them to the main process.
  */
 export class SpectronOutputMonitorService {
-
     private app: any;
 
     private stopped: boolean = false;
 
     constructor(app: any) {
-        this.app = Preconditions.assertNotNull(app, "app");
+        this.app = Preconditions.assertNotNull(app, 'app');
         this.stopped = false;
     }
 
-    start() {
+    public start() {
         this._iter();
-        console.log("SpectronOutputMonitorService started");
+        console.log('SpectronOutputMonitorService started');
     }
 
-    _iter() {
-
+    public _iter() {
         this._doLogForwarding();
         this._reschedule();
-
     }
 
-    _doLogForwarding() {
+    public _doLogForwarding() {
+        const client = this.app.client;
 
-        let client = this.app.client;
-
-        if(client) {
+        if (client) {
+            // right now e only forward the main because we can get the renderer
+            // via the javascript console.
+            client.getMainProcessLogs().then(function(logs: any[]) {
+                logs.forEach(function(log) {
+                    console.log('main: ' + log);
+                });
+            });
 
             // right now e only forward the main because we can get the renderer
             // via the javascript console.
-            client.getMainProcessLogs().then(function (logs: any[]) {
-                logs.forEach(function (log) {
-                    console.log("main: " + log);
-                })
-
-            })
-
-            // right now e only forward the main because we can get the renderer
-            // via the javascript console.
-            client.getRenderProcessLogs().then(function (logs: any[]) {
-                logs.forEach(function (log) {
-                    //console.log("render: " + JSON.stringify(log, null, "  "));
+            client.getRenderProcessLogs().then(function(logs: any[]) {
+                logs.forEach(function(log) {
+                    // console.log("render: " + JSON.stringify(log, null, "  "));
 
                     // TODO: this is ALL we get for SEVERE.  We don't get an
                     // exception.  I think if there are args given to log.info or
@@ -68,39 +62,33 @@ export class SpectronOutputMonitorService {
                     //         "timestamp": 1532443613553
                     // }
 
-                    console.log(`render: ${log.timestamp} ${log.source} ${log.level}: ${log.message}` );
-
-                })
-
-            })
-
+                    console.log(
+                        `render: ${log.timestamp} ${log.source} ${log.level}: ${
+                            log.message
+                        }`
+                    );
+                });
+            });
         } else {
-
         }
-
     }
 
-    _reschedule() {
-
-        if(this.stopped) {
+    public _reschedule() {
+        if (this.stopped) {
             return;
         }
 
         setTimeout(() => {
             this._doLogForwarding();
         }, TIMEOUT);
-
     }
 
-    stop() {
-
+    public stop() {
         // do one more just to make sure we don't have any missing last moment
         // logs
         this._doLogForwarding();
         this.stopped = true;
 
-        console.log("SpectronOutputMonitorService stopped");
-
+        console.log('SpectronOutputMonitorService stopped');
     }
-
 }

@@ -1,31 +1,30 @@
-import {SpectronMain2} from '../../js/test/SpectronMain2';
-import {Datastore} from '../../js/datastore/Datastore';
-import {MemoryDatastore} from '../../js/datastore/MemoryDatastore';
-import {Logging} from '../../js/logger/Logging';
-import {MainApp} from '../../js/apps/main/MainApp';
+import { SpectronMain2 } from '../../js/test/SpectronMain2';
+import { Datastore } from '../../js/datastore/Datastore';
+import { MemoryDatastore } from '../../js/datastore/MemoryDatastore';
+import { Logging } from '../../js/logger/Logging';
+import { MainApp } from '../../js/apps/main/MainApp';
 import BrowserWindow = Electron.BrowserWindow;
-import {BrowserWindowRegistry} from '../../js/electron/framework/BrowserWindowRegistry';
-import {wait} from 'dom-testing-library';
-import {assert} from 'chai';
+import { BrowserWindowRegistry } from '../../js/electron/framework/BrowserWindowRegistry';
+import { wait } from 'dom-testing-library';
+import { assert } from 'chai';
 import waitForExpect from 'wait-for-expect';
-import {Logger} from '../../js/logger/Logger';
-import {FilePaths} from '../../js/util/FilePaths';
-import {Files} from '../../js/util/Files';
-import {MainAppController} from '../../js/apps/main/MainAppController';
-import {PolarDataDir} from '../../js/test/PolarDataDir';
-import {AppPath} from '../../js/electron/app_path/AppPath';
+import { Logger } from '../../js/logger/Logger';
+import { FilePaths } from '../../js/util/FilePaths';
+import { Files } from '../../js/util/Files';
+import { MainAppController } from '../../js/apps/main/MainAppController';
+import { PolarDataDir } from '../../js/test/PolarDataDir';
+import { AppPath } from '../../js/electron/app_path/AppPath';
 import fs from 'fs';
-import {Preconditions} from '../../js/Preconditions';
+import { Preconditions } from '../../js/Preconditions';
 
 const log = Logger.create();
 
 let polarDir: PolarDir | undefined;
 let mainAppController: MainAppController | undefined;
 
-AppPath.set(FilePaths.resolve(__dirname, "..", "..", ".."));
+AppPath.set(FilePaths.resolve(__dirname, '..', '..', '..'));
 
 async function createWindow(): Promise<BrowserWindow> {
-
     polarDir = await setupNewDataDir();
 
     const datastore: Datastore = new MemoryDatastore();
@@ -40,17 +39,17 @@ async function createWindow(): Promise<BrowserWindow> {
     mainAppController = mainAppState.mainAppController;
 
     return mainAppState.mainWindow;
-
 }
 
-SpectronMain2.create({windowFactory: createWindow}).run(async state => {
-
-    log.info("Waiting for repository to show...");
+SpectronMain2.create({ windowFactory: createWindow }).run(async state => {
+    log.info('Waiting for repository to show...');
 
     await waitForExpect(() => {
-        const windows = BrowserWindowRegistry.tagged({name: 'app', value: 'repository'});
+        const windows = BrowserWindowRegistry.tagged({
+            name: 'app',
+            value: 'repository',
+        });
         assert.ok(windows.length === 1);
-
     });
 
     await mainAppController!.handleLoadDoc(polarDir!.files[0]);
@@ -66,14 +65,12 @@ SpectronMain2.create({windowFactory: createWindow}).run(async state => {
     // test.
 
     await state.testResultWriter.write(true);
-
 });
 
 async function setupNewDataDir(): Promise<PolarDir> {
-
     const dataDir = await PolarDataDir.useFreshDirectory('.polar-main-app');
 
-    log.info("Using new dataDir: " + dataDir);
+    log.info('Using new dataDir: ' + dataDir);
 
     const stashDir = FilePaths.create(dataDir, 'stash');
 
@@ -82,7 +79,6 @@ async function setupNewDataDir(): Promise<PolarDir> {
     const files: string[] = [];
 
     for (const filename of filenames) {
-
         const srcPath = FilePaths.join(__dirname, 'files', filename);
         const targetPath = FilePaths.join(stashDir, filename);
 
@@ -92,9 +88,8 @@ async function setupNewDataDir(): Promise<PolarDir> {
     }
 
     return {
-        files
+        files,
     };
-
 }
 
 interface PolarDir {

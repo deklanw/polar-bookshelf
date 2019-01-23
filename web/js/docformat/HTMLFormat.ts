@@ -1,77 +1,72 @@
-import {DocFormat, PageDetail} from './DocFormat';
-import {notNull} from '../Preconditions';
-import {Optional} from '../util/ts/Optional';
+import { DocFormat, PageDetail } from './DocFormat';
+import { notNull } from '../Preconditions';
+import { Optional } from '../util/ts/Optional';
 
 export class HTMLFormat extends DocFormat {
-
     public readonly name: string;
 
     constructor() {
         super();
-        this.name = "html";
+        this.name = 'html';
     }
 
     /**
      * Get all the metadata about the current page.
      */
     public getCurrentPageDetail(): PageDetail {
-
         const pageElement = notNull(this.getCurrentPageElement());
         const pageNum = this.getPageNumFromPageElement(pageElement);
 
         const dimensions = {
             width: pageElement.offsetWidth,
-            height: pageElement.offsetHeight
+            height: pageElement.offsetHeight,
         };
 
         return { pageElement, pageNum, dimensions };
-
     }
 
     /**
      * Get the current doc fingerprint or null if it hasn't been loaded yet.
      */
-    currentDocFingerprint(): string | undefined {
-
-        let polarFingerprint = this._queryFingerprintElement();
+    public currentDocFingerprint(): string | undefined {
+        const polarFingerprint = this._queryFingerprintElement();
 
         if (polarFingerprint !== null) {
-            return Optional.of(polarFingerprint.getAttribute("content")!).getOrUndefined();
+            return Optional.of(
+                polarFingerprint.getAttribute('content')!
+            ).getOrUndefined();
         }
 
         return undefined;
-
     }
 
-    setCurrentDocFingerprint(fingerprint: string) {
-        let polarFingerprint = this._queryFingerprintElement();
-        polarFingerprint.setAttribute("content", fingerprint);
+    public setCurrentDocFingerprint(fingerprint: string) {
+        const polarFingerprint = this._queryFingerprintElement();
+        polarFingerprint.setAttribute('content', fingerprint);
     }
 
-    _queryFingerprintElement(): Element {
-        return notNull(document.querySelector("meta[name='polar-fingerprint']"));
+    public _queryFingerprintElement(): Element {
+        return notNull(
+            document.querySelector("meta[name='polar-fingerprint']")
+        );
     }
 
     /**
      * Get the current state of the doc.
      */
-    currentState(event: any) {
-
+    public currentState(event: any) {
         return {
             nrPages: 1,
             currentPageNumber: 1,
-            pageElement: <HTMLElement>document.querySelector(".page")
-        }
-
-    }
-
-    textHighlightOptions() {
-        return {
+            pageElement: <HTMLElement>document.querySelector('.page'),
         };
     }
 
-    currentScale() {
+    public textHighlightOptions() {
+        return {};
+    }
 
+    public currentScale() {
         return Optional.of(document.querySelector("meta[name='polar-scale']"))
             .map(current => current.getAttribute('content'))
             .map(current => parseFloat(current))
@@ -97,11 +92,10 @@ export class HTMLFormat extends DocFormat {
 
         return result;
         */
-
     }
 
-    targetDocument(): HTMLDocument | null {
-        return Optional.of(document.querySelector("iframe")).get().contentDocument;
+    public targetDocument(): HTMLDocument | null {
+        return Optional.of(document.querySelector('iframe')).get()
+            .contentDocument;
     }
-
 }

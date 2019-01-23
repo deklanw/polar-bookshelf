@@ -1,36 +1,41 @@
-import {Promises} from '../../util/Promises';
-import {MockPipes} from './MockPipes';
-import {SyncPipe} from './SyncPipe';
+import { Promises } from '../../util/Promises';
+import { MockPipes } from './MockPipes';
+import { SyncPipe } from './SyncPipe';
 
 describe('SyncPipe', function() {
+    it('create sync pipes L->R', async function() {
+        const mockChannels: MockPipes<any, string> = MockPipes.create();
 
-    it("create sync pipes L->R", async function () {
+        const left = new SyncPipe(mockChannels.left, 'left', 'test');
+        const right = new SyncPipe(mockChannels.right, 'right', 'test');
 
-        let mockChannels: MockPipes<any, string> = MockPipes.create();
-
-        let left = new SyncPipe(mockChannels.left, 'left', 'test');
-        let right = new SyncPipe(mockChannels.right, 'right', 'test');
-
-        let leftPromise = Promises.withTimeout(1, async () => await left.sync())
-        let rightPromise = Promises.withTimeout(1, async () => await right.sync())
+        const leftPromise = Promises.withTimeout(
+            1,
+            async () => await left.sync()
+        );
+        const rightPromise = Promises.withTimeout(
+            1,
+            async () => await right.sync()
+        );
 
         await Promise.all([leftPromise, rightPromise]);
-
     });
 
-    it("create sync pipes R->L", async function () {
+    it('create sync pipes R->L', async function() {
+        const mockChannels: MockPipes<any, string> = MockPipes.create();
 
-        let mockChannels: MockPipes<any, string> = MockPipes.create();
+        const left = new SyncPipe(mockChannels.left, 'left', 'test');
+        const right = new SyncPipe(mockChannels.right, 'right', 'test');
 
-        let left = new SyncPipe(mockChannels.left, 'left', 'test');
-        let right = new SyncPipe(mockChannels.right, 'right', 'test');
-
-        let leftPromise = Promises.withTimeout(1, async () => await left.sync())
-        let rightPromise = Promises.withTimeout(1, async () => await right.sync())
+        const leftPromise = Promises.withTimeout(
+            1,
+            async () => await left.sync()
+        );
+        const rightPromise = Promises.withTimeout(
+            1,
+            async () => await right.sync()
+        );
 
         await Promise.all([rightPromise, leftPromise]);
-
     });
-
-
 });

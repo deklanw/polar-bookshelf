@@ -1,4 +1,4 @@
-import {StringBuffer} from '../../../js/util/StringBuffer';
+import { StringBuffer } from '../../../js/util/StringBuffer';
 
 export interface StandardFontIndex {
     [name: string]: FontType;
@@ -9,7 +9,6 @@ export interface FontType {
 }
 
 export class FontReplacer {
-
     // TODO: another aporoach is to just replace the standard fonts by name...
     // this would be easier to implement.
 
@@ -18,7 +17,6 @@ export class FontReplacer {
     // FIXME: monospace
 
     public static createFontReplacements(): string {
-
         const buff = new StringBuffer();
 
         const standardFontIndex = this.createStandardFontIndex();
@@ -27,22 +25,21 @@ export class FontReplacer {
             const fontType = standardFontIndex[fontName];
 
             if (fontType.type === 'serif') {
-                buff.append(this.createFontReplacementUsingMerriweather(fontName));
+                buff.append(
+                    this.createFontReplacementUsingMerriweather(fontName)
+                );
             } else if (fontType.type === 'sans-serif') {
                 buff.append(this.createFontReplacementUsingRoboto(fontName));
             }
-
         }
 
         return buff.toString();
-
     }
 
     /**
      * Create a simple/easy replacement which *probably* works.
      */
     private static createFontReplacementUsingRoboto(newFontName: string) {
-
         return `<style id="polar-font-mapping-from-${newFontName}-to-roboto">
 
             @font-face {
@@ -102,11 +99,9 @@ export class FontReplacer {
             }            
             
         </style>`;
-
     }
 
     private static createFontReplacementUsingMerriweather(newFontName: string) {
-
         return `<style id="polar-font-mapping-from-${newFontName}-to-merriweather">
 
             /* cyrillic-ext */
@@ -151,7 +146,6 @@ export class FontReplacer {
             }
             
         </style>`;
-
     }
 
     /**
@@ -159,96 +153,91 @@ export class FontReplacer {
      * stylesheet that works across platforms by replacing system fonts with
      * the same font across platforms.
      */
-    public static createReplacementStylesheet() {
-
-    }
+    public static createReplacementStylesheet() {}
 
     public static createStandardFontIndex(): StandardFontIndex {
-
         return {
-            "sans-serif": {
-                type: 'sans-serif'
+            'sans-serif': {
+                type: 'sans-serif',
             },
-            "serif": {
-                type: 'serif'
+            serif: {
+                type: 'serif',
             },
-            "monospace": {
-                type: 'monospace'
+            monospace: {
+                type: 'monospace',
             },
-            "helvetica": {
-                type: 'sans-serif'
+            helvetica: {
+                type: 'sans-serif',
             },
-            "helvetica neue": {
-                type: 'sans-serif'
+            'helvetica neue': {
+                type: 'sans-serif',
             },
-            "neue helvetica": {
-                type: 'sans-serif'
+            'neue helvetica': {
+                type: 'sans-serif',
             },
-            "arial": {
-                type: 'sans-serif'
+            arial: {
+                type: 'sans-serif',
             },
-            "tehoma": {
-                type: 'sans-serif'
+            tehoma: {
+                type: 'sans-serif',
             },
-            "geneva": {
-                type: 'sans-serif'
+            geneva: {
+                type: 'sans-serif',
             },
-            "gadget": {
-                type: 'sans-serif'
+            gadget: {
+                type: 'sans-serif',
             },
-            "times new roman": {
-                type: 'serif'
+            'times new roman': {
+                type: 'serif',
             },
-            "courier new": {
-                type: 'monospace'
+            'courier new': {
+                type: 'monospace',
             },
-            "courier": {
-                type: 'monospace'
+            courier: {
+                type: 'monospace',
             },
-            "lucida console": {
-                type: 'monospace'
+            'lucida console': {
+                type: 'monospace',
             },
-            "monaco": {
-                type: 'monospace'
+            monaco: {
+                type: 'monospace',
             },
-            "verdana": {
-                type: 'sans-serif'
+            verdana: {
+                type: 'sans-serif',
             },
-            "georgia": {
-                type: 'serif'
+            georgia: {
+                type: 'serif',
             },
-            "palatino": {
-                type: 'serif'
+            palatino: {
+                type: 'serif',
             },
-            "palatino linotype": {
-                type: 'serif'
+            'palatino linotype': {
+                type: 'serif',
             },
-            "book antiqua": {
-                type: 'serif'
+            'book antiqua': {
+                type: 'serif',
             },
-            "garamond": {
-                type: 'serif'
+            garamond: {
+                type: 'serif',
             },
-            "bookman": {
-                type: 'serif'
+            bookman: {
+                type: 'serif',
             },
-            "comic sans ms": {
-                type: 'sans-serif'
+            'comic sans ms': {
+                type: 'sans-serif',
             },
-            "trebuchet ms": {
-                type: 'sans-serif'
+            'trebuchet ms': {
+                type: 'sans-serif',
             },
-            "arial black": {
-                type: 'sans-serif'
+            'arial black': {
+                type: 'sans-serif',
             },
-            "impact": {
-                type: 'sans-serif'
+            impact: {
+                type: 'sans-serif',
             },
-            "charcoal": {
-                type: 'sans-serif'
+            charcoal: {
+                type: 'sans-serif',
             },
         };
-
     }
-
 }

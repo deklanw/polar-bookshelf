@@ -1,23 +1,26 @@
-import {CaptureOpts, DefaultCaptureOpts} from './CaptureOpts';
-import {WebContents, WebRequest} from 'electron';
-import {CaptureResult} from './CaptureResult';
-import {Logger} from '../logger/Logger';
-import {Preconditions} from '../Preconditions';
-import {PendingWebRequestsListener} from '../webrequests/PendingWebRequestsListener';
-import {DebugWebRequestsListener} from '../webrequests/DebugWebRequestsListener';
-import {WebRequestReactor} from '../webrequests/WebRequestReactor';
-import {WebContentsDriver, WebContentsDriverFactory} from './drivers/WebContentsDriver';
-import {BrowserProfile} from './BrowserProfile';
-import {Strings} from '../util/Strings';
-import {Optional} from '../util/ts/Optional';
-import {Functions} from '../util/Functions';
-import {Promises} from '../util/Promises';
-import {ContentCaptureExecutor} from './ContentCaptureExecutor';
-import {ResolvablePromise} from '../util/ResolvablePromise';
+import { CaptureOpts, DefaultCaptureOpts } from './CaptureOpts';
+import { WebContents, WebRequest } from 'electron';
+import { CaptureResult } from './CaptureResult';
+import { Logger } from '../logger/Logger';
+import { Preconditions } from '../Preconditions';
+import { PendingWebRequestsListener } from '../webrequests/PendingWebRequestsListener';
+import { DebugWebRequestsListener } from '../webrequests/DebugWebRequestsListener';
+import { WebRequestReactor } from '../webrequests/WebRequestReactor';
+import {
+    WebContentsDriver,
+    WebContentsDriverFactory,
+} from './drivers/WebContentsDriver';
+import { BrowserProfile } from './BrowserProfile';
+import { Strings } from '../util/Strings';
+import { Optional } from '../util/ts/Optional';
+import { Functions } from '../util/Functions';
+import { Promises } from '../util/Promises';
+import { ContentCaptureExecutor } from './ContentCaptureExecutor';
+import { ResolvablePromise } from '../util/ResolvablePromise';
 import BrowserRegistry from './BrowserRegistry';
-import {BrowserProfiles} from './BrowserProfiles';
-import {Objects} from '../util/Objects';
-import {Latch} from '../util/Latch';
+import { BrowserProfiles } from './BrowserProfiles';
+import { Objects } from '../util/Objects';
+import { Latch } from '../util/Latch';
 
 const log = Logger.create();
 
@@ -32,7 +35,6 @@ const log = Logger.create();
 const EXECUTE_CAPTURE_DELAY = 1500;
 
 export class Capture {
-
     public readonly browserProfile: BrowserProfile;
 
     public readonly captureOpts: CaptureOpts;
@@ -49,23 +51,33 @@ export class Capture {
 
     private driver?: WebContentsDriver;
 
-    constructor(browserProfile: BrowserProfile, captureOpts: Partial<CaptureOpts> = {}) {
-
-        this.browserProfile = Preconditions.assertNotNull(browserProfile, "browser");
-        this.captureOpts = Objects.defaults(captureOpts, new DefaultCaptureOpts());
+    constructor(
+        browserProfile: BrowserProfile,
+        captureOpts: Partial<CaptureOpts> = {}
+    ) {
+        this.browserProfile = Preconditions.assertNotNull(
+            browserProfile,
+            'browser'
+        );
+        this.captureOpts = Objects.defaults(
+            captureOpts,
+            new DefaultCaptureOpts()
+        );
 
         this.pendingWebRequestsListener = new PendingWebRequestsListener();
         this.debugWebRequestsListener = new DebugWebRequestsListener();
 
         if (captureOpts.pendingWebRequestsCallback) {
-            this.pendingWebRequestsListener.addEventListener(captureOpts.pendingWebRequestsCallback);
+            this.pendingWebRequestsListener.addEventListener(
+                captureOpts.pendingWebRequestsCallback
+            );
         }
-
     }
 
     public async start(): Promise<CaptureResult> {
-
-        const driver = await WebContentsDriverFactory.create(this.browserProfile);
+        const driver = await WebContentsDriverFactory.create(
+            this.browserProfile
+        );
 
         this.driver = driver;
 
@@ -78,33 +90,29 @@ export class Capture {
         this.onWebRequest(this.webContents.session.webRequest);
 
         this.browserProfile.navigation.navigated.addEventListener(event => {
-
             const url = event.link;
 
-            Preconditions.assertNotNull(url, "url");
+            Preconditions.assertNotNull(url, 'url');
 
-            if ( Strings.empty(url)) {
-                throw new Error("URL may not be empty");
+            if (Strings.empty(url)) {
+                throw new Error('URL may not be empty');
             }
 
-            this.loadURL(event.link)
-                .catch(err => log.error("Could not load URL: " + event.link, err));
-
+            this.loadURL(event.link).catch(err =>
+                log.error('Could not load URL: ' + event.link, err)
+            );
         });
 
         if (this.captureOpts.link) {
-
             this.browserProfile.navigation.navigated.dispatchEvent({
-                link: this.captureOpts.link
+                link: this.captureOpts.link,
             });
         }
 
         return this.result.get();
-
     }
 
     private async loadURL(url: string) {
-
         // wait until the main URL loads.
         const loadURLPromise = this.driver!.loadURL(url);
 
@@ -112,15 +120,13 @@ export class Capture {
         // make sure that all static content has executed.
         // const minDelayPromise = Promises.waitFor(EXECUTE_CAPTURE_DELAY);
 
-        await Promise.all([ loadURLPromise ]);
+        await Promise.all([loadURLPromise]);
 
         // the page loaded now... capture the content.
         await this.handleLoad(url);
-
     }
 
     private async handleLoad(url: string) {
-
         // see if we first need to handle the page in any special manner.
 
         // FIXME: make this into some type of content handlers system
@@ -135,26 +141,21 @@ export class Capture {
         // we might want to build up a history to prevent endless loops or
         // just keep track of the redirect count.
         if (this.captureOpts.amp && ampURL && ampURL !== url) {
-
-            log.info("Found AMP URL.  Redirecting then loading: " + ampURL);
+            log.info('Found AMP URL.  Redirecting then loading: ' + ampURL);
 
             await this.loadURL(ampURL);
             return;
-
         }
 
         return await this.capture();
-
     }
 
     public stop() {
-
         this.webRequestReactors.forEach(webRequestReactor => {
-            log.info("Stopping webRequestReactor...");
+            log.info('Stopping webRequestReactor...');
             webRequestReactor.stop();
-            log.info("Stopping webRequestReactor...done");
+            log.info('Stopping webRequestReactor...done');
         });
-
     }
 
     /**
@@ -162,13 +163,11 @@ export class Capture {
      * capture.
      */
     public async capture() {
-
-        log.debug("Awaiting captured");
+        log.debug('Awaiting captured');
 
         await this.browserProfile.navigation.captured.once();
 
         return this.executeContentCapture();
-
     }
 
     /**
@@ -177,35 +176,35 @@ export class Capture {
      * @return {Promise<string>}
      */
     private async getAmpURL() {
-
         /** @RendererContext */
         function fetchAmpURL() {
-
-            const link = <HTMLLinkElement> document.querySelector("link[rel='amphtml']");
+            const link = <HTMLLinkElement>(
+                document.querySelector("link[rel='amphtml']")
+            );
 
             if (link) {
                 return link.href;
             }
 
             return null;
-
         }
 
-        return await this.webContents!.executeJavaScript(Functions.functionToScript(fetchAmpURL));
-
+        return await this.webContents!.executeJavaScript(
+            Functions.functionToScript(fetchAmpURL)
+        );
     }
 
     public async executeContentCapture() {
-
-        const captureResult
-            = await ContentCaptureExecutor.execute(this.webContents!, this.driver!.browserProfile);
+        const captureResult = await ContentCaptureExecutor.execute(
+            this.webContents!,
+            this.driver!.browserProfile
+        );
 
         if (this.browserProfile.destroy) {
             Optional.of(this.driver).when(driver => driver.destroy());
         }
 
         this.result.resolve(captureResult);
-
     }
 
     /**
@@ -215,31 +214,27 @@ export class Capture {
      * @param webRequest
      */
     public onWebRequest(webRequest: WebRequest) {
-
         if (this.browserProfile.useReactor) {
-
             const webRequestReactor = new WebRequestReactor(webRequest);
             webRequestReactor.start();
 
             this.webRequestReactors.push(webRequestReactor);
 
             this.pendingWebRequestsListener.register(webRequestReactor);
-
         }
-
     }
 
-    public static async trigger(captureOpts: Partial<CaptureOpts> = {}): Promise<CaptureResult> {
-
+    public static async trigger(
+        captureOpts: Partial<CaptureOpts> = {}
+    ): Promise<CaptureResult> {
         const browser = BrowserRegistry.DEFAULT;
-        const browserProfile = BrowserProfiles.toBrowserProfile(browser, 'DEFAULT');
+        const browserProfile = BrowserProfiles.toBrowserProfile(
+            browser,
+            'DEFAULT'
+        );
         const capture = new Capture(browserProfile, captureOpts);
         return capture.start();
-
     }
-
 }
 
-export interface CaptureResultCallback {
-    (captureResult: CaptureResult): void;
-}
+export type CaptureResultCallback = (captureResult: CaptureResult) => void;

@@ -1,22 +1,18 @@
 import twitter_txt from 'twitter-text';
-import {isPresent} from '../Preconditions';
-import {Optional} from '../util/ts/Optional';
-import {Tag} from './Tag';
-import {TypedTag} from './TypedTag';
-import {Dictionaries} from '../util/Dictionaries';
+import { isPresent } from '../Preconditions';
+import { Optional } from '../util/ts/Optional';
+import { Tag } from './Tag';
+import { TypedTag } from './TypedTag';
+import { Dictionaries } from '../util/Dictionaries';
 
 export class Tags {
-
     public static assertValid(label: string) {
-
         if (!this.validate(label).isPresent()) {
-            throw new Error("Invalid tag: " + label);
+            throw new Error('Invalid tag: ' + label);
         }
-
     }
 
     public static validate(label: string): Optional<string> {
-
         if (!isPresent(label)) {
             return Optional.empty();
         }
@@ -27,7 +23,7 @@ export class Tags {
 
         const strippedLabel = this.stripTypedLabel(label);
 
-        if ( ! strippedLabel.isPresent()) {
+        if (!strippedLabel.isPresent()) {
             return Optional.empty();
         }
 
@@ -36,17 +32,14 @@ export class Tags {
         }
 
         return Optional.empty();
-
     }
 
     public static validateTag(tag: Tag): Optional<Tag> {
-
         if (this.validate(tag.label).isPresent()) {
             return Optional.of(tag);
         }
 
         return Optional.empty();
-
     }
 
     /**
@@ -54,10 +47,9 @@ export class Tags {
      * true as the input set had no valid tags.
      */
     public static tagsAreValid(...tags: Tag[]): boolean {
-
-        return tags.map(tag => this.validateTag(tag).isPresent())
-                   .reduce((acc, curr) => ! acc ? false : curr, true);
-
+        return tags
+            .map(tag => this.validateTag(tag).isPresent())
+            .reduce((acc, curr) => (!acc ? false : curr), true);
     }
 
     /**
@@ -65,7 +57,7 @@ export class Tags {
      * @param tags
      */
     public static findInvalidTags(...tags: Tag[]): Tag[] {
-        return tags.filter(tag => ! this.validateTag(tag).isPresent());
+        return tags.filter(tag => !this.validateTag(tag).isPresent());
     }
 
     public static findValidTags(...tags: Tag[]): Tag[] {
@@ -73,7 +65,6 @@ export class Tags {
     }
 
     public static toMap(tags: Tag[]) {
-
         const result: { [id: string]: Tag } = {};
 
         for (const tag of tags) {
@@ -81,21 +72,18 @@ export class Tags {
         }
 
         return result;
-
     }
 
     /**
      * From a union of the two tag arrays.
      */
     public static union(a: Tag[], b: Tag[]): Tag[] {
-
         const result: { [id: string]: Tag } = {};
 
         Dictionaries.putAll(Tags.toMap(a), result);
         Dictionaries.putAll(Tags.toMap(b), result);
 
         return Object.values(result);
-
     }
 
     public static toIDs(tags: Tag[]) {
@@ -108,7 +96,6 @@ export class Tags {
      *
      */
     public static stripTypedLabel(label: string): Optional<string> {
-
         const match = label.match(/:/g);
 
         if (match && match.length > 1) {
@@ -116,20 +103,15 @@ export class Tags {
         }
 
         return Optional.of(label.replace(/^#([^:/]+):([^:]+)$/g, '#$1$2'));
-
     }
 
     public static parseTypedTag(value: string): Optional<TypedTag> {
-
-        value = value.replace("#", "");
-        const split = value.split(":");
+        value = value.replace('#', '');
+        const split = value.split(':');
 
         return Optional.of({
             name: split[0],
-            value: split[1]
+            value: split[1],
         });
-
     }
-
 }
-

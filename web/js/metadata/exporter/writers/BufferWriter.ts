@@ -1,13 +1,12 @@
-import {WriteStream} from "fs";
-import {Files} from '../../../util/Files';
-import {Preconditions} from '../../../Preconditions';
-import {Writer} from '../Exporters';
+import { WriteStream } from 'fs';
+import { Files } from '../../../util/Files';
+import { Preconditions } from '../../../Preconditions';
+import { Writer } from '../Exporters';
 
 /**
  * Simple writer that just writes to memory
  */
 export class BufferWriter implements Writer {
-
     private buffer: string[] = [];
 
     public async init(): Promise<void> {
@@ -23,7 +22,6 @@ export class BufferWriter implements Writer {
     }
 
     public toString(): string {
-        return this.buffer.join("");
+        return this.buffer.join('');
     }
-
 }

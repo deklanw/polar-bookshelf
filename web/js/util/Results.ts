@@ -1,16 +1,12 @@
-import {Result} from './Result';
+import { Result } from './Result';
 
 export class Results {
-
     /**
      * Create a result from an object.
      */
     public static create<T>(result: any): Result<T> {
-
-
-        if(result.err !== undefined) {
-
-            let err = new Error();
+        if (result.err !== undefined) {
+            const err = new Error();
 
             err.message = result.err.message;
             err.name = result.err.name;
@@ -18,44 +14,33 @@ export class Results {
 
             return new Result<T>({
                 value: undefined,
-                err
+                err,
             });
-
         } else {
-            return new Result<T>({value: result.value});
+            return new Result<T>({ value: result.value });
         }
-
     }
 
     public static createValue<T>(value: T): Result<T> {
-
-        return new Result<T>( {
+        return new Result<T>({
             value,
-            err: undefined
+            err: undefined,
         });
-
     }
 
     public static createError<T>(err: Error): Result<T> {
-
-        return new Result<T>( {
+        return new Result<T>({
             value: undefined,
-            err
+            err,
         });
-
     }
 
-    public static execute<T>(func: () => T ): Result<T> {
-
+    public static execute<T>(func: () => T): Result<T> {
         try {
-
-            let value = func();
-            return this.createValue(value)
-
+            const value = func();
+            return this.createValue(value);
         } catch (e) {
             return this.createError(e);
         }
-
     }
-
 }

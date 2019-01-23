@@ -1,99 +1,92 @@
-import {assert} from 'chai';
-import {assertJSON} from '../../test/Assertions';
-import {Descriptors} from './Descriptors';
-import {ScrollBox} from '../../capture/renderer/Captured';
+import { assert } from 'chai';
+import { assertJSON } from '../../test/Assertions';
+import { Descriptors } from './Descriptors';
+import { ScrollBox } from '../../capture/renderer/Captured';
 
 describe('Descriptors', function() {
-
     describe('computeScrollBoxFromBoxes', function() {
-
-        it("basic", async function () {
-
+        it('basic', async function() {
             const scrollBox: ScrollBox = {
                 width: 150,
-                height: 150
-            }
+                height: 150,
+            };
 
             const scroll: ScrollBox = {
                 width: 100,
-                height: 100
-            }
+                height: 100,
+            };
 
-            let result = Descriptors.computeScrollBoxFromBoxes(scrollBox, scroll);
+            const result = Descriptors.computeScrollBoxFromBoxes(
+                scrollBox,
+                scroll
+            );
 
-            assert.ok(result.isPresent())
+            assert.ok(result.isPresent());
 
             assertJSON(result, {
-                "value": {
-                    "width": 150,
-                    "height": 150
-                }
+                value: {
+                    width: 150,
+                    height: 150,
+                },
             });
-
         });
 
-        it("none", async function () {
-
-            let result = Descriptors.computeScrollBoxFromBoxes();
-            assert.isFalse(result.isPresent())
-
+        it('none', async function() {
+            const result = Descriptors.computeScrollBoxFromBoxes();
+            assert.isFalse(result.isPresent());
         });
 
-        it("first", async function () {
-
+        it('first', async function() {
             const scrollBox: ScrollBox = {
                 width: 150,
-                height: 150
-            }
+                height: 150,
+            };
 
-            let result = Descriptors.computeScrollBoxFromBoxes(scrollBox);
+            const result = Descriptors.computeScrollBoxFromBoxes(scrollBox);
 
-            assert.ok(result.isPresent())
+            assert.ok(result.isPresent());
 
             assertJSON(result, {
-                "value": {
-                    "width": 150,
-                    "height": 150
-                }
+                value: {
+                    width: 150,
+                    height: 150,
+                },
             });
-
         });
 
-
-        it("last", async function () {
-
+        it('last', async function() {
             const scroll: ScrollBox = {
                 width: 100,
-                height: 100
-            }
+                height: 100,
+            };
 
-            let result = Descriptors.computeScrollBoxFromBoxes(undefined, scroll);
+            const result = Descriptors.computeScrollBoxFromBoxes(
+                undefined,
+                scroll
+            );
 
-            assert.ok(result.isPresent())
+            assert.ok(result.isPresent());
 
             assertJSON(result, {
-                "value": {
-                    "width": 100,
-                    "height": 100
-                }
+                value: {
+                    width: 100,
+                    height: 100,
+                },
             });
-
         });
 
-
-        it("broken", async function () {
-
+        it('broken', async function() {
             const scroll: any = {
-                width: "100",
-                height: 100
-            }
+                width: '100',
+                height: 100,
+            };
 
-            let result = Descriptors.computeScrollBoxFromBoxes(scroll, scroll);
+            const result = Descriptors.computeScrollBoxFromBoxes(
+                scroll,
+                scroll
+            );
 
-            assert.isFalse(result.isPresent())
-
+            assert.isFalse(result.isPresent());
         });
-
     });
-
 });

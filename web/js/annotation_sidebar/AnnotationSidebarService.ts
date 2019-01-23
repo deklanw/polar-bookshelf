@@ -1,12 +1,11 @@
-import {DocumentLoadedEvent, Model} from '../model/Model';
-import {AnnotationSidebars} from './AnnotationSidebars';
-import {Logger} from '../logger/Logger';
-import {Splitter} from '../ui/splitter/Splitter';
+import { DocumentLoadedEvent, Model } from '../model/Model';
+import { AnnotationSidebars } from './AnnotationSidebars';
+import { Logger } from '../logger/Logger';
+import { Splitter } from '../ui/splitter/Splitter';
 
 const log = Logger.create();
 
 export class AnnotationSidebarService {
-
     private readonly model: Model;
 
     private splitter?: Splitter;
@@ -16,36 +15,35 @@ export class AnnotationSidebarService {
     }
 
     public start() {
+        this.model.registerListenerForDocumentLoaded(event =>
+            this.onDocumentLoaded(event)
+        );
 
-        this.model.registerListenerForDocumentLoaded(event => this.onDocumentLoaded(event));
-
-        window.addEventListener("message", event => this.onMessageReceived(event), false);
+        window.addEventListener(
+            'message',
+            event => this.onMessageReceived(event),
+            false
+        );
 
         return this;
-
     }
 
     private onDocumentLoaded(event: DocumentLoadedEvent) {
-        log.debug("Creating annotation sidebar");
+        log.debug('Creating annotation sidebar');
         this.splitter = AnnotationSidebars.create(event.docMeta);
     }
 
     private onMessageReceived(event: any) {
-
-        log.info("Received message: ", event);
+        log.info('Received message: ', event);
 
         switch (event.data.type) {
-
-            case "toggle-annotation-sidebar":
+            case 'toggle-annotation-sidebar':
                 this.toggleAnnotationSidebar();
                 break;
-
         }
-
     }
 
     private toggleAnnotationSidebar() {
         this.splitter!.toggle();
     }
-
 }

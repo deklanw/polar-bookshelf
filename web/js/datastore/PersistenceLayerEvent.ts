@@ -1,6 +1,6 @@
-import {IDocInfo} from '../metadata/DocInfo';
-import {DocMetaRef} from './DocMetaRef';
-import {PersistenceEventType} from './PersistenceEventType';
+import { IDocInfo } from '../metadata/DocInfo';
+import { DocMetaRef } from './DocMetaRef';
+import { PersistenceEventType } from './PersistenceEventType';
 
 export interface PersistenceLayerEvent {
     docInfo: IDocInfo;

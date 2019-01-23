@@ -1,9 +1,7 @@
-import {Point} from '../Point';
-import {ContextMenuPoints} from './ContextMenuPoints';
+import { Point } from '../Point';
+import { ContextMenuPoints } from './ContextMenuPoints';
 
 export class ContextMenuLocation {
-
-
     /**
      * The page point where this was defined.
      *
@@ -27,5 +25,4 @@ export class ContextMenuLocation {
         this.points = opts.points;
         this.pageNum = opts.pageNum;
     }
-
 }

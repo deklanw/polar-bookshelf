@@ -1,13 +1,14 @@
 /**
  *
  */
-import {PersistenceLayerManager, PersistenceLayerState} from './PersistenceLayerManager';
-import {PersistenceLayer} from './PersistenceLayer';
-import {ListenablePersistenceLayer} from './ListenablePersistenceLayer';
+import {
+    PersistenceLayerManager,
+    PersistenceLayerState,
+} from './PersistenceLayerManager';
+import { PersistenceLayer } from './PersistenceLayer';
+import { ListenablePersistenceLayer } from './ListenablePersistenceLayer';
 
 export class PersistenceLayerManagers {
-
-
     /**
      * Call the given callback for the PersistenceLayer currently in place.
      *
@@ -17,24 +18,23 @@ export class PersistenceLayerManagers {
      * @param state Call the callback again when we've changed to the given
      *     state
      */
-    public static onPersistenceManager(persistenceLayerManager: PersistenceLayerManager,
-                                       callback: PersistenceLayerCallback,
-                                       state: PersistenceLayerState = 'changed' ) {
-
+    public static onPersistenceManager(
+        persistenceLayerManager: PersistenceLayerManager,
+        callback: PersistenceLayerCallback,
+        state: PersistenceLayerState = 'changed'
+    ) {
         if (persistenceLayerManager.get()) {
             callback(persistenceLayerManager.get());
         }
 
         persistenceLayerManager.addEventListener(event => {
-
             if (event.state === state) {
                 callback(event.persistenceLayer);
             }
-
         });
-
     }
-
 }
 
-export type PersistenceLayerCallback = (persistenceLayer: ListenablePersistenceLayer) => void;
+export type PersistenceLayerCallback = (
+    persistenceLayer: ListenablePersistenceLayer
+) => void;

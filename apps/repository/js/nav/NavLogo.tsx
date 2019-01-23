@@ -1,15 +1,15 @@
 import * as React from 'react';
-import {IStyleMap} from '../../../../web/js/react/IStyleMap';
+import { IStyleMap } from '../../../../web/js/react/IStyleMap';
 
 const Styles: IStyleMap = {
     parent: {
-        display: 'inline-block'
+        display: 'inline-block',
     },
 
     child: {
         display: 'inline-block',
         verticalAlign: 'middle',
-        userSelect: 'none'
+        userSelect: 'none',
     },
 
     textLogo: {
@@ -17,26 +17,23 @@ const Styles: IStyleMap = {
         fontWeight: 'bold',
         fontSize: '20px',
         userSelect: 'none',
-        textDecoration: 'none'
-    }
-
+        textDecoration: 'none',
+    },
 };
 
 /**
  */
 export class NavLogo extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
     }
 
     public render() {
-
         return (
             <div style={Styles.parent}>
                 <div style={Styles.child}>
                     <a href="#">
-                        <img src="./img/icon.svg" height="25"/>
+                        <img src="./img/icon.svg" height="25" />
                     </a>
                 </div>
 
@@ -45,15 +42,9 @@ export class NavLogo extends React.Component<IProps, IState> {
                 </div>
             </div>
         );
-
     }
-
 }
 
-interface IProps {
+interface IProps {}
 
-}
-
-interface IState {
-
-}
+interface IState {}

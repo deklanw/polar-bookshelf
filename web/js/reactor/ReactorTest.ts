@@ -1,61 +1,54 @@
-import {Reactor} from './Reactor';
-import {assert} from 'chai';
-import {assertJSON} from '../test/Assertions';
+import { Reactor } from './Reactor';
+import { assert } from 'chai';
+import { assertJSON } from '../test/Assertions';
 
 describe('Reactor', function() {
+    it('With multiple args', function() {
+        const reactor = new Reactor<MessageEvent>();
 
-    it("With multiple args", function () {
-
-        let reactor = new Reactor<MessageEvent>();
-
-        let messageEvent: MessageEvent = {
-            message: 'hello world'
+        const messageEvent: MessageEvent = {
+            message: 'hello world',
         };
 
-        let events: MessageEvent[] = [];
+        const events: MessageEvent[] = [];
 
-        assert.notEqual(reactor.registerEvent("hello"), undefined);
+        assert.notEqual(reactor.registerEvent('hello'), undefined);
 
-        reactor.addEventListener("hello", (messageEvent) => {
+        reactor.addEventListener('hello', messageEvent => {
             events.push(messageEvent);
         });
 
-        reactor.dispatchEvent("hello", messageEvent);
+        reactor.dispatchEvent('hello', messageEvent);
 
         assertJSON(events, [
             {
-                "message": "hello world"
-            }
+                message: 'hello world',
+            },
         ]);
-
     });
 
-    it("ordering", function() {
-
+    it('ordering', function() {
         const reactor = new Reactor<string>();
 
         const sources: string[] = [];
 
-        assert.notEqual(reactor.registerEvent("messages"), undefined);
+        assert.notEqual(reactor.registerEvent('messages'), undefined);
 
-        reactor.addEventListener("messages", (messageEvent) => {
+        reactor.addEventListener('messages', messageEvent => {
             console.log('first');
         });
 
-        reactor.addEventListener("messages", (messageEvent) => {
+        reactor.addEventListener('messages', messageEvent => {
             console.log('second');
         });
 
-        reactor.dispatchEvent("messages", 'hello');
-
+        reactor.dispatchEvent('messages', 'hello');
     });
 
-
-    it("removeEventListener", function() {
-
+    it('removeEventListener', function() {
         const reactor = new Reactor<string>();
 
-        const eventName = "messages";
+        const eventName = 'messages';
         assert.notEqual(reactor.registerEvent(eventName), undefined);
 
         assert.equal(reactor.getEventListeners(eventName).length, 0);
@@ -71,33 +64,36 @@ describe('Reactor', function() {
         assert.equal(reactor.removeEventListener(eventName, listener), true);
 
         assert.equal(reactor.getEventListeners(eventName).length, 0);
-
     });
 
-
-    it("removeEventListener from addEventListener", function() {
-
+    it('removeEventListener from addEventListener', function() {
         const reactor = new Reactor<string>();
 
-        const eventName = "messages";
+        const eventName = 'messages';
         reactor.registerEvent(eventName);
 
-        const registeredEventListener = reactor.addEventListener(eventName, message => {});
+        const registeredEventListener = reactor.addEventListener(
+            eventName,
+            message => {}
+        );
 
         assert.equal(reactor.getEventListeners(eventName).length, 1);
 
-        assert.equal(reactor.removeEventListener(eventName, registeredEventListener.eventListener), true);
+        assert.equal(
+            reactor.removeEventListener(
+                eventName,
+                registeredEventListener.eventListener
+            ),
+            true
+        );
 
         assert.equal(reactor.getEventListeners(eventName).length, 0);
-
     });
 
-
-    it("once", async function() {
-
+    it('once', async function() {
         const reactor = new Reactor<string>();
 
-        const eventName = "messages";
+        const eventName = 'messages';
         assert.notEqual(reactor.registerEvent(eventName), undefined);
 
         assert.equal(reactor.getEventListeners(eventName).length, 0);
@@ -113,10 +109,7 @@ describe('Reactor', function() {
         assert.equal(message, 'hello');
 
         assert.equal(reactor.getEventListeners(eventName).length, 0);
-
     });
-
-
 });
 
 interface MessageEvent {

@@ -1,7 +1,7 @@
 import * as libpath from 'path';
 import * as os from 'os';
-import {Optional} from './ts/Optional';
-import {isPresent, Preconditions} from '../Preconditions';
+import { Optional } from './ts/Optional';
+import { isPresent, Preconditions } from '../Preconditions';
 import url from 'url';
 
 /**
@@ -12,7 +12,6 @@ import url from 'url';
  * on.
  */
 export class FilePaths {
-
     /**
      * The OS specific file separator.
      */
@@ -112,7 +111,7 @@ export class FilePaths {
      * Create a windows path from unix path.  Mostly used for testing.
      */
     public static toWindowsPath(path: string) {
-        path = path.replace(/\//g, '\\' );
+        path = path.replace(/\//g, '\\');
         return 'C:' + path;
     }
 
@@ -122,15 +121,15 @@ export class FilePaths {
      * Used for testing.
      */
     public static textToWindowsPath(text: string) {
-
-        return text.replace(/(\/[a-zA-Z0-9_-]+)+(\/[a-zA-Z0-9_-]+\.[a-z]{2,3})/g, (substr: string) => {
-            return this.toWindowsPath(substr);
-        });
-
+        return text.replace(
+            /(\/[a-zA-Z0-9_-]+)+(\/[a-zA-Z0-9_-]+\.[a-z]{2,3})/g,
+            (substr: string) => {
+                return this.toWindowsPath(substr);
+            }
+        );
     }
 
     public static toFileURL(path: string) {
-
         // https://stackoverflow.com/questions/20619488/how-to-convert-local-file-path-to-a-file-url-safely-in-node-js
 
         // TODO: The new pathToFileURL function added in NodeJS 10.12 and
@@ -142,18 +141,15 @@ export class FilePaths {
         path = FilePaths.resolve(path);
 
         if (this.SEP === '\\') {
-
             path = path.replace(/\\/g, '/');
 
             // Windows drive letter must be prefixed with a slash
             if (path[0] !== '/') {
                 path = '/' + path;
             }
-
         }
 
         return encodeURI('file://' + path);
-
     }
 
     /**
@@ -161,8 +157,7 @@ export class FilePaths {
      * @param path
      */
     public static toExtension(path: string): Optional<string> {
-
-        if (! isPresent(path)) {
+        if (!isPresent(path)) {
             return Optional.empty();
         }
 
@@ -173,7 +168,5 @@ export class FilePaths {
         }
 
         return Optional.empty();
-
     }
-
 }

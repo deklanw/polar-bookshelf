@@ -1,38 +1,37 @@
-import {ElectronIPCPipe} from '../../ipc/handler/ElectronIPCPipe';
-import {IPCRegistry} from '../../ipc/handler/IPCRegistry';
-import {IPCEngine} from '../../ipc/handler/IPCEngine';
-import {CreateFlashcardForm} from './elements/schemaform/CreateFlashcardForm';
-import {CreateFlashcardHandler} from './handlers/CreateFlashcardHandler';
-import {ElectronRendererPipe} from '../../ipc/pipes/ElectronRendererPipe';
-import {Logger} from '../../logger/Logger';
+import { ElectronIPCPipe } from '../../ipc/handler/ElectronIPCPipe';
+import { IPCRegistry } from '../../ipc/handler/IPCRegistry';
+import { IPCEngine } from '../../ipc/handler/IPCEngine';
+import { CreateFlashcardForm } from './elements/schemaform/CreateFlashcardForm';
+import { CreateFlashcardHandler } from './handlers/CreateFlashcardHandler';
+import { ElectronRendererPipe } from '../../ipc/pipes/ElectronRendererPipe';
+import { Logger } from '../../logger/Logger';
 
 const log = Logger.create();
 
 export class CreateFlashcardService {
-
     private readonly createFlashcardForm: CreateFlashcardForm;
 
     constructor(createFlashcardForm: CreateFlashcardForm) {
         this.createFlashcardForm = createFlashcardForm;
     }
 
-    async start(): Promise<void> {
+    public async start(): Promise<void> {
+        log.info('Starting...');
 
-        log.info("Starting...");
+        const pipe = new ElectronRendererPipe();
+        const ipcPipe = new ElectronIPCPipe(pipe);
 
-        let pipe = new ElectronRendererPipe();
-        let ipcPipe = new ElectronIPCPipe(pipe);
+        const ipcRegistry = new IPCRegistry();
 
-        let ipcRegistry = new IPCRegistry();
+        ipcRegistry.registerPath(
+            '/create-flashcard/api/create',
+            new CreateFlashcardHandler(this.createFlashcardForm)
+        );
 
-        ipcRegistry.registerPath('/create-flashcard/api/create', new CreateFlashcardHandler(this.createFlashcardForm));
-
-        let ipcEngine = new IPCEngine(ipcPipe, ipcRegistry);
+        const ipcEngine = new IPCEngine(ipcPipe, ipcRegistry);
 
         ipcEngine.start();
 
-        log.info("Starting...done");
-
+        log.info('Starting...done');
     }
-
 }

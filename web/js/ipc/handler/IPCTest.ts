@@ -1,14 +1,14 @@
-import {IPCRegistry} from './IPCRegistry';
-import {IPCHandler} from './IPCHandler';
-import {IPCMessage} from './IPCMessage';
-import {Objects} from '../../util/Objects';
-import {IPCEngine} from './IPCEngine';
-import {assertJSON} from '../../test/Assertions';
-import {IPCPipe} from './IPCPipe';
-import {IPCEvent} from './IPCEvent';
-import {Pipe, PipeNotification} from '../pipes/Pipe';
-import {MockPipes} from '../pipes/MockPipes';
-import {IPCClient} from './IPCClient';
+import { IPCRegistry } from './IPCRegistry';
+import { IPCHandler } from './IPCHandler';
+import { IPCMessage } from './IPCMessage';
+import { Objects } from '../../util/Objects';
+import { IPCEngine } from './IPCEngine';
+import { assertJSON } from '../../test/Assertions';
+import { IPCPipe } from './IPCPipe';
+import { IPCEvent } from './IPCEvent';
+import { Pipe, PipeNotification } from '../pipes/Pipe';
+import { MockPipes } from '../pipes/MockPipes';
+import { IPCClient } from './IPCClient';
 
 let mockChannels: MockPipes<PersonEvent, any>;
 
@@ -23,48 +23,46 @@ let helloHandler: HelloHandler;
 let ipcEngine: IPCEngine<IPCEvent>;
 
 describe('IPCTest', function() {
+    xit('Test proper handling of messages', async function() {
+        const icpClient = new IPCClient(rightIpcPipe);
 
-    xit("Test proper handling of messages", async function () {
-
-        let icpClient = new IPCClient(rightIpcPipe);
-
-        let response: any = await icpClient.execute('/test/school/hello', new Person('Alice'));
+        const response: any = await icpClient.execute(
+            '/test/school/hello',
+            new Person('Alice')
+        );
 
         response._nonce = 10101;
 
         assertJSON(response, {
-            "_type": "result",
-            "_value": {
-                "person": {
-                    "name": "Alice"
-                }
+            _type: 'result',
+            _value: {
+                person: {
+                    name: 'Alice',
+                },
             },
-            "_nonce": 10101
+            _nonce: 10101,
         });
 
-        let expectedPeople = [
+        const expectedPeople = [
             {
-                "name": "Alice"
-            }
+                name: 'Alice',
+            },
         ];
 
         assertJSON(helloHandler.people, expectedPeople);
 
-        let expectedGreetings = [
-                {
-                    "person": {
-                        "name": "Alice"
-                    }
-                }
-            ]
-        ;
+        const expectedGreetings = [
+            {
+                person: {
+                    name: 'Alice',
+                },
+            },
+        ];
 
         assertJSON(helloHandler.greetings, expectedGreetings);
-
     });
 
-    beforeEach(function () {
-
+    beforeEach(function() {
         mockChannels = MockPipes.create();
 
         leftIpcPipe = new HelloIPCPipe(mockChannels.left);
@@ -80,27 +78,27 @@ describe('IPCTest', function() {
         ipcEngine = new IPCEngine(leftIpcPipe, ipcRegistry);
 
         ipcEngine.start();
-
     });
-
 });
 
 class HelloIPCPipe extends IPCPipe<IPCEvent> {
+    public readonly responses: Array<IPCMessage<any>> = [];
 
-    public readonly responses: IPCMessage<any>[] = [];
-
-    constructor(pipe: Pipe<any,any>) {
+    constructor(pipe: Pipe<any, any>) {
         super(pipe);
     }
 
-    convertEvent(pipeNotification: PipeNotification<any, any>): IPCEvent {
-        return new IPCEvent(this.pipe, IPCMessage.create(pipeNotification.message));
+    public convertEvent(
+        pipeNotification: PipeNotification<any, any>
+    ): IPCEvent {
+        return new IPCEvent(
+            this.pipe,
+            IPCMessage.create(pipeNotification.message)
+        );
     }
-
 }
 
 class HelloHandler extends IPCHandler<Person> {
-
     public readonly people: Person[] = [];
 
     public readonly greetings: Hello[] = [];
@@ -115,7 +113,6 @@ class HelloHandler extends IPCHandler<Person> {
 
         return new Hello(person);
     }
-
 }
 
 class Greeting {
@@ -124,21 +121,17 @@ class Greeting {
     constructor(message: string) {
         this.message = message;
     }
-
 }
 
 class Hello {
-
     public readonly person: Person;
 
     constructor(person: Person) {
         this.person = person;
     }
-
 }
 
 class Person {
-
     private readonly name: string;
 
     constructor(name: string) {
@@ -148,9 +141,6 @@ class Person {
     public static create(obj: any): Person {
         return Objects.createInstance(Person.prototype, obj);
     }
-
 }
 
-class PersonEvent {
-
-}
+class PersonEvent {}

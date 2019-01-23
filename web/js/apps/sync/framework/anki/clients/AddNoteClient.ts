@@ -1,6 +1,6 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import * as TypeMoq from "typemoq";
-import {NoteDescriptor} from '../NoteDescriptor';
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import * as TypeMoq from 'typemoq';
+import { NoteDescriptor } from '../NoteDescriptor';
 
 /**
  * addNote
@@ -53,21 +53,18 @@ import {NoteDescriptor} from '../NoteDescriptor';
  *
  */
 export class AddNoteClient implements IAddNoteClient {
-
     public async execute(note: NoteDescriptor): Promise<number> {
-
         const body = {
-            action: "addNote",
+            action: 'addNote',
             version: 6,
             params: {
-                note
-            }
+                note,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
-        return <number> await AnkiConnectFetch.fetch(init);
-
+        return <number>await AnkiConnectFetch.fetch(init);
     }
 
     /**
@@ -75,14 +72,13 @@ export class AddNoteClient implements IAddNoteClient {
      */
     public static createMock(result: number) {
         const client = TypeMoq.Mock.ofType<IAddNoteClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve(result));
         return client.object;
     }
-
 }
 
 export interface IAddNoteClient {
-
     execute(notes: NoteDescriptor): Promise<number>;
-
 }

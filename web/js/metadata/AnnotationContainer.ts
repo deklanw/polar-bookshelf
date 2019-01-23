@@ -1,9 +1,8 @@
-import {Annotation} from './Annotation';
-import {AnnotationDescriptor} from './AnnotationDescriptor';
-import {Preconditions} from '../Preconditions';
+import { Annotation } from './Annotation';
+import { AnnotationDescriptor } from './AnnotationDescriptor';
+import { Preconditions } from '../Preconditions';
 
 export class AnnotationContainer<A extends Annotation> {
-
     public readonly descriptor: AnnotationDescriptor;
 
     public readonly value: A;
@@ -13,15 +12,15 @@ export class AnnotationContainer<A extends Annotation> {
         this.value = Preconditions.assertNotNull(template.value);
     }
 
-    public static newInstance<A extends Annotation>(descriptor: AnnotationDescriptor,
-                                                    value: A): Readonly<AnnotationContainer<A>> {
-
-        const result = new AnnotationContainer(<AnnotationContainer<A>> {
-            descriptor, value
+    public static newInstance<A extends Annotation>(
+        descriptor: AnnotationDescriptor,
+        value: A
+    ): Readonly<AnnotationContainer<A>> {
+        const result = new AnnotationContainer(<AnnotationContainer<A>>{
+            descriptor,
+            value,
         });
 
         return Object.freeze(result);
-
     }
-
 }

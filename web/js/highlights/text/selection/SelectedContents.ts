@@ -1,16 +1,15 @@
 /**
  *
  */
-import {Ranges} from './Ranges';
-import {SelectedContent} from './SelectedContent';
-import {Selections} from './Selections';
-import {RectTexts} from '../controller/RectTexts';
-import {HTMLSanitizer} from './HTMLSanitizer';
+import { Ranges } from './Ranges';
+import { SelectedContent } from './SelectedContent';
+import { Selections } from './Selections';
+import { RectTexts } from '../controller/RectTexts';
+import { HTMLSanitizer } from './HTMLSanitizer';
 
-const {TextNodeRows} = require("./TextNodeRows");
+const { TextNodeRows } = require('./TextNodeRows');
 
 export class SelectedContents {
-
     /**
      * Compute the SelectedContents based on the page offset, not the
      * client/viewport offset, and include additional metadata including the
@@ -20,7 +19,6 @@ export class SelectedContents {
      * @return {SelectedContent}
      */
     public static compute(win: Window) {
-
         const selection = win.getSelection();
 
         // get all the ranges and clone them so they can't vanish.
@@ -28,7 +26,7 @@ export class SelectedContents {
 
         // now get the text and the sanitized HTML
         const text = selection.toString();
-        const html =  HTMLSanitizer.sanitize(SelectedContents.toHTML(ranges));
+        const html = HTMLSanitizer.sanitize(SelectedContents.toHTML(ranges));
 
         let textNodes: Node[] = [];
 
@@ -50,9 +48,8 @@ export class SelectedContents {
         return new SelectedContent({
             text,
             html,
-            rectTexts
+            rectTexts,
         });
-
     }
 
     /**
@@ -60,7 +57,6 @@ export class SelectedContents {
      * @param ranges
      */
     public static toHTML(ranges: Range[]) {
-        return ranges.map(range => Ranges.toHTML(range)).join("");
+        return ranges.map(range => Ranges.toHTML(range)).join('');
     }
-
 }

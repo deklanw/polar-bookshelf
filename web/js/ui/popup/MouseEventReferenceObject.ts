@@ -1,13 +1,16 @@
 import Popper from 'popper.js';
-import {MouseDirection} from './Popup';
+import { MouseDirection } from './Popup';
 
-export class MouseEventReferenceObject  implements Popper.ReferenceObject {
-
+export class MouseEventReferenceObject implements Popper.ReferenceObject {
     public readonly clientHeight: number;
     public readonly clientWidth: number;
     public readonly boundingClientRect: ClientRect;
 
-    constructor(mouseEvent: MouseEvent, range: Range, mouseDirection: MouseDirection) {
+    constructor(
+        mouseEvent: MouseEvent,
+        range: Range,
+        mouseDirection: MouseDirection
+    ) {
         this.clientHeight = 0;
         this.clientWidth = 0;
 
@@ -30,7 +33,6 @@ export class MouseEventReferenceObject  implements Popper.ReferenceObject {
                 y = boundingClientRect.bottom;
                 y += buffer;
                 break;
-
         }
 
         this.boundingClientRect = {
@@ -41,11 +43,9 @@ export class MouseEventReferenceObject  implements Popper.ReferenceObject {
             left: x,
             right: x,
         };
-
     }
 
     public getBoundingClientRect(): ClientRect {
         return this.boundingClientRect;
     }
-
 }

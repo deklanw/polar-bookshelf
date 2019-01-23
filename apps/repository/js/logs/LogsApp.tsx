@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {Logger} from '../../../../web/js/logger/Logger';
-import {RepoSidebar} from '../RepoSidebar';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { RepoSidebar } from '../RepoSidebar';
 import LogsContent from './LogsContent';
 import CopyLogsToClipboardButton from './CopyLogsToClipboardButton';
 import ClearLogsButton from './ClearLogsButton';
@@ -8,66 +8,43 @@ import ClearLogsButton from './ClearLogsButton';
 const log = Logger.create();
 
 export default class LogsApp extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
 
-        this.state = {
-        };
-
+        this.state = {};
     }
 
     public render() {
-
         return (
-
             <div id="doc-repository">
-
                 <header>
-
-                    <RepoSidebar/>
-
+                    <RepoSidebar />
                 </header>
 
                 <div className="container-fluid">
-
                     <div className="row">
-
                         <div className="col-lg-12">
-
-                            <div style={{display: 'flex'}}>
-
+                            <div style={{ display: 'flex' }}>
                                 <div className="mb-1">
-                                    <CopyLogsToClipboardButton/>
+                                    <CopyLogsToClipboardButton />
                                 </div>
 
                                 <div className="ml-1 mb-1">
-                                    <ClearLogsButton/>
+                                    <ClearLogsButton />
                                 </div>
-
                             </div>
 
                             <div className="mb-2">
-                                <LogsContent/>
+                                <LogsContent />
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         );
     }
-
 }
 
-export interface IProps {
+export interface IProps {}
 
-}
-
-export interface IState {
-
-}
+export interface IState {}

@@ -1,11 +1,7 @@
-
-
 export class Strings {
-
     public static toPrimitive(value: string): string | number | boolean {
-
-        if (value === "true" || value === "false") {
-            return value === "true";
+        if (value === 'true' || value === 'false') {
+            return value === 'true';
         }
 
         if (value.match(/^[0-9]+$/)) {
@@ -17,16 +13,15 @@ export class Strings {
         }
 
         return value;
-
     }
-
 
     /**
      * Convert the string to a number or return the default value.
      */
-    public static toNumber(value: string | null | undefined,
-                           defaultValue: number) {
-
+    public static toNumber(
+        value: string | null | undefined,
+        defaultValue: number
+    ) {
         // don't use type cooercion as the rules are insane.
 
         if (value && value.match(/^[0-9]+$/)) {
@@ -34,26 +29,27 @@ export class Strings {
         }
 
         return defaultValue;
-
     }
-
 
     public static empty(value: string | null | undefined): boolean {
-        return value === null || value === undefined || value.trim() === "";
+        return value === null || value === undefined || value.trim() === '';
     }
 
-    public static filterEmpty(value: string | null | undefined): string | undefined {
-
+    public static filterEmpty(
+        value: string | null | undefined
+    ): string | undefined {
         if (this.empty(value)) {
             return undefined;
         }
 
         return value!;
-
     }
 
-    public static lpad = function(str: string | number, padd: string, length: number) {
-
+    public static lpad = function(
+        str: string | number,
+        padd: string,
+        length: number
+    ) {
         if (typeof str === 'number') {
             str = `${str}`;
         }
@@ -63,7 +59,6 @@ export class Strings {
         }
 
         return str;
-
     };
 
     public static toUnixLineNewLines(str: string) {
@@ -72,8 +67,7 @@ export class Strings {
 
     public static indent(text: string, padding: string) {
         text = padding + text;
-        text = text.replace(/\n/g, "\n" + padding);
+        text = text.replace(/\n/g, '\n' + padding);
         return text;
     }
-
 }

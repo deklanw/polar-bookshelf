@@ -1,8 +1,7 @@
-
-import {BrowserWindow, ipcMain} from 'electron';
-import {Logger} from '../logger/Logger';
-import {Broadcasters} from './Broadcasters';
-import {BrowserWindowReference} from '../ui/dialog_window/BrowserWindowReference';
+import { BrowserWindow, ipcMain } from 'electron';
+import { Logger } from '../logger/Logger';
+import { Broadcasters } from './Broadcasters';
+import { BrowserWindowReference } from '../ui/dialog_window/BrowserWindowReference';
 
 const log = Logger.create();
 
@@ -13,7 +12,6 @@ const log = Logger.create();
  * web browsers.
  */
 export class Broadcaster {
-
     private channel: string;
 
     /**
@@ -22,21 +20,17 @@ export class Broadcaster {
      * @param outputChannel The channel to re-send the event on to other renderer processes.
      */
     constructor(inputChannel: string, outputChannel: string = inputChannel) {
-
         this.channel = inputChannel;
 
         // TODO: require that this is registered via start (not automatically).
         ipcMain.on(inputChannel, (event: Electron.Event, arg: any) => {
+            log.info('Forwarding message: ', inputChannel, event);
 
-            log.info("Forwarding message: " , inputChannel, event);
-
-            const senderBrowserWindowReference
-                = new BrowserWindowReference(BrowserWindow.fromWebContents(event.sender).id);
+            const senderBrowserWindowReference = new BrowserWindowReference(
+                BrowserWindow.fromWebContents(event.sender).id
+            );
 
             Broadcasters.send(outputChannel, arg, senderBrowserWindowReference);
-
         });
-
     }
-
 }

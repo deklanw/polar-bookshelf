@@ -1,18 +1,21 @@
-
 // noinspection TsLint: array-type
-import {Result} from '../../js/util/Result';
+import { Result } from '../../js/util/Result';
 
-export type Transfer = (ArrayBuffer | MessagePort | ImageBitmap)[];
+export type Transfer = Array<ArrayBuffer | MessagePort | ImageBitmap>;
 
 export interface ITypedWorker<In, Out> {
     terminate: () => void;
-    onMessage: OnMessageCallback<Out> ;
+    onMessage: OnMessageCallback<Out>;
     postMessage: (workerMessage: In, transfer?: Transfer) => void;
 }
 
 type WorkerFunction<In, Out> = (input: In, cb: WorkerCallback<Out>) => void;
 
-type WorkerCallback<Out> = (output: Out, err?: Error, transfer?: Transfer) => void;
+type WorkerCallback<Out> = (
+    output: Out,
+    err?: Error,
+    transfer?: Transfer
+) => void;
 
 type OnMessageCallback<Out> = (output: Result<Out>) => void;
 
@@ -20,11 +23,11 @@ type OnMessageCallback<Out> = (output: Result<Out>) => void;
 export const NullOnMessageCallback = <Out>(output: Result<Out>) => {};
 
 // noinspection TsLint: max-line-length
-export function createWorker<In, Out>(workerFunction: WorkerFunction<In, Out>,
-                                      onMessage: OnMessageCallback<Out> = NullOnMessageCallback): ITypedWorker<In, Out> {
-
+export function createWorker<In, Out>(
+    workerFunction: WorkerFunction<In, Out>,
+    onMessage: OnMessageCallback<Out> = NullOnMessageCallback
+): ITypedWorker<In, Out> {
     return new TypedWorker(workerFunction, onMessage);
-
 }
 
 /**
@@ -36,15 +39,15 @@ export function createWorker<In, Out>(workerFunction: WorkerFunction<In, Out>,
  * new thread.
  */
 class TypedWorker<In, Out> implements ITypedWorker<In, Out> {
-
     public readonly onMessage: OnMessageCallback<Out> = NullOnMessageCallback;
 
     private delegate: Worker;
     private readonly workerFunction: WorkerFunction<In, Out>;
 
-    constructor(workerFunction: WorkerFunction<In, Out>,
-                onMessage: OnMessageCallback<Out> = NullOnMessageCallback) {
-
+    constructor(
+        workerFunction: WorkerFunction<In, Out>,
+        onMessage: OnMessageCallback<Out> = NullOnMessageCallback
+    ) {
         this.workerFunction = workerFunction;
         this.onMessage = onMessage;
 
@@ -64,7 +67,6 @@ class TypedWorker<In, Out> implements ITypedWorker<In, Out> {
         this.delegate.onmessage = (messageEvent: MessageEvent) => {
             this.onMessage(new Result<Out>(messageEvent.data));
         };
-
     }
 
     /**
@@ -78,11 +80,9 @@ class TypedWorker<In, Out> implements ITypedWorker<In, Out> {
     public terminate(): void {
         this.delegate.terminate();
     }
-
 }
 
 export class TypedExecutor<In, Out> {
-
     private sequence: number = 0;
 
     private jobQueue = new JobQueue<Out>();
@@ -90,28 +90,22 @@ export class TypedExecutor<In, Out> {
     // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
 
     public execute(input: In): Promise<Out> {
-
-        return new Promise(((resolve, reject) => {
-
+        return new Promise((resolve, reject) => {
             const id = this.sequence++;
 
             this.jobQueue.add({
                 id,
                 resolve,
-                reject
+                reject,
             });
-
-        }));
-
+        });
     }
 
     // public onMessageCallback()
-
 }
 
 class JobQueue<Out> {
-
-    private jobs: {[id: number]: Job<Out>} = {};
+    private jobs: { [id: number]: Job<Out> } = {};
 
     public get(id: number): Job<Out> | undefined {
         return this.jobs[id];
@@ -120,13 +114,10 @@ class JobQueue<Out> {
     public add(job: Job<Out>) {
         this.jobs[job.id] = job;
     }
-
 }
 
 export interface Job<Out> {
-
     readonly id: number;
     readonly resolve: (resolved: Out) => void;
     readonly reject: (err: Error) => void;
-
 }

@@ -1,5 +1,5 @@
-import {Browser, BrowserProfileBuilder} from './Browser';
-import {BrowserProfile} from './BrowserProfile';
+import { Browser, BrowserProfileBuilder } from './Browser';
+import { BrowserProfile } from './BrowserProfile';
 
 // TODO: anything greater than 10k triggers a bug on NVidia drivers on Linux
 // but many documents are larger than this 10k limit if they have 10 pages or
@@ -13,15 +13,15 @@ import {BrowserProfile} from './BrowserProfile';
 // documents that need rendering with full windows.
 
 export class BrowserProfiles {
-
     /**
      * Migrate this to a profile of setting we then use to create the browser
      * window options.
      *
      */
-    public static toBrowserProfile(browser: Browser,
-                                   name: string): Readonly<BrowserProfile> {
-
+    public static toBrowserProfile(
+        browser: Browser,
+        name: string
+    ): Readonly<BrowserProfile> {
         if (name.toUpperCase() === 'DEFAULT') {
             return BrowserProfiles.toBrowserProfile(browser, 'BROWSER');
         }
@@ -31,16 +31,17 @@ export class BrowserProfiles {
         // https://electronjs.org/docs/tutorial/offscreen-rendering
 
         switch (name.toUpperCase()) {
+            case 'HIDDEN':
+                return (
+                    new BrowserProfileBuilder(browser)
+                        .setProfile(name)
+                        .setHeight(1000)
+                        .setShow(false)
+                        // .setShow(true)
+                        .build()
+                );
 
-            case "HIDDEN":
-                return new BrowserProfileBuilder(browser)
-                    .setProfile(name)
-                    .setHeight(1000)
-                    .setShow(false)
-                    // .setShow(true)
-                    .build();
-
-            case "HEADLESS":
+            case 'HEADLESS':
                 return new BrowserProfileBuilder(browser)
                     .setProfile(name)
                     .setHeight(1000)
@@ -48,7 +49,7 @@ export class BrowserProfiles {
                     .setOffscreen(true)
                     .build();
 
-            case "HEADLESS_500":
+            case 'HEADLESS_500':
                 return new BrowserProfileBuilder(browser)
                     .setProfile(name)
                     .setHeight(500)
@@ -56,7 +57,7 @@ export class BrowserProfiles {
                     .setOffscreen(true)
                     .build();
 
-            case "WEBVIEW":
+            case 'WEBVIEW':
                 return new BrowserProfileBuilder(browser)
                     .setProfile(name)
                     .setHeight(35000)
@@ -66,7 +67,7 @@ export class BrowserProfiles {
                     .setNodeIntegration(true)
                     .build();
 
-            case "BROWSER":
+            case 'BROWSER':
                 return new BrowserProfileBuilder(browser)
                     .setProfile(name)
                     .setHeight(35000)
@@ -91,10 +92,8 @@ export class BrowserProfiles {
             //     return browser;
 
             default:
-                throw new Error("Incorrect profile name: " + name);
-
+                throw new Error('Incorrect profile name: ' + name);
         }
-
     }
 
     public static createDefault(browser: Browser, height: number) {
@@ -114,7 +113,4 @@ export class BrowserProfiles {
 
         return browser;
     }
-
 }
-
-

@@ -3,10 +3,9 @@
  * complexities and insanity of the selection API which is really rough to deal
  * with.
  */
-import {RectText} from '../controller/RectText';
+import { RectText } from '../controller/RectText';
 
 export class SelectedContent {
-
     /**
      * The text of the selected content.
      */
@@ -23,11 +22,8 @@ export class SelectedContent {
     public readonly rectTexts: RectText[] = [];
 
     constructor(obj: any) {
-
         this.html = obj.html;
         this.text = obj.text;
         this.rectTexts = obj.rectTexts;
-
     }
-
 }

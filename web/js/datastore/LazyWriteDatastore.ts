@@ -1,12 +1,20 @@
-import {AbstractDatastore, Datastore, DatastoreID, DeleteResult} from './Datastore';
-import {DelegatedDatastore} from './DelegatedDatastore';
-import {IDocInfo, DocInfo} from '../metadata/DocInfo';
-import {DatastoreMutation, DefaultDatastoreMutation} from './DatastoreMutation';
-import {DocMetaFileRef} from './DocMetaRef';
-import {DocMetaComparisonIndex} from './DocMetaComparisonIndex';
-import {UUIDs} from '../metadata/UUIDs';
-import {DocMeta} from '../metadata/DocMeta';
-import {Logger} from '../logger/Logger';
+import {
+    AbstractDatastore,
+    Datastore,
+    DatastoreID,
+    DeleteResult,
+} from './Datastore';
+import { DelegatedDatastore } from './DelegatedDatastore';
+import { IDocInfo, DocInfo } from '../metadata/DocInfo';
+import {
+    DatastoreMutation,
+    DefaultDatastoreMutation,
+} from './DatastoreMutation';
+import { DocMetaFileRef } from './DocMetaRef';
+import { DocMetaComparisonIndex } from './DocMetaComparisonIndex';
+import { UUIDs } from '../metadata/UUIDs';
+import { DocMeta } from '../metadata/DocMeta';
+import { Logger } from '../logger/Logger';
 
 const log = Logger.create();
 
@@ -15,7 +23,6 @@ const log = Logger.create();
  * and prevents double writes of DocMeta but otherwise operates normally.
  */
 export class LazyWriteDatastore extends DelegatedDatastore {
-
     private readonly index = new DocMetaComparisonIndex();
 
     public readonly id: DatastoreID;
@@ -27,33 +34,44 @@ export class LazyWriteDatastore extends DelegatedDatastore {
         this.id = 'lazy-write:' + delegate.id;
     }
 
-    public async writeDocMeta(docMeta: DocMeta,
-                              datastoreMutation: DatastoreMutation<DocInfo> = new DefaultDatastoreMutation()): Promise<DocInfo> {
-
-        await this.handleWrite(docMeta.docInfo, async () => await super.writeDocMeta(docMeta, datastoreMutation));
+    public async writeDocMeta(
+        docMeta: DocMeta,
+        datastoreMutation: DatastoreMutation<
+            DocInfo
+        > = new DefaultDatastoreMutation()
+    ): Promise<DocInfo> {
+        await this.handleWrite(
+            docMeta.docInfo,
+            async () => await super.writeDocMeta(docMeta, datastoreMutation)
+        );
 
         return docMeta.docInfo;
-
     }
 
     // TODO: when we do a read, it might be better to update the index then
     // which would remove the first write in some situations but we need the
     // DocInfo and the UUID to handle this.
 
-    public async write(fingerprint: string,
-                       data: any,
-                       docInfo: IDocInfo,
-                       datastoreMutation?: DatastoreMutation<boolean>): Promise<void> {
-
-        return this.handleWrite(docInfo, async () => await super.write(fingerprint, data, docInfo, datastoreMutation));
-
+    public async write(
+        fingerprint: string,
+        data: any,
+        docInfo: IDocInfo,
+        datastoreMutation?: DatastoreMutation<boolean>
+    ): Promise<void> {
+        return this.handleWrite(
+            docInfo,
+            async () =>
+                await super.write(fingerprint, data, docInfo, datastoreMutation)
+        );
     }
 
-    private async handleWrite(docInfo: IDocInfo, writeFunction: () => Promise<any>): Promise<void> {
-
+    private async handleWrite(
+        docInfo: IDocInfo,
+        writeFunction: () => Promise<any>
+    ): Promise<void> {
         let doUpdated = false;
 
-        if (! this.index.contains(docInfo.fingerprint)) {
+        if (!this.index.contains(docInfo.fingerprint)) {
             doUpdated = true;
         }
 
@@ -63,30 +81,34 @@ export class LazyWriteDatastore extends DelegatedDatastore {
             doUpdated = true;
         }
 
-        if (docComparison && UUIDs.compare(docComparison.uuid, docInfo.uuid) < 0) {
+        if (
+            docComparison &&
+            UUIDs.compare(docComparison.uuid, docInfo.uuid) < 0
+        ) {
             doUpdated = true;
         }
 
-        const writeDesc = `fingerprint: ${docInfo.fingerprint}, uuid: ${docInfo.uuid}: ` + docInfo.title;
+        const writeDesc =
+            `fingerprint: ${docInfo.fingerprint}, uuid: ${docInfo.uuid}: ` +
+            docInfo.title;
 
         if (doUpdated) {
             // when the doc is created and it's not in the index.
             this.index.updateUsingDocInfo(docInfo);
             ++this.nrWrites;
 
-            log.info("Performing write: " + writeDesc);
+            log.info('Performing write: ' + writeDesc);
             await writeFunction();
             return;
-
         }
 
-        log.info("Skipping write: " + writeDesc);
-
+        log.info('Skipping write: ' + writeDesc);
     }
 
-    public delete(docMetaFileRef: DocMetaFileRef): Promise<Readonly<DeleteResult>> {
+    public delete(
+        docMetaFileRef: DocMetaFileRef
+    ): Promise<Readonly<DeleteResult>> {
         this.index.remove(docMetaFileRef.fingerprint);
         return super.delete(docMetaFileRef);
     }
-
 }

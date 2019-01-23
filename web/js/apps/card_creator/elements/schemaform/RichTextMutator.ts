@@ -3,7 +3,6 @@
  * internals.
  */
 export interface RichTextMutator {
-
     /**
      * Replace the text in the editor with the current value.
      *
@@ -16,7 +15,6 @@ export interface RichTextMutator {
     currentValue(): HTMLString;
 
     createRange(): Range;
-
 }
 
 export type HTMLString = string;

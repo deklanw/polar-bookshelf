@@ -1,6 +1,6 @@
-import {Percentage} from '../../util/ProgressTracker';
-import {Logger} from '../../logger/Logger';
-import {Optional} from '../../util/ts/Optional';
+import { Percentage } from '../../util/ProgressTracker';
+import { Logger } from '../../logger/Logger';
+import { Optional } from '../../util/ts/Optional';
 
 const ID = 'polar-determinate-progress-bar';
 
@@ -12,10 +12,8 @@ const log = Logger.create();
  * us to easily show a GUI for a download at any point in time.
  */
 export class DeterminateProgressBar {
-
     public static update(val: number) {
-
-        if (! val || val < 0 || val > 100) {
+        if (!val || val < 0 || val > 100) {
             return;
         }
 
@@ -25,47 +23,40 @@ export class DeterminateProgressBar {
         if (val >= 100) {
             this.destroy();
         }
-
     }
 
     private static destroy() {
-
         const timeout = 350;
 
         const doDestroy = () => {
-
             const progressElement = this.get().getOrUndefined();
 
             if (progressElement) {
-
                 if (progressElement.parentElement !== null) {
                     progressElement.parentElement.removeChild(progressElement);
                 } else {
-                    log.warn("No parent element for progress bar.");
+                    log.warn('No parent element for progress bar.');
                 }
-
             } else {
                 // log.warn("No progress bar to destroy.");
             }
-
         };
 
         setTimeout(() => {
-
             const progressElement = this.get();
 
-            if (! progressElement.isPresent() || progressElement.get().value !== 100) {
+            if (
+                !progressElement.isPresent() ||
+                progressElement.get().value !== 100
+            ) {
                 return;
             }
 
             doDestroy();
-
         }, timeout);
-
     }
 
     private static getOrCreate() {
-
         const result = this.get();
 
         if (result.isPresent()) {
@@ -73,16 +64,14 @@ export class DeterminateProgressBar {
         }
 
         return this.create();
-
     }
 
     private static get(): Optional<HTMLProgressElement> {
         const element = document.getElementById(ID);
-        return Optional.of(<HTMLProgressElement> element);
+        return Optional.of(<HTMLProgressElement>element);
     }
 
     private static create(): HTMLProgressElement {
-
         const element: HTMLProgressElement = document.createElement('progress');
 
         element.value = 0;
@@ -110,8 +99,5 @@ export class DeterminateProgressBar {
         document.body.appendChild(element);
 
         return element;
-
     }
-
 }
-

@@ -1,30 +1,31 @@
-import {IResult} from '../util/Result';
-import {Results} from '../util/Results';
-import {Filenames} from '../util/Filenames';
-import {FilePaths} from '../util/FilePaths';
-import {CapturedPHZWriter} from './CapturedPHZWriter';
-import {Logger} from '../logger/Logger';
-import {BrowserProfile} from './BrowserProfile';
+import { IResult } from '../util/Result';
+import { Results } from '../util/Results';
+import { Filenames } from '../util/Filenames';
+import { FilePaths } from '../util/FilePaths';
+import { CapturedPHZWriter } from './CapturedPHZWriter';
+import { Logger } from '../logger/Logger';
+import { BrowserProfile } from './BrowserProfile';
 import WebContents = Electron.WebContents;
-import {Directories} from '../datastore/Directories';
-import {CaptureResult} from './CaptureResult';
-import {Hashcodes} from '../Hashcodes';
-import {Captured} from './renderer/Captured';
+import { Directories } from '../datastore/Directories';
+import { CaptureResult } from './CaptureResult';
+import { Hashcodes } from '../Hashcodes';
+import { Captured } from './renderer/Captured';
 
 const log = Logger.create();
 
 const MAX_TITLE_LENGTH = 50;
 
 export class ContentCaptureExecutor {
-
     private static directories = new Directories();
 
-    public static async execute(webContents: WebContents, browserProfile: BrowserProfile): Promise<CaptureResult> {
-
+    public static async execute(
+        webContents: WebContents,
+        browserProfile: BrowserProfile
+    ): Promise<CaptureResult> {
         // TODO: this function should be cleaned up a bit.. it has too many moving
         // parts now and should be moved into smaller functions.
 
-        log.info("Capturing the HTML...");
+        log.info('Capturing the HTML...');
 
         let captured;
 
@@ -32,17 +33,16 @@ export class ContentCaptureExecutor {
         // properly and they also suggest using the callback so we should test
         // this more aggressively.
         try {
-
-            const result: IResult<Captured> = await webContents.executeJavaScript("ContentCapture.execute()");
+            const result: IResult<
+                Captured
+            > = await webContents.executeJavaScript('ContentCapture.execute()');
             captured = Results.create<Captured>(result).get();
-
         } catch (e) {
-
             // TODO: this isn't actually called because executeJavascript doesn't
             // handle exceptions. You just block there forever. I need to wrap
             // this with a closure that is an 'either' err or content.
 
-            log.error("Could not capture HTML: ", e);
+            log.error('Could not capture HTML: ', e);
             throw e;
         }
 
@@ -51,7 +51,7 @@ export class ContentCaptureExecutor {
 
         const url = captured.url;
 
-        const title = (captured.title || "").substring(0, MAX_TITLE_LENGTH);
+        const title = (captured.title || '').substring(0, MAX_TITLE_LENGTH);
 
         const hash = Hashcodes.createID(url);
         const stashDir = this.directories.stashDir;
@@ -59,7 +59,7 @@ export class ContentCaptureExecutor {
 
         const phzPath = FilePaths.join(stashDir, filename) + '.phz';
 
-        log.info("Writing PHZ to: " + phzPath);
+        log.info('Writing PHZ to: ' + phzPath);
 
         const capturedPHZWriter = new CapturedPHZWriter(phzPath);
         await capturedPHZWriter.convert(captured);
@@ -69,12 +69,10 @@ export class ContentCaptureExecutor {
 
         // await Files.writeFileAsync(`/tmp/${filename}.json`, JSON.stringify(captured, null, "  "));
 
-        log.info("Capturing the HTML...done");
+        log.info('Capturing the HTML...done');
 
         return {
-            path: phzPath
+            path: phzPath,
         };
-
     }
-
 }

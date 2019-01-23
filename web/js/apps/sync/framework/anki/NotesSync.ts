@@ -1,16 +1,23 @@
-import {NoteDescriptor} from './NoteDescriptor';
-import {AddNoteClient, IAddNoteClient} from './clients/AddNoteClient';
-import {FindNotesClient, IFindNotesClient} from './clients/FindNotesClient';
-import {SyncQueue} from '../SyncQueue';
-import {Logger} from '../../../../logger/Logger';
-import {IStoreMediaFileClient, MediaFile, StoreMediaFileClient} from './clients/StoreMediaFileClient';
-import {Dictionaries} from '../../../../util/Dictionaries';
-import {MediaContents} from './MediaContents';
-import {AnkiFields} from './AnkiFields';
-import {CanAddNotesClient, ICanAddNotesClient} from './clients/CanAddNotesClient';
-import {SyncTaskResult} from '../SyncTask';
-import {Optional} from '../../../../util/ts/Optional';
-import * as util from "util";
+import { NoteDescriptor } from './NoteDescriptor';
+import { AddNoteClient, IAddNoteClient } from './clients/AddNoteClient';
+import { FindNotesClient, IFindNotesClient } from './clients/FindNotesClient';
+import { SyncQueue } from '../SyncQueue';
+import { Logger } from '../../../../logger/Logger';
+import {
+    IStoreMediaFileClient,
+    MediaFile,
+    StoreMediaFileClient,
+} from './clients/StoreMediaFileClient';
+import { Dictionaries } from '../../../../util/Dictionaries';
+import { MediaContents } from './MediaContents';
+import { AnkiFields } from './AnkiFields';
+import {
+    CanAddNotesClient,
+    ICanAddNotesClient,
+} from './clients/CanAddNotesClient';
+import { SyncTaskResult } from '../SyncTask';
+import { Optional } from '../../../../util/ts/Optional';
+import * as util from 'util';
 
 const log = Logger.create();
 
@@ -18,7 +25,6 @@ const log = Logger.create();
  * Performs sync of notes once we are certain the decks are created.
  */
 export class NotesSync {
-
     public addNoteClient: IAddNoteClient = new AddNoteClient();
 
     public canAddNotesClient: ICanAddNotesClient = new CanAddNotesClient();
@@ -30,9 +36,8 @@ export class NotesSync {
     private readonly syncQueue: SyncQueue;
 
     private results: NotesSynchronized = {
-        created: []
+        created: [],
     };
-
 
     /**
      * @param syncQueue The queue to use for async operations.
@@ -47,72 +52,78 @@ export class NotesSync {
      * @param noteDescriptors The notes we need to sync.
      */
     public enqueue(noteDescriptors: NoteDescriptor[]): NotesSynchronized {
-
         this.syncQueue.add(async () => {
             return await this.findNotes(noteDescriptors);
         });
 
         return this.results;
-
     }
 
-    private async findNotes(noteDescriptors: NoteDescriptor[]): Promise<Optional<SyncTaskResult>> {
-
-        const normalizedNotes = noteDescriptors.map(current => this.normalize(current));
+    private async findNotes(
+        noteDescriptors: NoteDescriptor[]
+    ): Promise<Optional<SyncTaskResult>> {
+        const normalizedNotes = noteDescriptors.map(current =>
+            this.normalize(current)
+        );
 
         normalizedNotes.forEach(normalizedNote => {
-
             this.syncQueue.add(async () => {
                 return await this.findNote(normalizedNote);
             });
-
         });
 
         const message = `Performing sync on ${noteDescriptors.length} notes.`;
 
-        return Optional.of({message});
-
+        return Optional.of({ message });
     }
 
-    private async findNote(normalizedNote: NormalizedNote): Promise<Optional<SyncTaskResult>> {
+    private async findNote(
+        normalizedNote: NormalizedNote
+    ): Promise<Optional<SyncTaskResult>> {
+        const polarGUID = NotesSync.createPolarID(
+            normalizedNote.noteDescriptor.guid
+        );
 
-        const polarGUID = NotesSync.createPolarID(normalizedNote.noteDescriptor.guid);
-
-        const existingIDs = await this.findNotesClient.execute(`tag:${polarGUID.format()}`);
+        const existingIDs = await this.findNotesClient.execute(
+            `tag:${polarGUID.format()}`
+        );
 
         if (existingIDs.length === 0) {
-
             // add a special tag so that users can back out polar flashcards
             // and delete them if necessary.
-            normalizedNote.noteDescriptor.tags.push("_polar-flashcard");
+            normalizedNote.noteDescriptor.tags.push('_polar-flashcard');
 
-            if (! normalizedNote.noteDescriptor.tags.includes(polarGUID.format())) {
+            if (
+                !normalizedNote.noteDescriptor.tags.includes(polarGUID.format())
+            ) {
                 //  make sure the noteDescriptor has the proper tag.
                 normalizedNote.noteDescriptor.tags.push(polarGUID.format());
             }
 
-            this.syncQueue.add(async () => await this.canAddNote(normalizedNote));
+            this.syncQueue.add(
+                async () => await this.canAddNote(normalizedNote)
+            );
 
             const message = `Note not found.  Checking if we can add.`;
 
             log.debug(message, normalizedNote);
 
-            return Optional.of({message});
-
+            return Optional.of({ message });
         } else {
-
             const message = 'Note already found. Skipping.';
 
             log.debug(message, normalizedNote);
 
-            return Optional.of({message});
+            return Optional.of({ message });
         }
-
     }
 
-    private async canAddNote(normalizedNote: NormalizedNote): Promise<Optional<SyncTaskResult>> {
-
-        const canAddNotes = await this.canAddNotesClient.execute([normalizedNote.noteDescriptor]);
+    private async canAddNote(
+        normalizedNote: NormalizedNote
+    ): Promise<Optional<SyncTaskResult>> {
+        const canAddNotes = await this.canAddNotesClient.execute([
+            normalizedNote.noteDescriptor,
+        ]);
 
         let message: string;
 
@@ -125,21 +136,29 @@ export class NotesSync {
         }
 
         log.debug(message, normalizedNote);
-        return Optional.of({message});
-
+        return Optional.of({ message });
     }
 
-    private async storeMediaFile(mediaFile: MediaFile): Promise<Optional<SyncTaskResult>>  {
-        await this.storeMediaFileClient.execute(mediaFile.filename, mediaFile.data);
-        return Optional.of({message: `Sync'd media file: ${mediaFile.filename}`});
+    private async storeMediaFile(
+        mediaFile: MediaFile
+    ): Promise<Optional<SyncTaskResult>> {
+        await this.storeMediaFileClient.execute(
+            mediaFile.filename,
+            mediaFile.data
+        );
+        return Optional.of({
+            message: `Sync'd media file: ${mediaFile.filename}`,
+        });
     }
 
-    private async addNote(normalizedNote: NormalizedNote): Promise<Optional<SyncTaskResult>> {
-
-        let message = `Added note and ${normalizedNote.mediaFiles.length} media files.`;
+    private async addNote(
+        normalizedNote: NormalizedNote
+    ): Promise<Optional<SyncTaskResult>> {
+        let message = `Added note and ${
+            normalizedNote.mediaFiles.length
+        } media files.`;
 
         try {
-
             normalizedNote.mediaFiles.forEach(current => {
                 this.syncQueue.add(async () => this.storeMediaFile(current));
             });
@@ -147,15 +166,15 @@ export class NotesSync {
             await this.addNoteClient.execute(normalizedNote.noteDescriptor);
 
             this.results.created.push(normalizedNote.noteDescriptor);
-
         } catch (err) {
-            message = "Failed to create note: " + this.pp(normalizedNote.noteDescriptor);
+            message =
+                'Failed to create note: ' +
+                this.pp(normalizedNote.noteDescriptor);
             log.warn(message, err);
-            return Optional.of({message, failed: true});
+            return Optional.of({ message, failed: true });
         }
 
-        return Optional.of({message});
-
+        return Optional.of({ message });
     }
 
     private pp(noteDescriptor: NoteDescriptor) {
@@ -163,9 +182,8 @@ export class NotesSync {
     }
 
     private normalize(noteDescriptor: NoteDescriptor): NormalizedNote {
-
         const mediaFiles: MediaFile[] = [];
-        let fields: {[name: string]: string} = {};
+        let fields: { [name: string]: string } = {};
 
         Dictionaries.forDict(noteDescriptor.fields, (key, value) => {
             const mediaContent = MediaContents.parse(value);
@@ -180,20 +198,18 @@ export class NotesSync {
             deckName: noteDescriptor.deckName,
             modelName: noteDescriptor.modelName,
             fields,
-            tags: noteDescriptor.tags
+            tags: noteDescriptor.tags,
         };
 
         return {
             noteDescriptor: normalizedNoteDescriptor,
-            mediaFiles
+            mediaFiles,
         };
-
     }
 
     public static createPolarID(guid: string): Tag {
         return new Tag('polar_guid', guid);
     }
-
 }
 
 /**
@@ -201,23 +217,18 @@ export class NotesSync {
  * the media.
  */
 export interface NormalizedNote {
-
     readonly noteDescriptor: NoteDescriptor;
 
     readonly mediaFiles: MediaFile[];
-
 }
 
 export interface ITag {
-
     readonly name: string;
 
     readonly value: string;
-
 }
 
 export class Tag implements ITag {
-
     public readonly name: string;
     public readonly value: string;
 
@@ -229,11 +240,8 @@ export class Tag implements ITag {
     public format(): string {
         return `${this.name}:${this.value}`;
     }
-
 }
 
 export interface NotesSynchronized {
-
     readonly created: NoteDescriptor[];
-
 }

@@ -1,78 +1,67 @@
 import * as _ from 'lodash';
-import {assertJSON} from '../../../test/Assertions';
+import { assertJSON } from '../../../test/Assertions';
 
 describe('Test', function() {
-
-
     interface Address {
-
         readonly city: string;
-
-
     }
 
     interface Customer {
-        readonly addresses: Address[]
+        readonly addresses: Address[];
     }
 
-    let customers: Customer[] = [
+    const customers: Customer[] = [
         {
             addresses: [
                 {
-                    city: "San Francisco"
+                    city: 'San Francisco',
                 },
                 {
-                    city: "Sacramento",
-                }
-
-            ]
+                    city: 'Sacramento',
+                },
+            ],
         },
         {
             addresses: [
                 {
-                    city: "Baltimore"
+                    city: 'Baltimore',
                 },
                 {
-                    city: "Oakland",
-                }
-
-            ]
-        }
+                    city: 'Oakland',
+                },
+            ],
+        },
     ];
 
-    it("unchained", function () {
+    it('unchained', function() {
+        const result = _.map(
+            _.flatten(_.map(customers, customer => customer.addresses)),
+            address => address.city
+        );
 
-        let result = _.map(_.flatten(_.map(customers, customer => customer.addresses)), address => address.city);
-
-        let expected = [
-            "San Francisco",
-            "Sacramento",
-            "Baltimore",
-            "Oakland"
+        const expected = [
+            'San Francisco',
+            'Sacramento',
+            'Baltimore',
+            'Oakland',
         ];
         assertJSON(result, expected);
-
     });
 
-    it("chained", function () {
-
-        let result =_.chain(customers)
+    it('chained', function() {
+        const result = _.chain(customers)
             .map(customer => customer.addresses)
             .flatten()
             .map(address => address.city)
-            .value()
+            .value();
 
-        let expected = [
-            "San Francisco",
-            "Sacramento",
-            "Baltimore",
-            "Oakland"
+        const expected = [
+            'San Francisco',
+            'Sacramento',
+            'Baltimore',
+            'Oakland',
         ];
 
         assertJSON(result, expected);
-
     });
-
-
 });
-

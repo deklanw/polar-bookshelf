@@ -1,7 +1,6 @@
-import {DocTypeFormat} from '../capture/renderer/Captured';
+import { DocTypeFormat } from '../capture/renderer/Captured';
 
 export class Resource {
-
     /**
      * Unique ID representing this resource in this archive.
      *
@@ -45,17 +44,17 @@ export class Resource {
      * extensions of the files based on the content type.
      *
      */
-    public contentType = "text/html";
+    public contentType = 'text/html';
 
-    public mimeType = "text/html";
+    public mimeType = 'text/html';
 
-    public encoding = "UTF-8";
+    public encoding = 'UTF-8';
 
     /**
      * The HTTP request method.
      *
      */
-    public method = "GET";
+    public method = 'GET';
 
     /**
      * The status code for this content.
@@ -68,12 +67,11 @@ export class Resource {
     /**
      *
      */
-    public headers: {[key: string]: string | string[]} = {};
+    public headers: { [key: string]: string | string[] } = {};
 
     public docTypeFormat?: DocTypeFormat;
 
     constructor(opts: any) {
-
         this.id = opts.id;
         this.created = opts.created;
         this.url = opts.url;
@@ -83,9 +81,7 @@ export class Resource {
         this.docTypeFormat = opts.docTypeFormat;
 
         Object.assign(this, opts);
-
     }
-
 }
 
 export type DocTypeFormat = 'html' | 'xml';

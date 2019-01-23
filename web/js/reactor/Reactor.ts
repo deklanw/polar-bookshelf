@@ -1,18 +1,16 @@
-import {isPresent, Preconditions} from '../Preconditions';
-import {Event} from './Event';
-import {EventListener, RegisteredEventListener} from './EventListener';
-import {Logger} from '../logger/Logger';
-import {ISimpleReactor} from './SimpleReactor';
+import { isPresent, Preconditions } from '../Preconditions';
+import { Event } from './Event';
+import { EventListener, RegisteredEventListener } from './EventListener';
+import { Logger } from '../logger/Logger';
+import { ISimpleReactor } from './SimpleReactor';
 
 const log = Logger.create();
 
 export class Reactor<V> implements IReactor<V> {
-
-    private readonly events: {[name: string]: Event<V>} = {};
+    private readonly events: { [name: string]: Event<V> } = {};
 
     public registerEvent(eventName: string): this {
-
-        Preconditions.assertNotNull(eventName, "eventName");
+        Preconditions.assertNotNull(eventName, 'eventName');
 
         if (isPresent(this.events[eventName])) {
             // already registered so don't double register which would kill
@@ -24,7 +22,6 @@ export class Reactor<V> implements IReactor<V> {
         this.events[eventName] = event;
 
         return this;
-
     }
 
     public hasRegisteredEvent(eventName: string): boolean {
@@ -43,7 +40,6 @@ export class Reactor<V> implements IReactor<V> {
     }
 
     public size(eventName: string) {
-
         if (this.events[eventName]) {
             return this.events[eventName].size();
         }
@@ -58,41 +54,39 @@ export class Reactor<V> implements IReactor<V> {
      * @return {Reactor}
      */
     public dispatchEvent(eventName: string, value: V) {
-
-        Preconditions.assertNotNull(eventName, "eventName");
+        Preconditions.assertNotNull(eventName, 'eventName');
 
         const event = this.events[eventName];
 
-        if (! event) {
-            throw new Error("No events for event name: " + eventName);
+        if (!event) {
+            throw new Error('No events for event name: ' + eventName);
         }
 
-        event.getListeners().forEach((listener) => {
-
+        event.getListeners().forEach(listener => {
             try {
-
                 listener(value);
-
             } catch (e) {
-                log.error("listener generated unhandled exception: ", e);
+                log.error('listener generated unhandled exception: ', e);
             }
-
         });
 
         return this;
-
     }
 
-    public addEventListener(eventName: string, eventListener: EventListener<V>): RegisteredEventListener<V> {
+    public addEventListener(
+        eventName: string,
+        eventListener: EventListener<V>
+    ): RegisteredEventListener<V> {
+        Preconditions.assertNotNull(eventName, 'eventName');
 
-        Preconditions.assertNotNull(eventName, "eventName");
-
-        if (typeof eventListener !== "function") {
-            throw new Error("listener is not a function: " + typeof eventListener);
+        if (typeof eventListener !== 'function') {
+            throw new Error(
+                'listener is not a function: ' + typeof eventListener
+            );
         }
 
         if (this.events[eventName] === undefined) {
-            throw new Error("No registered event for event name: " + eventName);
+            throw new Error('No registered event for event name: ' + eventName);
         }
 
         this.events[eventName].registerListener(eventListener);
@@ -101,33 +95,29 @@ export class Reactor<V> implements IReactor<V> {
             this.removeEventListener(eventName, eventListener);
         };
 
-        return {eventListener, release};
-
+        return { eventListener, release };
     }
 
-    public removeEventListener(eventName: string, listener: EventListener<V>): boolean {
-
+    public removeEventListener(
+        eventName: string,
+        listener: EventListener<V>
+    ): boolean {
         if (this.events[eventName]) {
             return this.events[eventName].removeListener(listener);
         }
 
         return false;
-
     }
 
     public once(eventName: string): Promise<V> {
-
-        return new Promise<V>((resolve => {
-
+        return new Promise<V>(resolve => {
             const listener = (event: V) => {
                 resolve(event);
                 this.removeEventListener(eventName, listener);
             };
 
             this.addEventListener(eventName, listener);
-
-        }));
-
+        });
     }
 
     /**
@@ -135,20 +125,25 @@ export class Reactor<V> implements IReactor<V> {
      * @param eventName {String} The name of the event for the listeners.
      */
     public getEventListeners(eventName: string) {
-        Preconditions.assertNotNull(eventName, "eventName");
+        Preconditions.assertNotNull(eventName, 'eventName');
 
         return this.events[eventName].getListeners();
     }
 
     public hasEventListeners(eventName: string) {
-        return this.hasRegisteredEvent(eventName) && this.events[eventName].hasListeners();
+        return (
+            this.hasRegisteredEvent(eventName) &&
+            this.events[eventName].hasListeners()
+        );
     }
-
 }
 
 export interface IReactor<V> {
     once(eventName: string): Promise<V>;
-    addEventListener(eventName: string, listener: EventListener<V>): RegisteredEventListener<V>;
+    addEventListener(
+        eventName: string,
+        listener: EventListener<V>
+    ): RegisteredEventListener<V>;
     dispatchEvent(eventName: string, value: V): void;
     hasRegisteredEvent(eventName: string): boolean;
     hasEventListeners(eventName: string): boolean;
@@ -163,6 +158,4 @@ export interface IMutableReactor<V> extends IReactor<V> {
     size(eventName: string): number;
 }
 
-export interface INamedEventDispatcher<V> extends IReactor<V> {
-
-}
+export interface INamedEventDispatcher<V> extends IReactor<V> {}

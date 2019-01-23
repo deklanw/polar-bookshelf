@@ -1,12 +1,11 @@
-import {Annotation} from './Annotation';
-import {Note} from './Note';
-import {PagemarkType} from './PagemarkType';
-import {PagemarkRect} from './PagemarkRect';
-import {MetadataSerializer} from './MetadataSerializer';
-import {PagemarkMode} from './PagemarkMode';
+import { Annotation } from './Annotation';
+import { Note } from './Note';
+import { PagemarkType } from './PagemarkType';
+import { PagemarkRect } from './PagemarkRect';
+import { MetadataSerializer } from './MetadataSerializer';
+import { PagemarkMode } from './PagemarkMode';
 
 export class Pagemark extends Annotation {
-
     // TODO: should pagemarks support the full nesting model where we can
     // have comments, notes, flashcards, etc?  Probably not but notes might
     // make sense.
@@ -14,7 +13,7 @@ export class Pagemark extends Annotation {
     /**
      * The note for this annotation.
      */
-    public notes: {[id: string]: Note};
+    public notes: { [id: string]: Note };
 
     /**
      * The type of pagemark.
@@ -53,7 +52,6 @@ export class Pagemark extends Annotation {
     public mode: PagemarkMode;
 
     constructor(val: any) {
-
         super(val);
 
         // TODO: should pagemarks support the full nesting model where we can
@@ -71,11 +69,9 @@ export class Pagemark extends Annotation {
         // we can start off reading within a smaller page.
 
         this.init(val);
-
     }
 
-    setup() {
-
+    public setup() {
         super.setup();
 
         if (!this.notes) {
@@ -97,23 +93,19 @@ export class Pagemark extends Annotation {
         if (!this.column) {
             this.column = 0;
         }
-
     }
 
-    validate() {
+    public validate() {
         super.validate();
     }
 
-    toString() {
+    public toString() {
         return MetadataSerializer.serialize(this);
     }
-
 }
 
 export interface PagemarkRef {
-
     readonly pageNum: number;
 
     readonly pagemark: Pagemark;
-
 }

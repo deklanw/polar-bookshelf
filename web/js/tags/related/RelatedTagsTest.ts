@@ -1,14 +1,12 @@
-import {RelatedTags} from './RelatedTags';
-import {assertJSON} from '../../test/Assertions';
+import { RelatedTags } from './RelatedTags';
+import { assertJSON } from '../../test/Assertions';
 
 describe('RelatedTags', function() {
-
     const getTagMetaIndex = (relatedTags: RelatedTags) => {
-        return (<any> relatedTags).tagMetaIndex;
+        return (<any>relatedTags).tagMetaIndex;
     };
 
-    it("basic", async function() {
-
+    it('basic', async function() {
         const relatedTags = new RelatedTags();
 
         relatedTags.update('0x01', 'set', 'linux');
@@ -29,46 +27,31 @@ describe('RelatedTags', function() {
         const tagMetaIndex = getTagMetaIndex(relatedTags);
 
         assertJSON(tagMetaIndex, {
-               "linux": {
-                   "tag": "linux",
-                   "docs": [
-                       "0x01",
-                       "0x02",
-                       "0x03",
-                       "0x04",
-                       "0x05"
-                   ]
-               },
-               "microsoft": {
-                   "tag": "microsoft",
-                   "docs": [
-                       "0x01",
-                       "0x03",
-                       "0x04"
-                   ]
-               },
-               "google": {
-                   "tag": "google",
-                   "docs": [
-                       "0x02",
-                       "0x05"
-                   ]
-               }
-           });
+            linux: {
+                tag: 'linux',
+                docs: ['0x01', '0x02', '0x03', '0x04', '0x05'],
+            },
+            microsoft: {
+                tag: 'microsoft',
+                docs: ['0x01', '0x03', '0x04'],
+            },
+            google: {
+                tag: 'google',
+                docs: ['0x02', '0x05'],
+            },
+        });
 
         const tagHits = relatedTags.compute(['linux']);
 
         assertJSON(tagHits, [
-               {
-                   "tag": "microsoft",
-                   "hits": 3
-               },
-               {
-                   "tag": "google",
-                   "hits": 2
-               }
-           ]);
-
+            {
+                tag: 'microsoft',
+                hits: 3,
+            },
+            {
+                tag: 'google',
+                hits: 2,
+            },
+        ]);
     });
-
 });

@@ -1,10 +1,9 @@
-
-import {app, BrowserWindow} from 'electron';
-import {BrowserAppWindowFactory} from '../web/js/apps/electron_browser/BrowserAppWindowFactory';
+import { app, BrowserWindow } from 'electron';
+import { BrowserAppWindowFactory } from '../web/js/apps/electron_browser/BrowserAppWindowFactory';
 
 const url = process.argv[2];
 
-console.log("Loading url: " + url);
+console.log('Loading url: ' + url);
 
 app.on('ready', async function() {
     //
@@ -49,6 +48,4 @@ app.on('ready', async function() {
     // mainWindow.loadURL('about:blank')
 
     // mainWindow.loadURL(url)
-
 });
-

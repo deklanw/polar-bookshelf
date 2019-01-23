@@ -2,30 +2,45 @@ import Toastr from 'toastr';
 
 // needed to enforce that jquery is working.
 import $ from '../JQuery';
-import {Optional} from '../../util/ts/Optional';
+import { Optional } from '../../util/ts/Optional';
 
 /**
  * High level interface to create toaster UI popups for messages.
  */
 export class Toaster {
-
-    public static info(message: string, title: string = "", options: ToasterOptions = {}) {
-        title = Optional.of(title).getOrElse("");
+    public static info(
+        message: string,
+        title: string = '',
+        options: ToasterOptions = {}
+    ) {
+        title = Optional.of(title).getOrElse('');
         Toastr.info(message, title, this.augmentExtendedOptions(options));
     }
 
-    public static success(message: string, title: string = "", options: ToasterOptions = {}) {
-        title = Optional.of(title).getOrElse("");
+    public static success(
+        message: string,
+        title: string = '',
+        options: ToasterOptions = {}
+    ) {
+        title = Optional.of(title).getOrElse('');
         Toastr.success(message, title, this.augmentExtendedOptions(options));
     }
 
-    public static warning(message: string, title: string = "", options: ToasterOptions = {}) {
-        title = Optional.of(title).getOrElse("");
+    public static warning(
+        message: string,
+        title: string = '',
+        options: ToasterOptions = {}
+    ) {
+        title = Optional.of(title).getOrElse('');
         Toastr.warning(message, title, this.augmentExtendedOptions(options));
     }
 
-    public static error(message: string, title: string = "", options: ToasterOptions = {}) {
-        title = Optional.of(title).getOrElse("");
+    public static error(
+        message: string,
+        title: string = '',
+        options: ToasterOptions = {}
+    ) {
+        title = Optional.of(title).getOrElse('');
         Toastr.error(message, title, this.augmentExtendedOptions(options));
     }
 
@@ -35,18 +50,17 @@ export class Toaster {
      *
      * @param message
      */
-    public static persistentError(message: string, title: string = "") {
-
+    public static persistentError(message: string, title: string = '') {
         this.error(message, title, {
             timeOut: 0,
             extendedTimeOut: 0,
-            preventDuplicates: true
+            preventDuplicates: true,
         });
-
     }
 
-    private static augmentExtendedOptions(options: ToasterOptions): ToasterOptions {
-
+    private static augmentExtendedOptions(
+        options: ToasterOptions
+    ): ToasterOptions {
         const result = Object.assign({}, options);
 
         if (options.requiresAcknowledgment) {
@@ -58,9 +72,7 @@ export class Toaster {
         }
 
         return result;
-
     }
-
 }
 
 export interface ToasterOptions {
@@ -71,19 +83,19 @@ export interface ToasterOptions {
     debug?: boolean;
     newestOnTop?: boolean;
     requiresAcknowledgment?: boolean;
-    positionClass?: 'toast-top-center' | 'toast-top-right' | 'toast-top-left' | 'toast-top-full-width';
+    positionClass?:
+        | 'toast-top-center'
+        | 'toast-top-right'
+        | 'toast-top-left'
+        | 'toast-top-full-width';
 }
 
 export enum ToasterMessageType {
+    SUCCESS = 'success',
 
-    SUCCESS = "success",
+    INFO = 'info',
 
-    INFO = "info",
+    WARNING = 'warning',
 
-    WARNING = "warning",
-
-    ERROR = "error"
-
+    ERROR = 'error',
 }
-
-

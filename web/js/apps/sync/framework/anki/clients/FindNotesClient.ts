@@ -1,5 +1,5 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import * as TypeMoq from "typemoq";
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import * as TypeMoq from 'typemoq';
 
 /**
 findNotes
@@ -24,21 +24,18 @@ Sample request:
 
  */
 export class FindNotesClient implements IFindNotesClient {
-
     public async execute(query: string): Promise<number[]> {
-
         const body = {
-            action: "findNotes",
+            action: 'findNotes',
             version: 6,
             params: {
-                query
-            }
+                query,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
-        return <number[]> await AnkiConnectFetch.fetch(init);
-
+        return <number[]>await AnkiConnectFetch.fetch(init);
     }
 
     /**
@@ -46,14 +43,13 @@ export class FindNotesClient implements IFindNotesClient {
      */
     public static createMock(result: number[]) {
         const client = TypeMoq.Mock.ofType<IFindNotesClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve(result));
         return client.object;
     }
-
 }
 
 export interface IFindNotesClient {
-
     execute(query: string): Promise<number[]>;
-
 }

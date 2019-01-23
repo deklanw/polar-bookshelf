@@ -1,10 +1,9 @@
 /**
  * The points on screen where the event happened.
  */
-import {Point} from '../Point';
+import { Point } from '../Point';
 
 export class Points {
-
     public readonly page: Point;
     public readonly client: Point;
     public readonly offset: Point;
@@ -16,5 +15,4 @@ export class Points {
         this.offset = offset;
         this.pageOffset = pageOffset;
     }
-
 }

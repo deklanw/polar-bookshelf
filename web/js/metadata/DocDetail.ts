@@ -2,12 +2,11 @@
  * Details about a document that was loaded which can be incorporated into
  * DocInfo if necessary.
  */
-import {Image} from './Image';
-import {Author} from './Author';
-import {ISODateTimeString} from './ISODateTimeStrings';
+import { Image } from './Image';
+import { Author } from './Author';
+import { ISODateTimeString } from './ISODateTimeStrings';
 
 export interface DocDetail {
-
     /**
      * A fingerprint for the document.
      */
@@ -52,11 +51,9 @@ export interface DocDetail {
      * The time this file was added to the repository.
      */
     readonly added?: ISODateTimeString;
-
 }
 
 export interface UpdatableDocDetails {
-
     /**
      * The title for the document.
      */
@@ -80,5 +77,4 @@ export interface UpdatableDocDetails {
      * The number of pages in this document.
      */
     nrPages?: number;
-
 }

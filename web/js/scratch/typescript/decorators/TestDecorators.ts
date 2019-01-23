@@ -1,35 +1,41 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 
 describe('TestDecorators', function() {
-
-    it("basic decorators", function () {
-
+    it('basic decorators', function() {
         function Path(value: string) {
-            return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+            return function(
+                target: any,
+                propertyKey: string,
+                descriptor: PropertyDescriptor
+            ) {
+                console.log('FIXME propertyKey', propertyKey);
 
-                console.log("FIXME propertyKey", propertyKey)
+                const paramtypes = Reflect.getMetadata(
+                    'design:paramtypes',
+                    target,
+                    propertyKey
+                );
 
-                let paramtypes = Reflect.getMetadata("design:paramtypes", target, propertyKey);
+                console.log(
+                    'FIXME1:',
+                    Reflect.getMetadata('design:type', target, propertyKey)
+                );
 
-                console.log("FIXME1:", Reflect.getMetadata("design:type", target, propertyKey));
-
-                console.log("Within my annotation: ", paramtypes);
+                console.log('Within my annotation: ', paramtypes);
                 // FIXME: where do I store this value...
 
-                //descriptor.enumerable = value;
+                // descriptor.enumerable = value;
                 target.path = value;
 
                 // FIXME: how do I get method params. wit those I can do full
                 // API handling
 
-                console.log("FIXME: target", target);
-                console.log("FIXME: descriptor", descriptor);
-
+                console.log('FIXME: target', target);
+                console.log('FIXME: descriptor', descriptor);
             };
         }
 
         class Address {
-
             public readonly city: string;
             public readonly state: string;
             public readonly zip: number;
@@ -39,7 +45,6 @@ describe('TestDecorators', function() {
                 this.state = state;
                 this.zip = zip;
             }
-
         }
 
         interface Handler<T> {
@@ -47,19 +52,10 @@ describe('TestDecorators', function() {
         }
 
         class AddressHandler implements Handler<Address> {
-
             //  A method decorator cannot be used in a declaration file, on an
             // overload, or in any other ambient context (such as in a declare class).
-            @Path("/api/address")
-            handle(address: Address): void {
-
-            }
-
+            @Path('/api/address')
+            public handle(address: Address): void {}
         }
-
-
-
     });
-
 });
-

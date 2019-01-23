@@ -1,18 +1,15 @@
-import {Text} from './Text';
-import {TextType} from './TextType';
-import {isPresent} from '../Preconditions';
+import { Text } from './Text';
+import { TextType } from './TextType';
+import { isPresent } from '../Preconditions';
 
 export class Texts {
-
     public static create(body: string, type: TextType): Text {
-
         // TODO: if this is markdown, and we don't have the HTML version,
         // we need to add the HTML version by converting the markdown to HTML.
 
         const text = new Text();
         text[type] = body;
         return Object.freeze(text);
-
     }
 
     /**
@@ -20,10 +17,8 @@ export class Texts {
      * plain text string with no HTML formatting.
      */
     public static toPlainText(text?: Text | string): string | undefined {
-
         if (text && this.isText(text)) {
-
-            text = <Text> text;
+            text = <Text>text;
 
             if (text.TEXT) {
                 return text.TEXT;
@@ -38,7 +33,6 @@ export class Texts {
                 div.innerHTML = text.HTML;
                 return div.innerText;
             }
-
         }
 
         if (typeof text === 'string') {
@@ -46,17 +40,14 @@ export class Texts {
         }
 
         return undefined;
-
     }
 
     /**
      * Get the first field from the text object or the string value.
      */
     public static toString(text?: Text | string): string | undefined {
-
         if (text && this.isText(text)) {
-
-            text = <Text> text;
+            text = <Text>text;
 
             if (text.TEXT) {
                 return text.TEXT;
@@ -69,7 +60,6 @@ export class Texts {
             if (text.HTML) {
                 return text.MARKDOWN;
             }
-
         }
 
         if (typeof text === 'string') {
@@ -77,20 +67,17 @@ export class Texts {
         }
 
         return undefined;
-
     }
 
     public static isText(text?: any): boolean {
-
         if (text) {
-
-            return isPresent(text.MARKDOWN) || isPresent(text.HTML) || isPresent(text.TEXT);
-
+            return (
+                isPresent(text.MARKDOWN) ||
+                isPresent(text.HTML) ||
+                isPresent(text.TEXT)
+            );
         }
 
         return false;
-
     }
-
 }
-

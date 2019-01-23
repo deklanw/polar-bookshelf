@@ -1,10 +1,9 @@
-import {Rect} from "../../../../Rect";
-import {Rects} from "../../../../Rects";
-import {Preconditions} from "../../../../Preconditions";
-import {Objects} from "../../../../util/Objects";
+import { Rect } from '../../../../Rect';
+import { Rects } from '../../../../Rects';
+import { Preconditions } from '../../../../Preconditions';
+import { Objects } from '../../../../util/Objects';
 
 export class LineAdjustment {
-
     public overlapped: boolean;
 
     public start: number;
@@ -29,44 +28,37 @@ export class LineAdjustment {
     public axis: string;
 
     constructor(obj: any) {
-
         this.overlapped = obj.overlapped;
         this.start = obj.start;
         this.previous = obj.previous;
         this.snapped = obj.snapped;
         this.delta = obj.delta;
         this.axis = obj.axis;
-
     }
 
     /**
      * Apply the adjustment to the given rect and return the new rect.
      *
      */
-    adjustRect(primaryRect: Rect) {
-
-        let dir: any = {};
+    public adjustRect(primaryRect: Rect) {
+        const dir: any = {};
         dir[this.axis] = this.start;
 
-        let absolute=true;
+        const absolute = true;
 
         return Rects.move(primaryRect, dir, absolute);
-
     }
 
-    static create(opts: any) {
-
-        Preconditions.assertNotNull(opts.start, "start");
-        Preconditions.assertNotNull(opts.previous, "previous");
-        Preconditions.assertNotNull(opts.snapped, "snapped");
-        Preconditions.assertNotNull(opts.axis, "axis");
+    public static create(opts: any) {
+        Preconditions.assertNotNull(opts.start, 'start');
+        Preconditions.assertNotNull(opts.previous, 'previous');
+        Preconditions.assertNotNull(opts.snapped, 'snapped');
+        Preconditions.assertNotNull(opts.axis, 'axis');
 
         opts = Objects.duplicate(opts);
         opts.overlapped = true;
         opts.delta = Math.abs(opts.previous - opts.start);
 
         return new LineAdjustment(opts);
-
     }
-
 }

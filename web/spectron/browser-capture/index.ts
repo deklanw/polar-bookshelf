@@ -1,19 +1,20 @@
-import {SpectronMain2} from '../../js/test/SpectronMain2';
-import {Capture} from '../../js/capture/Capture';
-import {BrowserProfiles} from '../../js/capture/BrowserProfiles';
+import { SpectronMain2 } from '../../js/test/SpectronMain2';
+import { Capture } from '../../js/capture/Capture';
+import { BrowserProfiles } from '../../js/capture/BrowserProfiles';
 import BrowserRegistry from '../../js/capture/BrowserRegistry';
-import {BrowserProfile} from '../../js/capture/BrowserProfile';
+import { BrowserProfile } from '../../js/capture/BrowserProfile';
 
 SpectronMain2.create().run(async state => {
-
     const browser = BrowserRegistry.DEFAULT;
 
-    let browserProfile: BrowserProfile
-        = BrowserProfiles.toBrowserProfile(browser, 'DEFAULT');
+    let browserProfile: BrowserProfile = BrowserProfiles.toBrowserProfile(
+        browser,
+        'DEFAULT'
+    );
 
-    const url = "http://www.example.com";
+    const url = 'http://www.example.com';
 
-    browserProfile.navigation.navigated.dispatchEvent({link: url});
+    browserProfile.navigation.navigated.dispatchEvent({ link: url });
     browserProfile.navigation.captured.dispatchEvent({});
 
     browserProfile = Object.assign({}, browserProfile);
@@ -25,5 +26,4 @@ SpectronMain2.create().run(async state => {
     await capture.start();
 
     await state.testResultWriter.write(true);
-
 });

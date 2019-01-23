@@ -1,11 +1,9 @@
-import {MutationType} from './MutationType';
-import {MutationState} from './MutationState';
+import { MutationType } from './MutationType';
+import { MutationState } from './MutationState';
 
 export class MutationTypes {
-
-    static toMutationState(mutationType: MutationType) {
-
-        switch(mutationType) {
+    public static toMutationState(mutationType: MutationType) {
+        switch (mutationType) {
             case MutationType.INITIAL:
                 return MutationState.PRESENT;
             case MutationType.SET:
@@ -14,10 +12,7 @@ export class MutationTypes {
                 return MutationState.ABSENT;
 
             default:
-                throw new Error("Invalid mutationType: " + mutationType);
-
+                throw new Error('Invalid mutationType: ' + mutationType);
         }
-
     }
-
 }

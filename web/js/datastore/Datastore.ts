@@ -1,26 +1,28 @@
 // A datastore that supports ledgers and checkpoints.
-import {DocMetaFileRef, DocMetaFileRefs, DocMetaRef} from './DocMetaRef';
-import {DeleteResult} from './Datastore';
-import {Directories} from './Directories';
-import {Backend} from './Backend';
-import {DatastoreFile} from './DatastoreFile';
-import {Optional} from '../util/ts/Optional';
-import {DocInfo, IDocInfo} from '../metadata/DocInfo';
-import {FileHandle} from '../util/Files';
-import {Simulate} from 'react-dom/test-utils';
-import {DatastoreMutation, DefaultDatastoreMutation} from './DatastoreMutation';
-import {DocMeta} from '../metadata/DocMeta';
-import {Hashcode} from '../metadata/Hashcode';
-import {Progress} from '../util/ProgressTracker';
-import {AsyncProvider} from '../util/Providers';
-import {UUID} from '../metadata/UUID';
-import {AsyncWorkQueues} from '../util/AsyncWorkQueues';
-import {DocMetas} from '../metadata/DocMetas';
-import {DatastoreMutations} from './DatastoreMutations';
-import {IEventDispatcher, SimpleReactor} from '../reactor/SimpleReactor';
+import { DocMetaFileRef, DocMetaFileRefs, DocMetaRef } from './DocMetaRef';
+import { DeleteResult } from './Datastore';
+import { Directories } from './Directories';
+import { Backend } from './Backend';
+import { DatastoreFile } from './DatastoreFile';
+import { Optional } from '../util/ts/Optional';
+import { DocInfo, IDocInfo } from '../metadata/DocInfo';
+import { FileHandle } from '../util/Files';
+import { Simulate } from 'react-dom/test-utils';
+import {
+    DatastoreMutation,
+    DefaultDatastoreMutation,
+} from './DatastoreMutation';
+import { DocMeta } from '../metadata/DocMeta';
+import { Hashcode } from '../metadata/Hashcode';
+import { Progress } from '../util/ProgressTracker';
+import { AsyncProvider } from '../util/Providers';
+import { UUID } from '../metadata/UUID';
+import { AsyncWorkQueues } from '../util/AsyncWorkQueues';
+import { DocMetas } from '../metadata/DocMetas';
+import { DatastoreMutations } from './DatastoreMutations';
+import { IEventDispatcher, SimpleReactor } from '../reactor/SimpleReactor';
 
 export interface Datastore extends BinaryDatastore, WritableDatastore {
-
     /**
      * The id of this datastore.
      */
@@ -57,15 +59,19 @@ export interface Datastore extends BinaryDatastore, WritableDatastore {
      * Get a current snapshot of the internal state of the Datastore by
      * receiving DocMetaSnapshotEvent on the initial state.
      */
-    snapshot(docMetaSnapshotEventListener: DocMetaSnapshotEventListener,
-             errorListener?: ErrorListener): Promise<SnapshotResult>;
+    snapshot(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener,
+        errorListener?: ErrorListener
+    ): Promise<SnapshotResult>;
 
     /**
      * An event listener to listen to the datastore while operating on both
      * the underlying datastores to discover when documents are discovered
      * without having to re-read the datastore after it's been initialized.
      */
-    addDocMetaSnapshotEventListener(docMetaSnapshotEventListener: DocMetaSnapshotEventListener): void;
+    addDocMetaSnapshotEventListener(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener
+    ): void;
 
     /**
      * Deactivate using this datasource. For most datasources this is not used
@@ -85,35 +91,45 @@ export interface Datastore extends BinaryDatastore, WritableDatastore {
     //
     // - this is VERY similar (but somewhat different) than the firebase
     // snapshot support
-
 }
 
 export abstract class AbstractDatastore {
-
     protected datastoreMutations: DatastoreMutations;
 
     constructor() {
         this.datastoreMutations = DatastoreMutations.create('written');
-
     }
-    public async writeDocMeta(docMeta: DocMeta,
-                              datastoreMutation: DatastoreMutation<DocInfo> = new DefaultDatastoreMutation()): Promise<DocInfo> {
-
+    public async writeDocMeta(
+        docMeta: DocMeta,
+        datastoreMutation: DatastoreMutation<
+            DocInfo
+        > = new DefaultDatastoreMutation()
+    ): Promise<DocInfo> {
         const data = DocMetas.serialize(docMeta);
         const docInfo = docMeta.docInfo;
 
         const syncMutation = new DefaultDatastoreMutation<boolean>();
-        this.datastoreMutations.pipe(syncMutation, datastoreMutation, () => docInfo);
+        this.datastoreMutations.pipe(
+            syncMutation,
+            datastoreMutation,
+            () => docInfo
+        );
 
-        await this.write(docMeta.docInfo.fingerprint, data, docInfo, syncMutation);
+        await this.write(
+            docMeta.docInfo.fingerprint,
+            data,
+            docInfo,
+            syncMutation
+        );
         return docInfo;
-
     }
 
-    public abstract write(fingerprint: string,
-                          data: any,
-                          docInfo: IDocInfo,
-                          datastoreMutation?: DatastoreMutation<boolean>): Promise<void>;
+    public abstract write(
+        fingerprint: string,
+        data: any,
+        docInfo: IDocInfo,
+        datastoreMutation?: DatastoreMutation<boolean>
+    ): Promise<void>;
 
     public async synchronizeDocs(...docMetaRefs: DocMetaRef[]): Promise<void> {
         // noop
@@ -125,22 +141,25 @@ export abstract class AbstractDatastore {
 
     public async createBackup(): Promise<void> {
         // only supported with the disk datastore.
-        throw new Error("Not supported with this datatore");
-
+        throw new Error('Not supported with this datatore');
     }
-
 }
 
 interface WritableDatastore {
-
     /**
      * Delete the DocMeta file and the underlying doc from the stash.  Deletes
      * MUST be idempotent.
      *
      */
-    delete(docMetaFileRef: DocMetaFileRef, datastoreMutation?: DatastoreMutation<boolean>): Promise<Readonly<DeleteResult>>;
+    delete(
+        docMetaFileRef: DocMetaFileRef,
+        datastoreMutation?: DatastoreMutation<boolean>
+    ): Promise<Readonly<DeleteResult>>;
 
-    writeDocMeta(docMeta: DocMeta, datastoreMutation?: DatastoreMutation<DocInfo>): Promise<DocInfo>;
+    writeDocMeta(
+        docMeta: DocMeta,
+        datastoreMutation?: DatastoreMutation<DocInfo>
+    ): Promise<DocInfo>;
 
     /**
      * Write the datastore to disk.  Writes should be idempotent.
@@ -149,7 +168,12 @@ interface WritableDatastore {
      * @param data The RAW data to decode by the PersistenceLayer
      * @param docInfo The DocInfo for this document that we're writing
      */
-    write(fingerprint: string, data: any, docInfo: IDocInfo, datastoreMutation?: DatastoreMutation<boolean>): Promise<void>;
+    write(
+        fingerprint: string,
+        data: any,
+        docInfo: IDocInfo,
+        datastoreMutation?: DatastoreMutation<boolean>
+    ): Promise<void>;
 
     /**
      * Make sure the docs with the given fingerprints are synchronized with
@@ -158,44 +182,40 @@ interface WritableDatastore {
     synchronizeDocs(...docMetaRefs: DocMetaRef[]): Promise<void>;
 
     createBackup(): Promise<void>;
-
 }
 
 /**
  * A datastore that support storage of binary data (images, videos, PDFs, etc).
  */
-interface BinaryDatastore extends ReadableBinaryDatastore, WritableBinaryDatastore {
-
-}
+interface BinaryDatastore
+    extends ReadableBinaryDatastore,
+        WritableBinaryDatastore {}
 
 interface ReadableBinaryDatastore {
-
     containsFile(backend: Backend, ref: FileRef): Promise<boolean>;
 
     getFile(backend: Backend, ref: FileRef): Promise<Optional<DatastoreFile>>;
-
 }
 
 interface WritableBinaryDatastore {
-
     /**
      * Add file data to the datastore.  This is used for binary data or other
      * data types that need to be stored. This is primarily designed for video,
      * audio, and documents like PDF, ePub, etc.
      */
-    writeFile(backend: Backend,
-              ref: FileRef,
-              data: BinaryFileData,
-              meta?: FileMeta): Promise<DatastoreFile>;
+    writeFile(
+        backend: Backend,
+        ref: FileRef,
+        data: BinaryFileData,
+        meta?: FileMeta
+    ): Promise<DatastoreFile>;
 
     deleteFile(backend: Backend, ref: FileRef): Promise<void>;
-
 }
 
 export type BinaryFileData = FileHandle | Buffer | string;
 
 export interface FileRef {
-
     readonly name: string;
 
     /**
@@ -203,11 +223,12 @@ export interface FileRef {
      * but not required.
      */
     readonly hashcode?: Hashcode;
-
 }
 
 // noinspection TsLint
-export type FileMeta = {[key: string]: string};
+export interface FileMeta {
+    [key: string]: string;
+}
 
 /**
  *
@@ -217,18 +238,21 @@ export type FileMeta = {[key: string]: string};
  * datastore by fetching the data and writing it back out on the mutation.
  */
 export interface SynchronizingDatastore extends Datastore {
-
     /**
      * Listens for mutations to binaries.
      */
-    addFileSynchronizationEventListener(fileSynchronizationEventListener: FileSynchronizationEventListener): void;
+    addFileSynchronizationEventListener(
+        fileSynchronizationEventListener: FileSynchronizationEventListener
+    ): void;
 
     /**
      * Listens only for new synchronized documents and ignores existing
      * documents.  This allows us to find replicated documents as they
      * change.
      */
-    addSynchronizationEventListener(synchronizationEventListener: SynchronizationEventListener): void;
+    addSynchronizationEventListener(
+        synchronizationEventListener: SynchronizationEventListener
+    ): void;
 
     // /**
     //  * Mark that we've properly transferred the disk datastore into the cloud
@@ -236,42 +260,43 @@ export interface SynchronizingDatastore extends Datastore {
     //  *
     //  */
     // markMerged(transferred: boolean): Promise<void>;
-
 }
 
 export interface SynchronizationEvent extends DocMetaSnapshotEvent {
-
     /**
      * The destination of the data in this synchronization event.  When the
      * dest is 'local' we're copying from the cloud to local and when it's
      * 'cloud' then we're copying from the local to the cloud.
      */
     readonly dest: DatastoreID;
-
 }
 
-export type SynchronizationEventListener = (synchronizationEvent: SynchronizationEvent) => void;
+export type SynchronizationEventListener = (
+    synchronizationEvent: SynchronizationEvent
+) => void;
 
 /**
  * Mutations on binary files.
  */
 export interface FileSynchronizationEvent {
-
     readonly backend: Backend;
 
     readonly name: string;
 
     readonly mutationType: MutationType;
-
 }
 
-export type FileSynchronizationEventListener = (fileSynchronizationEvent: FileSynchronizationEvent) => void;
+export type FileSynchronizationEventListener = (
+    fileSynchronizationEvent: FileSynchronizationEvent
+) => void;
 
 /**
  * Call the listener for every DocMetaSnapshotEvent and await its results.  It's
  * VERY important to await the results here!
  */
-export type DocMetaSnapshotEventListener = (docMetaSnapshotEvent: DocMetaSnapshotEvent) => Promise<void>;
+export type DocMetaSnapshotEventListener = (
+    docMetaSnapshotEvent: DocMetaSnapshotEvent
+) => Promise<void>;
 
 export type ErrorListener = (err: Error) => void;
 
@@ -285,7 +310,6 @@ export type ErrorListener = (err: Error) => void;
  * generate zero DocMetaMutations when we're updating progress.
  */
 export interface DocMetaSnapshotEvent {
-
     readonly datastore: DatastoreID;
 
     readonly progress: Readonly<SnapshotProgress>;
@@ -299,48 +323,53 @@ export interface DocMetaSnapshotEvent {
     readonly docMetaMutations: ReadonlyArray<DocMetaMutation>;
 
     readonly batch?: DocMetaSnapshotBatch;
-
 }
 
 export class DocMetaSnapshotEvents {
-
     public static format(ev: DocMetaSnapshotEvent) {
-
-        let batch = "NO BATCH";
+        let batch = 'NO BATCH';
 
         if (ev.batch) {
-            batch = `(id: ${ev.batch!.id}, terminated: ${ev.batch!.terminated})`;
+            batch = `(id: ${ev.batch!.id}, terminated: ${
+                ev.batch!.terminated
+            })`;
         }
 
         const progress = ev.progress.progress;
         const nrMutations = ev.docMetaMutations.length;
 
-        return `${ev.datastore} ${progress}% (consistency: ${ev.consistency}, nr mutations: ${nrMutations}, batch: ${batch})`;
-
+        return `${ev.datastore} ${progress}% (consistency: ${
+            ev.consistency
+        }, nr mutations: ${nrMutations}, batch: ${batch})`;
     }
 
-    public static async toDocInfos(docMetaSnapshotEvent: DocMetaSnapshotEvent):
-        Promise<ReadonlyArray<IDocInfo>> {
-
-        return AsyncWorkQueues
-            .awaitPromises(docMetaSnapshotEvent.docMetaMutations.map(current => current.docInfoProvider()));
-
+    public static async toDocInfos(
+        docMetaSnapshotEvent: DocMetaSnapshotEvent
+    ): Promise<ReadonlyArray<IDocInfo>> {
+        return AsyncWorkQueues.awaitPromises(
+            docMetaSnapshotEvent.docMetaMutations.map(current =>
+                current.docInfoProvider()
+            )
+        );
     }
 
-    public static async toSyncDocs(docMetaSnapshotEvent: DocMetaSnapshotEvent):
-        Promise<ReadonlyArray<SyncDoc>> {
-
-        const promises = docMetaSnapshotEvent.docMetaMutations.map(docMetaMutation => {
-            return async () => {
-                const docInfo = await docMetaMutation.docInfoProvider();
-                return SyncDocs.fromDocInfo(docInfo, docMetaMutation.mutationType);
-            };
-        }).map(current => current());
+    public static async toSyncDocs(
+        docMetaSnapshotEvent: DocMetaSnapshotEvent
+    ): Promise<ReadonlyArray<SyncDoc>> {
+        const promises = docMetaSnapshotEvent.docMetaMutations
+            .map(docMetaMutation => {
+                return async () => {
+                    const docInfo = await docMetaMutation.docInfoProvider();
+                    return SyncDocs.fromDocInfo(
+                        docInfo,
+                        docMetaMutation.mutationType
+                    );
+                };
+            })
+            .map(current => current());
 
         return await AsyncWorkQueues.awaitPromises(promises);
-
     }
-
 }
 
 /**
@@ -352,7 +381,6 @@ export class DocMetaSnapshotEvents {
  * datastores which might be merging streams.
  */
 export interface DocMetaSnapshotBatch {
-
     /**
      * The ID of this batch. The first batch at a given consistency level is a
      * complete snapshot of the underlying datastore and all docs.  You MAY not
@@ -367,7 +395,6 @@ export interface DocMetaSnapshotBatch {
      * event you will see with the same batch ID.
      */
     readonly terminated: boolean;
-
 }
 
 /**
@@ -383,16 +410,13 @@ export interface DocMetaSnapshotBatch {
  */
 export type DatastoreConsistency = 'written' | 'committed';
 
-export interface SnapshotProgress extends Readonly<Progress> {
-
-}
+export interface SnapshotProgress extends Readonly<Progress> {}
 
 /**
  * Only use one provider, either dataProvider, docMetaProvider, or
  * docInfoProvider, whichever is the most efficient and only read once ideally.
  */
 export interface DocMetaMutation {
-
     readonly fingerprint: string;
 
     readonly mutationType: MutationType;
@@ -408,32 +432,28 @@ export interface DocMetaMutation {
     readonly docMetaProvider: AsyncProvider<DocMeta>;
 
     readonly docInfoProvider: AsyncProvider<IDocInfo>;
-
 }
 
-export type MutationType = 'created' | 'updated' |'deleted';
+export type MutationType = 'created' | 'updated' | 'deleted';
 
 /**
  * The result of an init operation which could be different form each datastore.
  */
-export interface InitResult {
-
-}
-
+export interface InitResult {}
 
 /**
  * The result of a delete() operation.
  */
-export interface DeleteResult {
-
-}
+export interface DeleteResult {}
 
 /**
  * Listens to documents in the local repository on load.  We receive one event
  * per document it enters the repository. Once on startup if it's already
  * present and then again if it's replicated from the cloud.
  */
-export type InitDocMetaEventListener = (initDocMetaEvent: InitDocMetaEvent) => void;
+export type InitDocMetaEventListener = (
+    initDocMetaEvent: InitDocMetaEvent
+) => void;
 
 export interface InitDocMetaEvent {
     readonly docMeta: DocMeta;
@@ -453,12 +473,10 @@ export type InitLoadListener = (docMeta: DocMeta) => void;
  * The result of a snapshot call with an optional unsubscribe callback.
  */
 export interface SnapshotResult {
-
     /**
      * An optional unsubscribe
      */
     readonly unsubscribe?: SnapshotUnsubscriber;
-
 }
 
 /**
@@ -468,21 +486,19 @@ export type SnapshotUnsubscriber = () => void;
 
 export interface SyncDocMap {
     [fingerprint: string]: SyncDoc;
-
 }
 
 export class SyncDocMaps {
-
-    public static putAll(syncDocMap: SyncDocMap, syncDocs: ReadonlyArray<SyncDoc>): void {
-
+    public static putAll(
+        syncDocMap: SyncDocMap,
+        syncDocs: ReadonlyArray<SyncDoc>
+    ): void {
         for (const syncDoc of syncDocs) {
             syncDocMap[syncDoc.fingerprint] = syncDoc;
         }
-
     }
 
     public static fromArray(syncDocs: ReadonlyArray<SyncDoc>): SyncDocMap {
-
         const result: SyncDocMap = {};
 
         for (const syncDoc of syncDocs) {
@@ -490,9 +506,7 @@ export class SyncDocMaps {
         }
 
         return result;
-
     }
-
 }
 
 /**
@@ -500,7 +514,6 @@ export class SyncDocMaps {
  * flighweight and should be kept minimally compact to save space.
  */
 export interface SyncDoc {
-
     readonly fingerprint: string;
 
     readonly mutationType: MutationType;
@@ -523,17 +536,16 @@ export interface SyncDoc {
  * A lightweight reference to a binary file attached to a SyncDoc.
  */
 export interface SyncFile {
-
     readonly backend: Backend;
 
     readonly ref: FileRef;
-
 }
 
 export class SyncDocs {
-
-    public static fromDocInfo(docInfo: IDocInfo, mutationType: MutationType): SyncDoc {
-
+    public static fromDocInfo(
+        docInfo: IDocInfo,
+        mutationType: MutationType
+    ): SyncDoc {
         const files: SyncFile[] = [];
 
         // TODO: dedicated function to take IDocInfo and then extract the file
@@ -542,17 +554,15 @@ export class SyncDocs {
         // (I think).
 
         if (docInfo.filename) {
-
             const stashFile: SyncFile = {
                 backend: Backend.STASH,
                 ref: {
                     name: docInfo.filename!,
-                    hashcode: docInfo.hashcode
-                }
+                    hashcode: docInfo.hashcode,
+                },
             };
 
             files.push(stashFile);
-
         }
 
         return {
@@ -560,11 +570,9 @@ export class SyncDocs {
             docMetaFileRef: DocMetaFileRefs.createFromDocInfo(docInfo),
             mutationType,
             uuid: docInfo.uuid,
-            files
+            files,
         };
-
     }
-
 }
 
 export type DatastoreID = string;

@@ -1,8 +1,7 @@
-import {BrowserProfile, BrowserProfileID} from './BrowserProfile';
-import {DefaultNavigation, Navigation} from './navigation/Navigation';
+import { BrowserProfile, BrowserProfileID } from './BrowserProfile';
+import { DefaultNavigation, Navigation } from './navigation/Navigation';
 
 export class Browser implements Readonly<IBrowser> {
-
     public readonly name: string;
 
     public readonly title: string;
@@ -29,11 +28,9 @@ export class Browser implements Readonly<IBrowser> {
         this.userAgent = opts.userAgent;
         this.deviceEmulation = opts.deviceEmulation;
     }
-
 }
 
 export interface IBrowser {
-
     name: string;
 
     title: string;
@@ -51,14 +48,12 @@ export interface IBrowser {
      * profile.
      */
     inactive: boolean;
-
 }
 
 export class BrowserProfileBuilder implements BrowserProfile {
-
     public id: BrowserProfileID = BrowserProfileBuilder.sequence++;
 
-    public profile: string = "unknown";
+    public profile: string = 'unknown';
 
     public description: string;
 
@@ -102,12 +97,10 @@ export class BrowserProfileBuilder implements BrowserProfile {
     }
 
     public setHeight(height: number) {
-
         this.deviceEmulation.screenSize.height = height;
         this.deviceEmulation.viewSize.height = height;
 
         return this;
-
     }
 
     public setShow(show: boolean) {
@@ -150,11 +143,8 @@ export class BrowserProfileBuilder implements BrowserProfile {
     }
 
     private static sequence: number = 0;
-
 }
 
-export interface DeviceEmulation {
-
-}
+export interface DeviceEmulation {}
 
 export type BrowserType = 'desktop' | 'tablet' | 'phone';

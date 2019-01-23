@@ -1,6 +1,3 @@
-import {BrowserWindowReference} from './BrowserWindowReference';
+import { BrowserWindowReference } from './BrowserWindowReference';
 
-export class ParentWindowReference extends BrowserWindowReference {
-
-
-}
+export class ParentWindowReference extends BrowserWindowReference {}

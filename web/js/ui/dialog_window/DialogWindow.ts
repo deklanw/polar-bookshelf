@@ -1,11 +1,11 @@
-import {BrowserWindow} from 'electron';
-import {Logger} from '../../logger/Logger';
-import {BrowserWindowPromises} from '../../electron/framework/BrowserWindowPromises';
-import {WebContentsPromises} from '../../electron/framework/WebContentsPromises';
-import {DialogWindowReference} from './DialogWindowReference';
-import {DialogWindowMenu} from './DialogWindowMenu';
-import {ResourcePaths} from '../../electron/webresource/ResourcePaths';
-import {Preconditions} from '../../Preconditions';
+import { BrowserWindow } from 'electron';
+import { Logger } from '../../logger/Logger';
+import { BrowserWindowPromises } from '../../electron/framework/BrowserWindowPromises';
+import { WebContentsPromises } from '../../electron/framework/WebContentsPromises';
+import { DialogWindowReference } from './DialogWindowReference';
+import { DialogWindowMenu } from './DialogWindowMenu';
+import { ResourcePaths } from '../../electron/webresource/ResourcePaths';
+import { Preconditions } from '../../Preconditions';
 
 const log = Logger.create();
 
@@ -17,67 +17,72 @@ const BROWSER_WINDOW_OPTIONS = {
     webPreferences: {
         webSecurity: false,
         nodeIntegration: true,
-        defaultEncoding: 'UTF-8'
-    }
+        defaultEncoding: 'UTF-8',
+    },
 };
 
 /**
  * @MainContext
  */
 export class DialogWindow {
-
     public readonly window: BrowserWindow;
 
     public readonly dialogWindowReference: DialogWindowReference;
 
-    constructor(window: BrowserWindow, dialogWindowReference: DialogWindowReference) {
+    constructor(
+        window: BrowserWindow,
+        dialogWindowReference: DialogWindowReference
+    ) {
         this.window = window;
         this.dialogWindowReference = dialogWindowReference;
     }
 
-    show(): void {
+    public show(): void {
         this.window.show();
     }
 
-    hide(): void {
+    public hide(): void {
         this.window.hide();
     }
 
-    destroy(): void {
+    public destroy(): void {
         this.hide();
         this.window.destroy();
     }
 
-    static async create(options: DialogWindowOptions): Promise<DialogWindow> {
+    public static async create(
+        options: DialogWindowOptions
+    ): Promise<DialogWindow> {
+        const browserWindowOptions = Object.assign({}, BROWSER_WINDOW_OPTIONS);
 
-        let browserWindowOptions = Object.assign({}, BROWSER_WINDOW_OPTIONS);
-
-        log.info("Starting with browser options: ", browserWindowOptions);
+        log.info('Starting with browser options: ', browserWindowOptions);
 
         browserWindowOptions.width = options.width;
         browserWindowOptions.height = options.height;
         browserWindowOptions.show = options.show;
 
         // Create the browser window.
-        let window = new BrowserWindow(browserWindowOptions);
+        const window = new BrowserWindow(browserWindowOptions);
         window.setMenu(DialogWindowMenu.create());
 
-        window.webContents.on('new-window', (e) => {
+        window.webContents.on('new-window', e => {
             e.preventDefault();
         });
 
-        window.webContents.on('will-navigate', (e) => {
+        window.webContents.on('will-navigate', e => {
             e.preventDefault();
         });
 
-        window.on('close', (e) => {
+        window.on('close', e => {
             e.preventDefault();
             window.hide();
         });
 
-        let readyToShowPromise = BrowserWindowPromises.once(window).readyToShow();
+        const readyToShowPromise = BrowserWindowPromises.once(
+            window
+        ).readyToShow();
 
-        let loadPromise = WebContentsPromises.once(window.webContents).load();
+        const loadPromise = WebContentsPromises.once(window.webContents).load();
 
         switch (options.resource.type) {
             case ResourceType.FILE:
@@ -88,37 +93,37 @@ export class DialogWindow {
                 break;
 
             case ResourceType.APP:
-
-                let appURL = ResourcePaths.resourceURLFromRelativeURL(options.resource.value);
-                log.info("Loading app URL:" , appURL);
+                const appURL = ResourcePaths.resourceURLFromRelativeURL(
+                    options.resource.value
+                );
+                log.info('Loading app URL:', appURL);
                 window.loadURL(appURL, {});
-                break
-
+                break;
         }
 
         await Promise.all([readyToShowPromise, loadPromise]);
 
-        log.info("Window is now ready to show.");
-        let dialogWindow = new DialogWindow(window, new DialogWindowReference(window.id));
+        log.info('Window is now ready to show.');
+        const dialogWindow = new DialogWindow(
+            window,
+            new DialogWindowReference(window.id)
+        );
 
-        if(options.show) {
+        if (options.show) {
             dialogWindow.show();
         }
 
         return dialogWindow;
-
     }
-
 }
 
 export enum ResourceType {
     FILE,
     URL,
-    APP
+    APP,
 }
 
 export class Resource {
-
     public readonly type: ResourceType;
     public readonly value: string;
 
@@ -126,11 +131,9 @@ export class Resource {
         this.type = type;
         this.value = value;
     }
-
 }
 
 export class DialogWindowOptions {
-
     public readonly resource: Resource;
 
     public width: number = 800;
@@ -139,28 +142,34 @@ export class DialogWindowOptions {
 
     public show: boolean = false;
 
-    constructor(resource: Resource, width: number = 800, height: number = 600, show?: boolean) {
-
+    constructor(
+        resource: Resource,
+        width: number = 800,
+        height: number = 600,
+        show?: boolean
+    ) {
         Preconditions.assertNotNull(resource);
 
         this.resource = resource;
 
-        if(width !== undefined)
+        if (width !== undefined) {
             this.width = width;
+        }
 
-        if(height !== undefined)
+        if (height !== undefined) {
             this.height = height;
+        }
 
-        if(show !== undefined)
+        if (show !== undefined) {
             this.show = show;
-
+        }
     }
 
     public static create(obj: any) {
-        let result: DialogWindowOptions = Object.create(DialogWindowOptions.prototype);
+        const result: DialogWindowOptions = Object.create(
+            DialogWindowOptions.prototype
+        );
         Object.assign(result, obj);
         return result;
     }
-
 }
-

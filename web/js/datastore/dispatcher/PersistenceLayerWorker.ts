@@ -1,6 +1,6 @@
-import {IPCMessage} from '../../ipc/handler/IPCMessage';
-import {Logger} from '../../logger/Logger';
-import {RemotePersistenceLayerFactory} from '../factories/RemotePersistenceLayerFactory';
+import { IPCMessage } from '../../ipc/handler/IPCMessage';
+import { Logger } from '../../logger/Logger';
+import { RemotePersistenceLayerFactory } from '../factories/RemotePersistenceLayerFactory';
 
 const log = Logger.create();
 //
@@ -32,17 +32,13 @@ RemotePersistenceLayerFactory.create();
 //
 // let persistenceLayerWorker = new PersistenceLayerWorker();
 //
-addEventListener('message', (messageEvent) => {
-
+addEventListener('message', messageEvent => {
     const ipcMessage: IPCMessage<any> = messageEvent.data;
 
     if (ipcMessage.type === 'sync') {
-
         // persistenceLayerWorker.sync(messageEvent.data)
         //     .catch(err => log.error("Unable to write docMeta: ", err))
-
     } else {
-        throw new Error("Unhandled message: " + ipcMessage.type);
+        throw new Error('Unhandled message: ' + ipcMessage.type);
     }
-
 });

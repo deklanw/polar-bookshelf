@@ -1,29 +1,26 @@
-import {Dictionaries} from '../Dictionaries';
+import { Dictionaries } from '../Dictionaries';
 
 export class Mutator {
-
     /**
      * Create a copy of the given value, allow us to mutate it by having a
      * non-readonly method executed, then return a readonly version of the same
      * object so it can't be mutated in the future.
      *
      */
-    public static mutate<T>(value: Readonly<T>, mutateFunction: MutateFunction<T>): Readonly<T> {
-
+    public static mutate<T>(
+        value: Readonly<T>,
+        mutateFunction: MutateFunction<T>
+    ): Readonly<T> {
         // FIXME: make a shallow copy of this, not deep...
         const copyOf = Dictionaries.copyOf(value);
         return Object.freeze(mutateFunction(copyOf));
-
     }
-
 }
 
 /**
  * The opposite of Object.frozen() or Readonly
  */
-type Mutatable<T> = {
-    [P in keyof T]: T[P];
-};
+type Mutatable<T> = { [P in keyof T]: T[P] };
 
 export type MutateFunction<T extends {}> = (value: Mutatable<T>) => T;
 

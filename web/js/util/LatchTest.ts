@@ -1,26 +1,20 @@
-import {assert} from 'chai';
-import {Latch} from './Latch';
-import {fail} from 'assert';
-
+import { assert } from 'chai';
+import { Latch } from './Latch';
+import { fail } from 'assert';
 
 describe('Latch', function() {
-
-    it("basic", async function() {
-
+    it('basic', async function() {
         const latch = new Latch<string>();
 
-        latch.resolve("hello");
+        latch.resolve('hello');
 
-        assert.equal(await latch.get(), "hello");
-        assert.equal(await latch.get(), "hello");
-        assert.equal(await latch.get(), "hello");
-        assert.equal(await latch.get(), "hello");
-
+        assert.equal(await latch.get(), 'hello');
+        assert.equal(await latch.get(), 'hello');
+        assert.equal(await latch.get(), 'hello');
+        assert.equal(await latch.get(), 'hello');
     });
 
-
-    it("reject", async function() {
-
+    it('reject', async function() {
         const latch = new Latch<string>();
 
         let failures = 0;
@@ -28,17 +22,12 @@ describe('Latch', function() {
         latch.reject(new Error('hello'));
 
         try {
-
             await latch.get();
-            assert.fail("Should not succeed");
-
+            assert.fail('Should not succeed');
         } catch (e) {
             ++failures;
         }
 
         assert.equal(failures, 1);
-
     });
-
 });
-

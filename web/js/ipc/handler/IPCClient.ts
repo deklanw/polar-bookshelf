@@ -1,19 +1,21 @@
-import {IPCMessage} from './IPCMessage';
-import {IPCEvent} from './IPCEvent';
-import {IPCPipe} from './IPCPipe';
-import {ElectronContext, ElectronMainContext} from './ElectronContext';
-import {WritablePipes} from './WritablePipes';
+import { IPCMessage } from './IPCMessage';
+import { IPCEvent } from './IPCEvent';
+import { IPCPipe } from './IPCPipe';
+import { ElectronContext, ElectronMainContext } from './ElectronContext';
+import { WritablePipes } from './WritablePipes';
 
 /**
  * A client which executes requests and waits for responses.
  */
 export class IPCClient<E extends IPCEvent> {
-
     private readonly pipe: IPCPipe<E>;
 
     private readonly targetContext: ElectronContext;
 
-    constructor(pipe: IPCPipe<E>, targetContext: ElectronContext = new ElectronMainContext()) {
+    constructor(
+        pipe: IPCPipe<E>,
+        targetContext: ElectronContext = new ElectronMainContext()
+    ) {
         this.pipe = pipe;
         this.targetContext = targetContext;
     }
@@ -29,26 +31,33 @@ export class IPCClient<E extends IPCEvent> {
      * are calling from the renderer.  No other context can be inferred by
      * default.
      */
-    async execute<R>(path: string, request: R, targetContext: ElectronContext = this.targetContext): Promise<IPCMessage<any>> {
+    public async execute<R>(
+        path: string,
+        request: R,
+        targetContext: ElectronContext = this.targetContext
+    ): Promise<IPCMessage<any>> {
+        const ipcMessage = new IPCMessage<any>('request', request);
 
-        let ipcMessage = new IPCMessage<any>('request', request);
+        const responsePromise = this.pipe.when(
+            ipcMessage.computeResponseChannel()
+        );
 
-        let responsePromise = this.pipe.when(ipcMessage.computeResponseChannel());
-
-        let writablePipe = WritablePipes.createFromContext(targetContext);
+        const writablePipe = WritablePipes.createFromContext(targetContext);
 
         writablePipe.write(path, ipcMessage);
-        //this.pipe.write(path, ipcMessage);
+        // this.pipe.write(path, ipcMessage);
 
-        let response = await responsePromise;
+        const response = await responsePromise;
 
         return response.message;
-
     }
 
-    async call<R, T>(path: string, request: R, targetContext: ElectronContext = this.targetContext): Promise<T> {
-        let ipcMessage = await this.execute(path, request, targetContext);
+    public async call<R, T>(
+        path: string,
+        request: R,
+        targetContext: ElectronContext = this.targetContext
+    ): Promise<T> {
+        const ipcMessage = await this.execute(path, request, targetContext);
         return ipcMessage.value;
     }
-
 }

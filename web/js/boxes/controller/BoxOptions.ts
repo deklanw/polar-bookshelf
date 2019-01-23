@@ -1,6 +1,4 @@
 export class BoxOptions {
-
-
     /**
      * The element or selector to define boxes.
      */
@@ -22,5 +20,4 @@ export class BoxOptions {
         this.restrictionElement = opts.restrictionElement;
         this.intersectedElementsSelector = opts.intersectedElementsSelector;
     }
-
 }

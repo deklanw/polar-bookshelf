@@ -16,10 +16,9 @@ import 'summernote/dist/summernote-lite';
 // // require('summernote/dist/summernote.css');
 // // require('summernote/dist/summernote-bs4');
 //
-import {SpectronRenderer} from '../../js/test/SpectronRenderer';
+import { SpectronRenderer } from '../../js/test/SpectronRenderer';
 
 SpectronRenderer.run(async () => {
-
     // this disables tab input so that we can go back and forth between editor
     // controls easily.
     // delete (<any> $).summernote.options.keyMap.pc.TAB;
@@ -28,9 +27,6 @@ SpectronRenderer.run(async () => {
     $('.summernote').summernote({
         height: 300,
         minHeight: 150,
-        airMode: true
+        airMode: true,
     });
-
 });
-
-

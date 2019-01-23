@@ -1,13 +1,12 @@
 /**
  * Simple logger that just writes to the console.
  */
-import {ILogger} from '../ILogger';
+import { ILogger } from '../ILogger';
 
 /**
  * Annotates logs by including the time.
  */
 export class TimeAnnotatingLogger implements ILogger {
-
     public readonly name: string;
     private readonly delegate: ILogger;
 
@@ -47,5 +46,4 @@ export class TimeAnnotatingLogger implements ILogger {
     private createTimestamp() {
         return new Date().toUTCString();
     }
-
 }

@@ -1,7 +1,6 @@
-import {Preconditions} from '../../Preconditions';
+import { Preconditions } from '../../Preconditions';
 
 export class WebserverConfig implements IWebserverConfig {
-
     public readonly dir: string;
 
     public readonly port: number;
@@ -16,20 +15,18 @@ export class WebserverConfig implements IWebserverConfig {
     public readonly ssl?: SSLConfig;
 
     constructor(dir: string, port: number) {
-        this.dir = Preconditions.assertNotNull(dir, "dir");
-        this.port = Preconditions.assertNotNull(port, "port");
-        this.host = "127.0.0.1";
+        this.dir = Preconditions.assertNotNull(dir, 'dir');
+        this.port = Preconditions.assertNotNull(port, 'port');
+        this.host = '127.0.0.1';
     }
 
     public static create(config: IWebserverConfig): WebserverConfig {
-
         const template = {
-            host: "127.0.0.1"
+            host: '127.0.0.1',
         };
 
         return Object.assign(template, config);
     }
-
 }
 
 export interface SSLConfig {
@@ -38,7 +35,6 @@ export interface SSLConfig {
 }
 
 export interface IWebserverConfig {
-
     readonly dir: string;
 
     readonly port: number;
@@ -51,5 +47,4 @@ export interface IWebserverConfig {
     readonly useSSL?: boolean;
 
     readonly ssl?: SSLConfig;
-
 }

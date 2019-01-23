@@ -1,8 +1,8 @@
-import {LoadedFile} from './LoadedFile';
-import {Files} from '../../../util/Files';
-import {FilePaths} from '../../../util/FilePaths';
-import {Directories} from '../../../datastore/Directories';
-import {Logger} from '../../../logger/Logger';
+import { LoadedFile } from './LoadedFile';
+import { Files } from '../../../util/Files';
+import { FilePaths } from '../../../util/FilePaths';
+import { Directories } from '../../../datastore/Directories';
+import { Logger } from '../../../logger/Logger';
 
 const log = Logger.create();
 
@@ -15,7 +15,6 @@ const log = Logger.create();
  */
 
 export abstract class FileLoader {
-
     /**
      * Compute a URL to load a file in the UI a PHZ file and registers it
      * with the CacheRegistry so it can be loaded properly.
@@ -24,5 +23,4 @@ export abstract class FileLoader {
      * @return
      */
     public abstract registerForLoad(path: string): Promise<LoadedFile>;
-
 }

@@ -1,19 +1,17 @@
-import {Mutator} from './Mutator';
-import {assert} from 'chai';
+import { Mutator } from './Mutator';
+import { assert } from 'chai';
 
 describe('Mutator', function() {
-
-    it("Test mutation", function() {
-
+    it('Test mutation', function() {
         let name: Readonly<Name> = {
             first: 'Alice',
-            last: 'Smith'
+            last: 'Smith',
         };
 
         // this will give us a compilation error
         // name.first = 'Bob';
 
-        name = Mutator.mutate(name, (current) => {
+        name = Mutator.mutate(name, current => {
             current.first = 'Bob';
             // FIXME: it's too easy to return the wrong object here. I have to
             // find a way to return the non-mutable version...
@@ -25,9 +23,7 @@ describe('Mutator', function() {
 
         // yet this works.
         assert.equal(name.first, 'Bob');
-
     });
-
 });
 
 interface Name {

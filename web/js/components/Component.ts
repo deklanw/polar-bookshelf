@@ -1,5 +1,4 @@
 export abstract class Component {
-
     public abstract init(componentEvent: any): void;
 
     /**
@@ -11,5 +10,4 @@ export abstract class Component {
     public abstract render(): void;
 
     public abstract destroy(): void;
-
 }

@@ -1,6 +1,6 @@
-import {INamedWebRequestEvent} from './WebRequestReactor';
-import {Logger} from '../logger/Logger';
-import {BaseWebRequestsListener} from './BaseWebRequestsListener';
+import { INamedWebRequestEvent } from './WebRequestReactor';
+import { Logger } from '../logger/Logger';
+import { BaseWebRequestsListener } from './BaseWebRequestsListener';
 
 const log = Logger.create();
 
@@ -14,7 +14,6 @@ const log = Logger.create();
  *
  */
 export class DebugWebRequestsListener extends BaseWebRequestsListener {
-
     /**
      * The number of pending requests
      */
@@ -23,9 +22,7 @@ export class DebugWebRequestsListener extends BaseWebRequestsListener {
     /**
      */
     constructor() {
-
         super();
-
     }
 
     /**
@@ -33,18 +30,20 @@ export class DebugWebRequestsListener extends BaseWebRequestsListener {
      * object.
      */
     public onWebRequestEvent(event: INamedWebRequestEvent) {
+        const { name, details, callback } = event;
 
-        const {name, details, callback} = event;
-
-        if (name === "onCompleted" || name === "onErrorOccurred") {
+        if (name === 'onCompleted' || name === 'onErrorOccurred') {
             // this request has already completed so is not considered against
             // pending any longer
             --this.pending;
         }
 
-        log.info(`${name} (pending=${this.pending}): `, JSON.stringify(details, null, "  "));
+        log.info(
+            `${name} (pending=${this.pending}): `,
+            JSON.stringify(details, null, '  ')
+        );
 
-        if (name === "onBeforeRequest") {
+        if (name === 'onBeforeRequest') {
             // after this request the pending will be incremented.
             ++this.pending;
         }
@@ -52,9 +51,7 @@ export class DebugWebRequestsListener extends BaseWebRequestsListener {
         if (callback) {
             // the callback always has to be used or the requests will be
             // cancelled.
-            callback({cancel: false});
+            callback({ cancel: false });
         }
-
     }
-
 }

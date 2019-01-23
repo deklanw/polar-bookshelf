@@ -1,18 +1,17 @@
-import {assert} from "chai";
-import {FirebaseDatastore} from './FirebaseDatastore';
-import {DefaultPersistenceLayer} from './DefaultPersistenceLayer';
-import {DiskDatastore} from './DiskDatastore';
-import {Datastores} from './Datastores';
-import {PersistenceLayers} from './PersistenceLayers';
-import {MemoryDatastore} from './MemoryDatastore';
-import {MockDocMetas} from '../metadata/DocMetas';
-import {PersistenceLayer} from './PersistenceLayer';
-import {UUIDs} from "../metadata/UUIDs";
-import {TestingTime} from "../test/TestingTime";
+import { assert } from 'chai';
+import { FirebaseDatastore } from './FirebaseDatastore';
+import { DefaultPersistenceLayer } from './DefaultPersistenceLayer';
+import { DiskDatastore } from './DiskDatastore';
+import { Datastores } from './Datastores';
+import { PersistenceLayers } from './PersistenceLayers';
+import { MemoryDatastore } from './MemoryDatastore';
+import { MockDocMetas } from '../metadata/DocMetas';
+import { PersistenceLayer } from './PersistenceLayer';
+import { UUIDs } from '../metadata/UUIDs';
+import { TestingTime } from '../test/TestingTime';
 
 describe('PersistenceLayers', function() {
-
-    const fingerprint = "0x001";
+    const fingerprint = '0x001';
     const docMeta = MockDocMetas.createWithinInitialPagemarks(fingerprint, 14);
 
     let source: PersistenceLayer;
@@ -30,8 +29,7 @@ describe('PersistenceLayers', function() {
         TestingTime.unfreeze();
     });
 
-    xit("Transfer with existing in source but not in target", async function() {
-
+    xit('Transfer with existing in source but not in target', async function() {
         await source.write(fingerprint, docMeta);
 
         // const transferResult = await PersistenceLayers.synchronize(source, target, (transferEvent) => {
@@ -39,10 +37,9 @@ describe('PersistenceLayers', function() {
         // });
 
         // assert.equal(transferResult.mutations.fingerprints.length, 1);
-
     });
 
-    xit("Transfer with existing in source and target", async function() {
+    xit('Transfer with existing in source and target', async function() {
         //
         // await target.write(fingerprint, docMeta);
         //
@@ -58,7 +55,5 @@ describe('PersistenceLayers', function() {
         // });
         //
         // assert.equal(transferResult.mutations.fingerprints.length, 1);
-
     });
-
 });

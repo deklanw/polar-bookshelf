@@ -4,9 +4,7 @@
  * section of content.
  */
 export enum PagemarkMode {
+    READ = 'READ',
 
-    READ = "READ",
-
-    IGNORED = "IGNORED",
-
+    IGNORED = 'IGNORED',
 }

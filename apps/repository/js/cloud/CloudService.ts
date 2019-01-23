@@ -1,12 +1,11 @@
-import {Firebase} from '../../../../web/js/firebase/Firebase';
+import { Firebase } from '../../../../web/js/firebase/Firebase';
 import * as firebase from '../../../../web/js/firebase/lib/firebase';
-import {Logger} from '../../../../web/js/logger/Logger';
-import {PersistenceLayerManager} from '../../../../web/js/datastore/PersistenceLayerManager';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { PersistenceLayerManager } from '../../../../web/js/datastore/PersistenceLayerManager';
 
 const log = Logger.create();
 
 export class CloudService {
-
     private readonly persistenceLayerManager: PersistenceLayerManager;
 
     constructor(persistenceLayerManager: PersistenceLayerManager) {
@@ -14,25 +13,23 @@ export class CloudService {
     }
 
     public start() {
-
         Firebase.init();
 
-        firebase.auth()
-            .onAuthStateChanged((user) => this.onAuth(user),
-                                (err) => this.onAuthError(err));
-
+        firebase
+            .auth()
+            .onAuthStateChanged(
+                user => this.onAuth(user),
+                err => this.onAuthError(err)
+            );
     }
 
-
     private onAuth(user: firebase.User | null) {
-
-        this.handleAuth(user)
-            .catch(err => log.error("Failed to handle auth: ", err));
-
+        this.handleAuth(user).catch(err =>
+            log.error('Failed to handle auth: ', err)
+        );
     }
 
     private async handleAuth(user: firebase.User | null) {
-
         // console.log("onAuth: ", user);
 
         if (this.persistenceLayerManager.requiresReset()) {
@@ -42,19 +39,16 @@ export class CloudService {
         }
 
         if (user) {
-
             log.notice(`Authenticated as: ${user.displayName} (${user.email})`);
 
-            log.info("Switching to cloud persistence layer");
+            log.info('Switching to cloud persistence layer');
             await this.persistenceLayerManager.change('cloud');
         } else {
             await this.persistenceLayerManager.change('local');
         }
-
     }
 
     private onAuthError(err: firebase.auth.Error) {
-        log.error("Authentication error: ", err);
+        log.error('Authentication error: ', err);
     }
-
 }

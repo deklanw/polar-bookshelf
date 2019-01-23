@@ -1,12 +1,11 @@
 import WebContents = Electron.WebContents;
-import {StandardWebContentsDriver} from './StandardWebContentsDriver';
-import {BrowserProfile} from '../BrowserProfile';
-import {PendingWebRequestsEvent} from '../../webrequests/PendingWebRequestsListener';
-import {CaptureWebviewWebContentsDriver} from './CaptureWebviewWebContentsDriver';
-import {BrowserWebContentsDriver} from './BrowserWebContentsDriver';
+import { StandardWebContentsDriver } from './StandardWebContentsDriver';
+import { BrowserProfile } from '../BrowserProfile';
+import { PendingWebRequestsEvent } from '../../webrequests/PendingWebRequestsListener';
+import { CaptureWebviewWebContentsDriver } from './CaptureWebviewWebContentsDriver';
+import { BrowserWebContentsDriver } from './BrowserWebContentsDriver';
 
 export interface WebContentsDriver {
-
     browserProfile: BrowserProfile;
 
     /**
@@ -31,18 +30,22 @@ export interface WebContentsDriver {
     /**
      * Allows us to listen to close, etc.
      */
-    addEventListener(eventName: WebContentsEventName, eventListener: () => void): void;
-
+    addEventListener(
+        eventName: WebContentsEventName,
+        eventListener: () => void
+    ): void;
 }
 
 export class WebContentsDriverFactory {
-
-    public static async create(browserProfile: BrowserProfile): Promise<WebContentsDriver> {
-
+    public static async create(
+        browserProfile: BrowserProfile
+    ): Promise<WebContentsDriver> {
         let webContentsDriver: WebContentsDriver;
 
         if (browserProfile.profile === DriverType.WEBVIEW) {
-            webContentsDriver = new CaptureWebviewWebContentsDriver(browserProfile);
+            webContentsDriver = new CaptureWebviewWebContentsDriver(
+                browserProfile
+            );
         } else if (browserProfile.profile === DriverType.BROWSER) {
             webContentsDriver = new BrowserWebContentsDriver(browserProfile);
         } else {
@@ -52,11 +55,9 @@ export class WebContentsDriverFactory {
         await webContentsDriver.init();
         return webContentsDriver;
     }
-
 }
 
 export enum DriverType {
-
     HEADLESS = 'HEADLESS',
 
     HIDDEN = 'HIDDEN',
@@ -68,11 +69,8 @@ export enum DriverType {
     // interact with the page.
 
     BROWSER = 'BROWSER',
-
 }
 
 export type WebContentsEventName = 'close';
 
-export interface WebContentsEvent {
-
-}
+export interface WebContentsEvent {}

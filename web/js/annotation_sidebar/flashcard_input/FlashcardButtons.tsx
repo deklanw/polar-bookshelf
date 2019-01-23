@@ -1,49 +1,41 @@
 import * as React from 'react';
-import {Logger} from '../../logger/Logger';
+import { Logger } from '../../logger/Logger';
 import Button from 'reactstrap/lib/Button';
 
 const log = Logger.create();
 
-class Styles {
-
-}
+class Styles {}
 
 export class FlashcardButtons extends React.PureComponent<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
 
-        this.state = {
-        };
-
+        this.state = {};
     }
 
     public render() {
-
         return (
-
             <div>
-
-                <Button color="secondary"
-                        size="sm"
-                        className=""
-                        onClick={() => this.props.onCancel()}>
+                <Button
+                    color="secondary"
+                    size="sm"
+                    className=""
+                    onClick={() => this.props.onCancel()}
+                >
                     Cancel
                 </Button>
 
-                <Button color="primary"
-                        size="sm"
-                        className="ml-1"
-                        onClick={() => this.props.onCreate()}>
+                <Button
+                    color="primary"
+                    size="sm"
+                    className="ml-1"
+                    onClick={() => this.props.onCreate()}
+                >
                     Create
                 </Button>
-
             </div>
-
         );
-
     }
-
 }
 
 export interface IProps {
@@ -51,7 +43,4 @@ export interface IProps {
     readonly onCreate: () => void;
 }
 
-export interface IState {
-}
-
-
+export interface IState {}

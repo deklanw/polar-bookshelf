@@ -1,9 +1,9 @@
-import {Preconditions} from '../../Preconditions';
-import {WebserverConfig} from './WebserverConfig';
-import {Hashcodes} from '../../Hashcodes';
+import { Preconditions } from '../../Preconditions';
+import { WebserverConfig } from './WebserverConfig';
+import { Hashcodes } from '../../Hashcodes';
 
 import path from 'path';
-import {Logger} from '../../logger/Logger';
+import { Logger } from '../../logger/Logger';
 
 const log = Logger.create();
 
@@ -12,19 +12,16 @@ const log = Logger.create();
  * other apps can be served via URLs.
  */
 export class FileRegistry {
-
     private readonly webserverConfig: WebserverConfig;
 
     /**
      * The registry of hashcodes to the file path it should be served from.
      *
      */
-    private readonly registry: {[key: string]: string} = {};
+    private readonly registry: { [key: string]: string } = {};
 
     constructor(webserverConfig: WebserverConfig) {
-
         this.webserverConfig = Preconditions.assertNotNull(webserverConfig);
-
     }
 
     public registerFile(filename: string) {
@@ -39,24 +36,24 @@ export class FileRegistry {
      *
      */
     public register(key: string, filename: string): RegisterEntry {
-
         filename = path.resolve(filename);
 
-        const reqPath = "/files/" + key;
+        const reqPath = '/files/' + key;
         this.registry[key] = filename;
 
         log.info(`Registered new file at: ${reqPath} to ${filename}`);
 
         const scheme = this.webserverConfig.useSSL ? 'https' : 'http';
 
-        const url = `${scheme}://${this.webserverConfig.host}:${this.webserverConfig.port}${reqPath}`;
+        const url = `${scheme}://${this.webserverConfig.host}:${
+            this.webserverConfig.port
+        }${reqPath}`;
 
-        const result = {key, filename, url};
+        const result = { key, filename, url };
 
-        log.debug("Using file registry entry: ", result);
+        log.debug('Using file registry entry: ', result);
 
         return result;
-
     }
 
     /**
@@ -73,24 +70,20 @@ export class FileRegistry {
      *
      */
     public get(key: string): FileEntry {
-
         if (!this.hasKey(key)) {
-            throw new Error("Key not registered: " + key);
+            throw new Error('Key not registered: ' + key);
         }
 
         return {
             key,
-            filename: this.registry[key]
+            filename: this.registry[key],
         };
-
     }
-
 }
 
 export interface FileEntry {
     readonly key: string;
     readonly filename: string;
-
 }
 
 export interface RegisterEntry extends FileEntry {

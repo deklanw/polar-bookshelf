@@ -8,7 +8,6 @@
  * @type {ObjectPathEntry}
  */
 export class ObjectPathEntry {
-
     /**
      * The full path to this object from the root.
      */
@@ -30,13 +29,15 @@ export class ObjectPathEntry {
      */
     public readonly parentKey: string | null;
 
-    constructor(path: string, value: any, parent: any, parentKey: string | null) {
-
+    constructor(
+        path: string,
+        value: any,
+        parent: any,
+        parentKey: string | null
+    ) {
         this.parent = parent;
         this.parentKey = parentKey;
         this.path = path;
         this.value = value;
-
     }
-
 }

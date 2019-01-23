@@ -1,25 +1,24 @@
 import * as React from 'react';
-import {DocRepoTableColumns} from '../doc_repo/DocRepoTableColumns';
-import {PersistenceLayerManager} from '../../../../web/js/datastore/PersistenceLayerManager';
-import {IDocInfo} from '../../../../web/js/metadata/DocInfo';
-import {RepoAnnotation} from '../RepoAnnotation';
-import {IStyleMap} from '../../../../web/js/react/IStyleMap';
+import { DocRepoTableColumns } from '../doc_repo/DocRepoTableColumns';
+import { PersistenceLayerManager } from '../../../../web/js/datastore/PersistenceLayerManager';
+import { IDocInfo } from '../../../../web/js/metadata/DocInfo';
+import { RepoAnnotation } from '../RepoAnnotation';
+import { IStyleMap } from '../../../../web/js/react/IStyleMap';
 import Moment from 'react-moment';
-import {FormattedTags} from '../FormattedTags';
-import {Logger} from '../../../../web/js/logger/Logger';
-import {SynchronizingDocLoader} from '../util/SynchronizingDocLoader';
-import {Button} from 'reactstrap';
+import { FormattedTags } from '../FormattedTags';
+import { Logger } from '../../../../web/js/logger/Logger';
+import { SynchronizingDocLoader } from '../util/SynchronizingDocLoader';
+import { Button } from 'reactstrap';
 
 const log = Logger.create();
 
 const Styles: IStyleMap = {
-
     metaTable: {
-        display: 'table'
+        display: 'table',
     },
 
     metaTableRow: {
-        display: 'table-row'
+        display: 'table-row',
     },
 
     metaField: {
@@ -27,172 +26,146 @@ const Styles: IStyleMap = {
         // fontWeight: 'bold',
         color: 'var(--secondary)',
         marginRight: '10px',
-        verticalAlign: 'top'
+        verticalAlign: 'top',
     },
 
     metaValue: {
         paddingLeft: '5px',
         display: 'table-cell',
-        verticalAlign: 'top'
+        verticalAlign: 'top',
     },
 
     annotationText: {
-        paddingTop: '5px'
+        paddingTop: '5px',
     },
 
     relativeTime: {
         marginLeft: '5px',
         color: 'var(--secondary)',
-        display: 'inline'
-    }
-
+        display: 'inline',
+    },
 };
 
 export class RepoAnnotationMetaView extends React.Component<IProps, IState> {
-
     private readonly synchronizingDocLoader: SynchronizingDocLoader;
 
     constructor(props: IProps, context: any) {
         super(props, context);
 
-        this.synchronizingDocLoader = new SynchronizingDocLoader(this.props.persistenceLayerManager);
+        this.synchronizingDocLoader = new SynchronizingDocLoader(
+            this.props.persistenceLayerManager
+        );
 
         this.state = {
             data: [],
-            columns: new DocRepoTableColumns()
+            columns: new DocRepoTableColumns(),
         };
-
     }
 
     public render() {
-
         if (this.props.repoAnnotation) {
-
             const repoAnnotation = this.props.repoAnnotation;
 
             return (
-
                 <div>
-
                     <div style={Styles.metaTable}>
-
                         <div style={Styles.metaTableRow}>
                             <div style={Styles.metaField}>Created</div>
 
                             <div style={Styles.metaValue}>
-
-                                <Moment withTitle={true}
-                                        titleFormat="D MMM YYYY hh:MM A"
-                                        format="MMM DD YYYY HH:mm A"
-                                        filter={(value) => value.replace(/^an? /g, '1 ')}>
+                                <Moment
+                                    withTitle={true}
+                                    titleFormat="D MMM YYYY hh:MM A"
+                                    format="MMM DD YYYY HH:mm A"
+                                    filter={value =>
+                                        value.replace(/^an? /g, '1 ')
+                                    }
+                                >
                                     {repoAnnotation.created}
                                 </Moment>
 
                                 <div style={Styles.relativeTime}>
-
                                     (
-
-                                    <Moment withTitle={true}
-                                            titleFormat="D MMM YYYY hh:MM A"
-                                            fromNow>
+                                    <Moment
+                                        withTitle={true}
+                                        titleFormat="D MMM YYYY hh:MM A"
+                                        fromNow
+                                    >
                                         {repoAnnotation.created}
                                     </Moment>
-
                                     )
-
                                 </div>
-
                             </div>
-
                         </div>
 
                         <div style={Styles.metaTableRow}>
-
                             <div style={Styles.metaField}>Tags</div>
 
                             <div style={Styles.metaValue}>
-
-                                <FormattedTags tags={repoAnnotation.tags || {}}/>
-
+                                <FormattedTags
+                                    tags={repoAnnotation.tags || {}}
+                                />
                             </div>
-
                         </div>
 
                         <div style={Styles.metaTableRow}>
-
                             <div style={Styles.metaField}>Type</div>
 
                             <div style={Styles.metaValue}>
-
                                 {repoAnnotation.type}
-
                             </div>
-
                         </div>
 
                         <div style={Styles.metaTableRow}>
-
                             <div style={Styles.metaField}>Doc</div>
 
                             <div style={Styles.metaValue}>
-
                                 {/*TODO: make this into a TextLink component*/}
 
-                                <Button onClick={() => this.onDocumentLoadRequested(repoAnnotation.docInfo)}
-                                        style={{whiteSpace: 'normal', textAlign: 'left'}}
-                                        className="p-0"
-                                        size="sm"
-                                        color="link">
-
+                                <Button
+                                    onClick={() =>
+                                        this.onDocumentLoadRequested(
+                                            repoAnnotation.docInfo
+                                        )
+                                    }
+                                    style={{
+                                        whiteSpace: 'normal',
+                                        textAlign: 'left',
+                                    }}
+                                    className="p-0"
+                                    size="sm"
+                                    color="link"
+                                >
                                     {repoAnnotation.docInfo.title}
-
                                 </Button>
-
                             </div>
-
                         </div>
-
                     </div>
 
                     <div style={Styles.annotationText}>
                         {repoAnnotation.text}
                     </div>
-
                 </div>
-
             );
-
         } else {
-
             return (
-
                 <div className="text-muted text-center">
                     No annotation selected.
                 </div>
-
             );
-
         }
-
     }
 
     private onDocumentLoadRequested(docInfo: IDocInfo) {
-
-        this.synchronizingDocLoader.load(docInfo.fingerprint,
-                                         docInfo.filename!,
-                                         docInfo.hashcode)
-            .catch(err => log.error("Unable to load doc: ", err));
-
+        this.synchronizingDocLoader
+            .load(docInfo.fingerprint, docInfo.filename!, docInfo.hashcode)
+            .catch(err => log.error('Unable to load doc: ', err));
     }
-
 }
 
 export interface IProps {
-
     readonly persistenceLayerManager: PersistenceLayerManager;
     readonly repoAnnotation?: RepoAnnotation;
 }
 
-export interface IState {
-
-}
+export interface IState {}

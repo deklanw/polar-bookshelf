@@ -1,10 +1,9 @@
 /**
  * Simple logger that just writes to the console.
  */
-import {ILogger} from './ILogger';
+import { ILogger } from './ILogger';
 
 export class ConsoleLogger implements ILogger {
-
     public readonly name: string = 'console-logger';
 
     public notice(msg: string, ...args: any[]) {
@@ -34,5 +33,4 @@ export class ConsoleLogger implements ILogger {
     public async sync(): Promise<void> {
         // noop
     }
-
 }

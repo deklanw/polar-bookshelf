@@ -6,12 +6,11 @@
  *
  * https://mechanical-sympathy.blogspot.com/2011/10/smart-batching.html
  */
-import {Logger} from '../../logger/Logger';
+import { Logger } from '../../logger/Logger';
 
 const log = Logger.create();
 
 export class Batcher {
-
     private readonly runnable: AsyncRunnable;
 
     private tickets: Ticket[] = [];
@@ -24,13 +23,11 @@ export class Batcher {
      * Enqueue the runnable to be executed again as part of a batch.
      */
     public enqueue(): Batch {
-
         const ticket = new Ticket(this.runnable());
 
         this.tickets.push(ticket);
 
         if (this.tickets.length > 1) {
-
             // Push a ticket on so that the worker thread handling this IO
             // can complete my work for me when it finishes the next write.
 
@@ -53,21 +50,16 @@ export class Batcher {
             const pending = this.tickets.length;
 
             return new PassiveBatch(pending, ticket);
-
         }
 
         return new ActiveBatch(this.tickets, this.runnable, ticket);
-
     }
-
 }
 
 export interface Batch {
-
     readonly ticket: Ticket;
 
     run(): Promise<void>;
-
 }
 
 /**
@@ -75,7 +67,6 @@ export interface Batch {
  * instead scheduled.
  */
 export class PassiveBatch implements Batch {
-
     public readonly ticket: Ticket;
 
     /**
@@ -86,20 +77,17 @@ export class PassiveBatch implements Batch {
     constructor(pending: number, ticket: Ticket) {
         this.pending = pending;
         this.ticket = ticket;
-
     }
 
     public run(): Promise<void> {
         return Promise.resolve();
     }
-
 }
 
 /**
  * Metdata around the last execution of this batch. Mostly for testing purposes.
  */
-export class ActiveBatch implements Batch  {
-
+export class ActiveBatch implements Batch {
     /**
      * The total number of batched records written across all batches.
      */
@@ -128,43 +116,35 @@ export class ActiveBatch implements Batch  {
     }
 
     public async run(): Promise<void> {
-
         while (this.tickets.length > 0) {
             // keep writing while we have tickets. The other tickets are when
             // people have been writing while we were blocked.
 
             await this.iter();
-
         }
-
     }
 
     /**
      * Apply once batch iteration.
      */
     public async iter() {
-
         const nrTicketsToExecute = this.tickets.length;
-        log.debug("Executing request for N tickets: ", nrTicketsToExecute);
+        log.debug('Executing request for N tickets: ', nrTicketsToExecute);
 
         await this.tickets[0].promise;
 
         const tickets = this.tickets.splice(0, nrTicketsToExecute);
 
-        tickets.forEach(ticket => ticket.executed = true);
+        tickets.forEach(ticket => (ticket.executed = true));
 
         this.ticketsPerBatch.push(nrTicketsToExecute);
         this.batched += nrTicketsToExecute;
 
         ++this.batches;
-
     }
-
 }
 
 export class Ticket {
-
-
     /**
      * True when the runnable was executed as requested.
      */
@@ -175,20 +155,15 @@ export class Ticket {
     constructor(promise: Promise<void>) {
         this.promise = promise;
     }
-
 }
 
 /**
  * Interface that just returns a promise and performs work. The results are not
  * needed other than to make sure we execute.
  */
-export interface AsyncRunnable {
-    (): Promise<void>;
-}
+export type AsyncRunnable = () => Promise<void>;
 
 /**
  * Async runnable that performs no operation.
  */
-export async function nullAsyncRunnable() {
-
-}
+export async function nullAsyncRunnable() {}

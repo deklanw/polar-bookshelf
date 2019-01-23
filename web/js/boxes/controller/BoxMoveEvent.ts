@@ -1,8 +1,7 @@
-import {Rect} from '../../Rect';
-import {Preconditions} from '../../Preconditions';
+import { Rect } from '../../Rect';
+import { Preconditions } from '../../Preconditions';
 
 export class BoxMoveEvent {
-
     /**
      * The type of the event.  Either 'resize' or 'drag'
      */
@@ -43,22 +42,18 @@ export class BoxMoveEvent {
      * completed: The box move operation is completed and is in its final position.
      *
      */
-    public state: string = "pending";
+    public state: string = 'pending';
 
     constructor(opts: any) {
-
         this.type = opts.type;
         this.restrictionRect = opts.restrictionRect;
         this.boxRect = opts.boxRect;
         this.id = opts.id;
         this.target = opts.target;
-        this.state = "pending";
+        this.state = 'pending';
 
         Object.assign(this, opts);
 
-        Preconditions.assertInstanceOf(this.boxRect, Rect, "boxRect");
-
+        Preconditions.assertInstanceOf(this.boxRect, Rect, 'boxRect');
     }
-
 }
-

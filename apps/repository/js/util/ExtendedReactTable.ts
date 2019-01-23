@@ -1,12 +1,13 @@
 import ReleasingReactComponent from '../framework/ReleasingReactComponent';
 
-export class ExtendedReactTable<P, S extends IReactTableState> extends ReleasingReactComponent<P, S> {
-
+export class ExtendedReactTable<
+    P,
+    S extends IReactTableState
+> extends ReleasingReactComponent<P, S> {
     constructor(props: any, context: any) {
         super(props, context);
 
         const keyboardHandler = (event: KeyboardEvent) => {
-
             // TODO: only do this if the current react component has focus but
             // I'm not sure if I can figure this out...
 
@@ -16,26 +17,24 @@ export class ExtendedReactTable<P, S extends IReactTableState> extends Releasing
                 return;
             }
 
-            if (event.key === "ArrowUp") {
+            if (event.key === 'ArrowUp') {
                 const selected = Math.max(state.selected - 1, 0);
                 this.onSelectedRow(selected);
             }
 
-            if (event.key === "ArrowDown") {
+            if (event.key === 'ArrowDown') {
                 const selected = state.selected + 1;
                 this.onSelectedRow(selected);
             }
-
         };
 
-       //  window.addEventListener('keyup', keyboardHandler);
-       //
-       //  this.releaser.register({
-       //      release: () => {
-       //          window.removeEventListener('keyup', keyboardHandler);
-       //      }
-       // });
-
+        //  window.addEventListener('keyup', keyboardHandler);
+        //
+        //  this.releaser.register({
+        //      release: () => {
+        //          window.removeEventListener('keyup', keyboardHandler);
+        //      }
+        // });
     }
 
     /**
@@ -45,12 +44,10 @@ export class ExtendedReactTable<P, S extends IReactTableState> extends Releasing
      */
     protected onSelectedRow(selected: number) {
         const state: IReactTableState = this.state;
-        this.setState({...state, selected });
+        this.setState({ ...state, selected });
     }
-
 }
 
 export interface IReactTableState {
     selected?: number;
 }
-

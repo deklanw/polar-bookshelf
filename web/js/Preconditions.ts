@@ -1,5 +1,4 @@
 export class Preconditions {
-
     /**
      *
      * @param value  The value we're trying to assert.
@@ -8,18 +7,20 @@ export class Preconditions {
      * @param message
      * @return Return the value we've been given once it's passed assertions.
      */
-    static assert<T>(value: T, testFunction: AssertionFunction<T>, message: string): T {
+    public static assert<T>(
+        value: T,
+        testFunction: AssertionFunction<T>,
+        message: string
+    ): T {
+        Preconditions.assertNotNull(testFunction, 'testFunction');
 
-        Preconditions.assertNotNull(testFunction, "testFunction");
+        const result = testFunction(value);
 
-        let result = testFunction(value);
-
-        if(!result) {
+        if (!result) {
             throw new Error(`Assertion failed for value ${value}: ` + message);
         }
 
         return value;
-
     }
 
     /**
@@ -27,14 +28,12 @@ export class Preconditions {
      * number.
      *
      */
-    static assertEqual<T>(value: T, expected: T, name: string): T {
-
-        if(value !== expected) {
+    public static assertEqual<T>(value: T, expected: T, name: string): T {
+        if (value !== expected) {
             throw new Error(`Value of ${value} !==- ${expected}`);
         }
 
         return value;
-
     }
 
     /**
@@ -43,18 +42,16 @@ export class Preconditions {
      * @param name The name of the number.
      * @return {number}
      */
-    static assertNumber(value: any, name: string) {
-
+    public static assertNumber(value: any, name: string) {
         Preconditions.assertNotNull(value, name);
 
-        if(isNaN(value)) {
+        if (isNaN(value)) {
             throw new Error(`Precondition failure for ${name}: NaN`);
         }
 
-        Preconditions.assertTypeOf(value, "number", name);
+        Preconditions.assertTypeOf(value, 'number', name);
 
         return value;
-
     }
 
     /**
@@ -64,17 +61,19 @@ export class Preconditions {
      * @param name
      * @return {*}
      */
-    static assertInstanceOf(value: any, instance: any, name: string) {
-
+    public static assertInstanceOf(value: any, instance: any, name: string) {
         Preconditions.assertNotNull(value, name);
-        Preconditions.assertNotNull(instance, "instance");
+        Preconditions.assertNotNull(instance, 'instance');
 
-        if (! (value instanceof instance)) {
-            throw new Error(`Precondition for instanceof '${name}' was not ${instance.name}.`);
+        if (!(value instanceof instance)) {
+            throw new Error(
+                `Precondition for instanceof '${name}' was not ${
+                    instance.name
+                }.`
+            );
         }
 
         return value;
-
     }
 
     public static assertString(value: any, name: string): string {
@@ -89,26 +88,31 @@ export class Preconditions {
      * @return value
      */
     public static assertTypeOf(value: any, type: string, name: string): any {
-
         if (typeof value !== type) {
-            throw new Error(`Precondition for typeof '${name}' was not ${type} but actually: ` + typeof value);
+            throw new Error(
+                `Precondition for typeof '${name}' was not ${type} but actually: ` +
+                    typeof value
+            );
         }
 
         return value;
-
     }
 
     /**
      * @deprecated Use assertPresent instead
      */
-    static assertNotNull<T>(value: T | null, name?: string): NonNullable<T> {
+    public static assertNotNull<T>(
+        value: T | null,
+        name?: string
+    ): NonNullable<T> {
         return Preconditions.assertPresent(value, name);
     }
 
-
-    public static assertPresent<T>(value: T | null, name?: string): NonNullable<T> {
-
-        let msgPrefix = "Precondition argument failed: ";
+    public static assertPresent<T>(
+        value: T | null,
+        name?: string
+    ): NonNullable<T> {
+        let msgPrefix = 'Precondition argument failed: ';
 
         if (name) {
             msgPrefix = `Precondition (argument) for '${name}' failed`;
@@ -123,12 +127,10 @@ export class Preconditions {
         }
 
         return value!;
-
     }
 
     public static assertAbsent<T>(value: T) {
-
-        if (! isPresent(value)) {
+        if (!isPresent(value)) {
             return;
         }
 
@@ -136,28 +138,35 @@ export class Preconditions {
             throw value;
         }
 
-        throw new Error("Not absent: " + value);
-
+        throw new Error('Not absent: ' + value);
     }
 
-    static assertNotTypeOf<T>(value: any, name: string, type: string): T {
-
-        if (typeof value === type ) {
-            throw new Error(`Precondition for typeof '${name}' was ${type} but not allowed`);
+    public static assertNotTypeOf<T>(
+        value: any,
+        name: string,
+        type: string
+    ): T {
+        if (typeof value === type) {
+            throw new Error(
+                `Precondition for typeof '${name}' was ${type} but not allowed`
+            );
         }
 
         return value;
-
     }
 
-    public static assertNotInstanceOf<T>(value: T, name: string, instance: any): T {
-
+    public static assertNotInstanceOf<T>(
+        value: T,
+        name: string,
+        instance: any
+    ): T {
         if (value instanceof instance) {
-            throw new Error(`Precondition for instanceof '${name}' was ${instance} but not allowed`);
+            throw new Error(
+                `Precondition for instanceof '${name}' was ${instance} but not allowed`
+            );
         }
 
         return value;
-
     }
 
     /**
@@ -166,13 +175,11 @@ export class Preconditions {
      *
      */
     public static defaultValue<T>(argCurrentValue: T, argDefaultValue: T): T {
-
-        if(! argCurrentValue) {
+        if (!argCurrentValue) {
             return argDefaultValue;
         }
 
         return argCurrentValue;
-
     }
 
     /**
@@ -183,13 +190,9 @@ export class Preconditions {
     public static isPresent(val: any): boolean {
         return val !== undefined && val !== null;
     }
-
 }
 
-interface AssertionFunction<T> {
-    (val: T): boolean;
-}
-
+type AssertionFunction<T> = (val: T) => boolean;
 
 // noinspection TsLint: variable-name
 export function defaultValue<T>(_currentValue: T, _defaultValue: T): T {
@@ -203,4 +206,3 @@ export function notNull<T>(value: T | null, name?: string): NonNullable<T> {
 export function isPresent(val: any): boolean {
     return Preconditions.isPresent(val);
 }
-

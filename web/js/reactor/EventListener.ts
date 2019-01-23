@@ -1,14 +1,12 @@
 export type EventListener<V> = (value: V) => void;
 
 export interface RegisteredEventListener<V> extends Releaseable {
-
     eventListener: EventListener<V>;
 
     /**
      * Remove the listener after it's been registered..
      */
     release(): void;
-
 }
 
 export interface Releaseable {
@@ -19,7 +17,6 @@ export interface Releaseable {
  * Register and release multiple Releaseables.
  */
 export class MultiReleaser implements Releaseable {
-
     private releaseables: Releaseable[] = [];
 
     public register(releaseable: Releaseable) {
@@ -31,5 +28,4 @@ export class MultiReleaser implements Releaseable {
             releaseable.release();
         }
     }
-
 }

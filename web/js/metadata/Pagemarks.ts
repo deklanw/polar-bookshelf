@@ -1,20 +1,20 @@
-import {PagemarkRect} from './PagemarkRect';
-import {Pagemark, PagemarkRef} from './Pagemark';
-import {Logger} from '../logger/Logger';
-import {Hashcodes} from '../Hashcodes';
-import {Objects} from '../util/Objects';
-import {PagemarkType} from './PagemarkType';
-import {PagemarkRects} from './PagemarkRects';
-import {Dictionaries} from '../util/Dictionaries';
-import {round} from '../util/Percentages';
-import {PagemarkMode} from './PagemarkMode';
-import {DocMeta} from './DocMeta';
-import {DocMetas} from './DocMetas';
-import {isPresent, Preconditions} from '../Preconditions';
-import {ISODateTimeString, ISODateTimeStrings} from './ISODateTimeStrings';
-import {PageNumber} from './PageMeta';
-import {Numbers} from "../util/Numbers";
-import {Reducers} from '../util/Reducers';
+import { PagemarkRect } from './PagemarkRect';
+import { Pagemark, PagemarkRef } from './Pagemark';
+import { Logger } from '../logger/Logger';
+import { Hashcodes } from '../Hashcodes';
+import { Objects } from '../util/Objects';
+import { PagemarkType } from './PagemarkType';
+import { PagemarkRects } from './PagemarkRects';
+import { Dictionaries } from '../util/Dictionaries';
+import { round } from '../util/Percentages';
+import { PagemarkMode } from './PagemarkMode';
+import { DocMeta } from './DocMeta';
+import { DocMetas } from './DocMetas';
+import { isPresent, Preconditions } from '../Preconditions';
+import { ISODateTimeString, ISODateTimeStrings } from './ISODateTimeStrings';
+import { PageNumber } from './PageMeta';
+import { Numbers } from '../util/Numbers';
+import { Reducers } from '../util/Reducers';
 
 const log = Logger.create();
 
@@ -22,15 +22,14 @@ const DEFAULT_PAGEMARK_RECT = new PagemarkRect({
     left: 0,
     top: 0,
     width: 100,
-    height: 100
+    height: 100,
 });
 
 let sequence = 0;
 
 export class Pagemarks {
-
     public static createID(created: ISODateTimeString) {
-        return Hashcodes.createID({created, sequence: sequence++});
+        return Hashcodes.createID({ created, sequence: sequence++ });
     }
 
     /**
@@ -39,39 +38,38 @@ export class Pagemarks {
      *
      * @param percentage The percentage of the end page to create a pagemark.
      */
-    public static updatePagemarksForRange(docMeta: DocMeta,
-                                          end: PageNumber,
-                                          percentage: number = 100 ): ReadonlyArray<PagemarkRef> {
-
+    public static updatePagemarksForRange(
+        docMeta: DocMeta,
+        end: PageNumber,
+        percentage: number = 100
+    ): ReadonlyArray<PagemarkRef> {
         if (end < 1) {
-            throw new Error("Page number must be 1 or more");
+            throw new Error('Page number must be 1 or more');
         }
 
         const calculateStartPage = () => {
-
             // find the starting page by going back to the beginning of the
             // document until we find the first pagemark or we hit the first
             // page.
 
-            const range = [ ... Numbers.range(1, Math.max(1, end - 1)) ].reverse();
+            const range = [...Numbers.range(1, Math.max(1, end - 1))].reverse();
 
             for (const r of range) {
-
                 const pageMeta = DocMetas.getPageMeta(docMeta, r);
 
                 if (Dictionaries.size(pageMeta.pagemarks || {}) !== 0) {
                     // this page has a pagemark so we should start from there.
                     return r;
                 }
-
             }
 
             return 1;
-
         };
 
-        const createPagemarkRect = (pageNum: PageNumber, percentage: number = 100): PagemarkRect | undefined => {
-
+        const createPagemarkRect = (
+            pageNum: PageNumber,
+            percentage: number = 100
+        ): PagemarkRect | undefined => {
             // find the pagemark that is the furthest down the page.
 
             const pageMeta = DocMetas.getPageMeta(docMeta, pageNum);
@@ -79,44 +77,40 @@ export class Pagemarks {
             const pagemarks = Object.values(pageMeta.pagemarks || {});
 
             if (pagemarks.length === 0) {
-
                 return PagemarkRects.createFromRect({
                     left: 0,
                     top: 0,
                     height: percentage,
-                    width: 100
+                    width: 100,
                 });
-
             }
 
             let top: number = 0;
 
             for (const pagemark of pagemarks) {
-
                 const newTop = pagemark.rect.top + pagemark.rect.height;
 
                 if (newTop > top) {
-                   top = newTop;
+                    top = newTop;
                 }
-
             }
 
-            if (pagemarks.map(pagemark => pagemark.percentage)
-                         .reduce(Reducers.SUM, 0) === 100) {
-
+            if (
+                pagemarks
+                    .map(pagemark => pagemark.percentage)
+                    .reduce(Reducers.SUM, 0) === 100
+            ) {
                 // if this page is completely covered just ignore it
 
                 return undefined;
-
             }
 
             return PagemarkRects.createFromRect({
                 left: 0,
                 top,
                 height: 100 - top,
-                width: 100
+                width: 100,
             });
-
         };
 
         const start = calculateStartPage();
@@ -124,25 +118,22 @@ export class Pagemarks {
         const result: PagemarkRef[] = [];
 
         DocMetas.withBatchedMutations(docMeta, () => {
-
             for (const pageNum of Numbers.range(start, end)) {
-
-                const rect = createPagemarkRect(pageNum, pageNum === end ? percentage : 100);
+                const rect = createPagemarkRect(
+                    pageNum,
+                    pageNum === end ? percentage : 100
+                );
 
                 if (rect) {
-                    const pagemark = Pagemarks.create({rect});
+                    const pagemark = Pagemarks.create({ rect });
                     Pagemarks.updatePagemark(docMeta, pageNum, pagemark);
 
-                    result.push({pageNum, pagemark});
-
+                    result.push({ pageNum, pagemark });
                 }
-
             }
-
         });
 
         return result;
-
     }
 
     /**
@@ -151,9 +142,7 @@ export class Pagemarks {
      *
      */
     public static create(opts: Partial<PagemarkOptions> = {}): Pagemark {
-
-        const options: PagemarkOptions = Objects.defaults( opts, {
-
+        const options: PagemarkOptions = Objects.defaults(opts, {
             // just set docMeta pageMarkType = PagemarkType.SINGLE_COLUMN by
             // default for now until we add multiple column types and handle
             // them properly.
@@ -164,37 +153,43 @@ export class Pagemarks {
             type: PagemarkType.SINGLE_COLUMN,
 
             column: 0,
-
         });
 
         const keyOptions = Pagemarks.createKeyOptions(options);
 
         if (keyOptions.count === 0) {
-            throw new Error("Must specify either rect or percentage.");
+            throw new Error('Must specify either rect or percentage.');
         }
 
         if (keyOptions.count === 1) {
-
             if (keyOptions.hasPercentage) {
-                keyOptions.rect = PagemarkRects.createFromPercentage(keyOptions.percentage);
+                keyOptions.rect = PagemarkRects.createFromPercentage(
+                    keyOptions.percentage
+                );
             }
 
             if (keyOptions.hasRect) {
                 keyOptions.percentage = keyOptions.rect.toPercentage();
             }
-
         }
 
-        if (round(keyOptions.percentage) !== round(keyOptions.rect.toPercentage())) {
-            const msg = "Percentage and rect are not the same";
-            log.warn(msg, keyOptions.percentage, keyOptions.rect, keyOptions.rect.toPercentage());
+        if (
+            round(keyOptions.percentage) !==
+            round(keyOptions.rect.toPercentage())
+        ) {
+            const msg = 'Percentage and rect are not the same';
+            log.warn(
+                msg,
+                keyOptions.percentage,
+                keyOptions.rect,
+                keyOptions.rect.toPercentage()
+            );
             throw new Error(msg);
         }
 
         const created = ISODateTimeStrings.create();
 
         return new Pagemark({
-
             // per-pagemark fields.
             id: Pagemarks.createID(created),
             created,
@@ -203,10 +198,8 @@ export class Pagemarks {
             type: options.type,
             percentage: keyOptions.percentage,
             column: options.column,
-            rect: keyOptions.rect
-
+            rect: keyOptions.rect,
         });
-
     }
 
     /**
@@ -214,18 +207,19 @@ export class Pagemarks {
      * @param options
      * @return {KeyPagemarkOptions}
      */
-    private static createKeyOptions(options: PagemarkOptions): KeyPagemarkOptions {
-
+    private static createKeyOptions(
+        options: PagemarkOptions
+    ): KeyPagemarkOptions {
         const keyOptions: KeyPagemarkOptions = {
             count: 0,
             hasPercentage: false,
             hasRect: false,
             rect: options.rect,
-            percentage: options.percentage
+            percentage: options.percentage,
         };
 
-        keyOptions.hasPercentage = "percentage" in options;
-        keyOptions.hasRect = "rect" in options;
+        keyOptions.hasPercentage = 'percentage' in options;
+        keyOptions.hasRect = 'rect' in options;
 
         if (keyOptions.hasPercentage) {
             ++keyOptions.count;
@@ -236,50 +230,43 @@ export class Pagemarks {
         }
 
         return keyOptions;
-
     }
 
     /**
      *
      */
-    public static upgrade(pagemarks: {[id: string]: Pagemark}) {
-
-        const result: {[id: string]: Pagemark} = {};
+    public static upgrade(pagemarks: { [id: string]: Pagemark }) {
+        const result: { [id: string]: Pagemark } = {};
 
         Object.assign(result, pagemarks);
 
         Dictionaries.forDict(result, (key, pagemark) => {
-
-            if (! pagemark.rect) {
-
+            if (!pagemark.rect) {
                 if (pagemark.percentage >= 0 && pagemark.percentage <= 100) {
-
                     // now rect but we can build one from the percentage.
-                    pagemark.rect = PagemarkRects.createFromPercentage(pagemark.percentage);
-
+                    pagemark.rect = PagemarkRects.createFromPercentage(
+                        pagemark.percentage
+                    );
                 }
-
             }
 
-            if (! pagemark.id) {
-                log.debug("Pagemark given ID");
+            if (!pagemark.id) {
+                log.debug('Pagemark given ID');
                 pagemark.id = key;
             }
 
-            if ( ! pagemark.mode) {
-                log.debug("Using default pagemark mode.");
+            if (!pagemark.mode) {
+                log.debug('Using default pagemark mode.');
                 pagemark.mode = PagemarkMode.READ;
             }
 
-            if ( ! isPresent(pagemark.percentage)) {
-                log.debug("No pagemark percentage. Assigning zero.");
+            if (!isPresent(pagemark.percentage)) {
+                log.debug('No pagemark percentage. Assigning zero.');
                 pagemark.percentage = 0;
             }
-
         });
 
         return result;
-
     }
 
     /**
@@ -290,9 +277,12 @@ export class Pagemarks {
      * @param pagemark An optional pagemark to update.  If the pagemark isn't
      * specified all the pagemarks on the page are deleted and progress updated.
      */
-    public static updatePagemark(docMeta: DocMeta, pageNum: number, pagemark?: Pagemark) {
-
-        Preconditions.assertPresent(pageNum, "pageNum");
+    public static updatePagemark(
+        docMeta: DocMeta,
+        pageNum: number,
+        pagemark?: Pagemark
+    ) {
+        Preconditions.assertPresent(pageNum, 'pageNum');
 
         const pageMeta = docMeta.getPageMeta(pageNum);
 
@@ -309,14 +299,11 @@ export class Pagemarks {
         // elide these to one somehow by hinting to the persistenceLayer
         // used in the model to start a batch around these objects then
         // commit just the last one.
-        docMeta.docInfo.progress = (DocMetas.computeProgress(docMeta) * 100);
-
+        docMeta.docInfo.progress = DocMetas.computeProgress(docMeta) * 100;
     }
-
 }
 
 export interface PagemarkOptions {
-
     /**
      * The type of pagemark we're working with.
      */
@@ -331,14 +318,12 @@ export interface PagemarkOptions {
     percentage: number;
 
     column: number;
-
 }
 
 /**
  * The key / important options when creating a Pagemark.
  */
 export interface KeyPagemarkOptions {
-
     /**
      * The total number of key options.
      */
@@ -363,5 +348,4 @@ export interface KeyPagemarkOptions {
     /**
      */
     percentage: number;
-
 }

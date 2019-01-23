@@ -1,5 +1,5 @@
-import {AnkiConnectFetch} from '../AnkiConnectFetch';
-import * as TypeMoq from "typemoq";
+import { AnkiConnectFetch } from '../AnkiConnectFetch';
+import * as TypeMoq from 'typemoq';
 
 /**
  Create a new empty deck. Will not overwrite a deck that exists with the same
@@ -23,21 +23,18 @@ import * as TypeMoq from "typemoq";
 
  */
 export class CreateDeckClient implements ICreateDeckClient {
-
     public async execute(deck: string): Promise<number> {
-
         const body = {
-            action: "createDeck",
+            action: 'createDeck',
             version: 6,
             params: {
-                deck
-            }
+                deck,
+            },
         };
 
         const init = { method: 'POST', body: JSON.stringify(body) };
 
-        return <number> await AnkiConnectFetch.fetch(init);
-
+        return <number>await AnkiConnectFetch.fetch(init);
     }
 
     /**
@@ -45,15 +42,13 @@ export class CreateDeckClient implements ICreateDeckClient {
      */
     public static createMock(result: number) {
         const client = TypeMoq.Mock.ofType<ICreateDeckClient>();
-        client.setup(x => x.execute(TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
+        client
+            .setup(x => x.execute(TypeMoq.It.isAny()))
+            .returns(() => Promise.resolve(result));
         return client.object;
     }
-
 }
 
 export interface ICreateDeckClient {
-
     execute(deck: string): Promise<number>;
-
 }
-

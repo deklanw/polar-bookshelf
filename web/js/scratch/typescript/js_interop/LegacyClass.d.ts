@@ -1,5 +1,3 @@
 export class LegacyClass {
-
-    myFunction(): any;
-
+    public myFunction(): any;
 }

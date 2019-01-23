@@ -1,7 +1,6 @@
-import {Rect} from '../../../Rect';
+import { Rect } from '../../../Rect';
 
 export class PlacedPagemark {
-
     /**
      * The place on the page to place this pagemark.
      */
@@ -10,5 +9,4 @@ export class PlacedPagemark {
     constructor(opts: any) {
         this.rect = opts.rect;
     }
-
 }

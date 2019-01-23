@@ -6,14 +6,14 @@ import 'summernote/dist/summernote-bs4';
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {HTMLString, RichTextMutator} from './RichTextMutator';
+import { HTMLString, RichTextMutator } from './RichTextMutator';
 const randomUid = () => Math.floor(Math.random() * 100000);
 
 /**
  * React Summernote for Twitter Boostrap v4
  */
-export class ReactSummernote4 extends Component<IProps, any> implements RichTextMutator {
-
+export class ReactSummernote4 extends Component<IProps, any>
+    implements RichTextMutator {
     private readonly uid: string;
 
     private editor: any;
@@ -72,11 +72,9 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
             // mutation when necessary.
             this.props.onRichTextMutator(this);
         }
-
     }
 
     public componentDidMount() {
-
         const options = this.props.options || {};
         const codeview = this.props.codeview;
         // const codeviewCommand = codeview ? 'codeview.activate' : 'codeview.deactivate';
@@ -93,27 +91,28 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
         }
 
         if (options.airMode) {
-
             domNode.parentElement!.addEventListener('click', () => {
                 this.editor.summernote('focus');
             });
-
         }
-
     }
 
     public componentWillReceiveProps(nextProps: any) {
-
         const { props } = this;
 
         const codeview = nextProps.codeview;
-        const codeviewCommand = codeview ? 'codeview.activate' : 'codeview.deactivate';
+        const codeviewCommand = codeview
+            ? 'codeview.activate'
+            : 'codeview.deactivate';
 
         if (typeof nextProps.value === 'string') {
             this.replace(nextProps.value);
         }
 
-        if (typeof nextProps.disabled === 'boolean' && props.disabled !== nextProps.disabled) {
+        if (
+            typeof nextProps.disabled === 'boolean' &&
+            props.disabled !== nextProps.disabled
+        ) {
             this.toggleState(nextProps.disabled);
         }
 
@@ -124,7 +123,6 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
         if (this.props.autofocus) {
             this.editor.summernote('focus');
         }
-
     }
 
     public shouldComponentUpdate() {
@@ -138,7 +136,6 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
     }
 
     public onInit() {
-
         const { disabled, onInit } = this.props;
 
         const $container = this.editor.parent();
@@ -161,13 +158,12 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
                 enable: this.enable,
                 insertImage: this.insertImage,
                 insertNode: this.insertNode,
-                insertText: this.insertText
+                insertText: this.insertText,
             });
         }
     }
 
     public onImageUpload(images: any) {
-
         const { onImageUpload } = this.props;
 
         if (typeof onImageUpload === 'function') {
@@ -209,7 +205,6 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
 
     public createRange(): Range {
         return this.editor.summernote('createRange');
-
     }
 
     public disable() {
@@ -252,13 +247,13 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
             onKeydown: props.onKeyDown,
             onPaste: props.onPaste,
             onChange: props.onChange,
-            onImageUpload: this.onImageUpload
+            onImageUpload: this.onImageUpload,
         };
     }
 
     public render() {
         const { value, defaultValue, className } = this.props;
-        const html = value || defaultValue || "";
+        const html = value || defaultValue || '';
 
         return (
             <div className={className}>
@@ -266,11 +261,9 @@ export class ReactSummernote4 extends Component<IProps, any> implements RichText
             </div>
         );
     }
-
 }
 
 interface IProps {
-
     readonly options: any;
     readonly value?: string;
     readonly defaultValue?: string;
@@ -296,8 +289,4 @@ interface IProps {
      * and fucntionality on the underlying text component.
      */
     readonly onRichTextMutator?: (mutator: RichTextMutator) => void;
-
 }
-
-
-

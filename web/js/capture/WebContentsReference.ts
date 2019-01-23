@@ -1,5 +1,4 @@
 export interface WebContentsReference {
-
     readonly webContents: Electron.WebContents;
 
     /**
@@ -7,5 +6,4 @@ export interface WebContentsReference {
      * resources.
      */
     destroy(): void;
-
 }

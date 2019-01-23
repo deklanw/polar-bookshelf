@@ -1,8 +1,14 @@
 import * as React from 'react';
-import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Tooltip} from 'reactstrap';
-import {Logger} from '../../logger/Logger';
-import {IStyleMap} from '../../react/IStyleMap';
-import {ConfirmPopover} from '../../ui/confirm/ConfirmPopover';
+import {
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    Tooltip,
+} from 'reactstrap';
+import { Logger } from '../../logger/Logger';
+import { IStyleMap } from '../../react/IStyleMap';
+import { ConfirmPopover } from '../../ui/confirm/ConfirmPopover';
 
 const log = Logger.create();
 
@@ -12,7 +18,6 @@ const log = Logger.create();
  * display the component.
  */
 export class ConfirmDropdownItem extends React.Component<IProps, IState> {
-
     constructor(props: IProps, context: any) {
         super(props, context);
 
@@ -21,35 +26,30 @@ export class ConfirmDropdownItem extends React.Component<IProps, IState> {
         this.onConfirmed = this.onConfirmed.bind(this);
 
         this.state = {
-            selected: false
+            selected: false,
         };
-
     }
 
     public render() {
-
         return (
-
             <div className="">
-
                 <DropdownItem onClick={() => this.onSelected()}>
                     {this.props.text}
                 </DropdownItem>
 
-                <ConfirmPopover open={this.state.selected}
-                                target={this.props.target}
-                                title={this.props.prompt}
-                                onCancel={() => this.onCancelled()}
-                                onConfirm={() => this.onConfirmed()}/>
-
+                <ConfirmPopover
+                    open={this.state.selected}
+                    target={this.props.target}
+                    title={this.props.prompt}
+                    onCancel={() => this.onCancelled()}
+                    onConfirm={() => this.onConfirmed()}
+                />
             </div>
-
         );
-
     }
 
     private onSelected() {
-        this.setState({selected: true});
+        this.setState({ selected: true });
     }
 
     private onCancelled() {
@@ -59,17 +59,13 @@ export class ConfirmDropdownItem extends React.Component<IProps, IState> {
     }
 
     private onConfirmed() {
-
         if (this.props.onConfirmed) {
             this.props.onConfirmed();
         }
-
     }
-
 }
 
 interface IProps {
-
     text: string;
 
     target: string;
@@ -88,7 +84,5 @@ interface IProps {
 }
 
 interface IState {
-
     selected: boolean;
-
 }

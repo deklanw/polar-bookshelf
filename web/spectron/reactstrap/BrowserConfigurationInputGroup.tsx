@@ -1,14 +1,21 @@
 import React from 'react';
-import {DropdownItem, DropdownMenu, DropdownToggle, InputGroupButtonDropdown} from 'reactstrap';
+import {
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    InputGroupButtonDropdown,
+} from 'reactstrap';
 
-export class BrowserConfigurationInputGroup extends React.Component<any, InternalState> {
-
+export class BrowserConfigurationInputGroup extends React.Component<
+    any,
+    InternalState
+> {
     constructor(props: any) {
         super(props);
 
         this.toggle = this.toggle.bind(this);
         this.state = {
-            open: false
+            open: false,
         };
     }
 
@@ -18,9 +25,10 @@ export class BrowserConfigurationInputGroup extends React.Component<any, Interna
                 title="Configure browser settings for capture"
                 addonType="append"
                 isOpen={this.state.open}
-                toggle={this.toggle}>
+                toggle={this.toggle}
+            >
                 <DropdownToggle caret>
-                     <span className="fa fa-chrome fa-lg" aria-hidden="true"></span>
+                    <span className="fa fa-chrome fa-lg" aria-hidden="true" />
                 </DropdownToggle>
                 <DropdownMenu>
                     <DropdownItem header>Browser:</DropdownItem>
@@ -33,10 +41,9 @@ export class BrowserConfigurationInputGroup extends React.Component<any, Interna
 
     private toggle(): void {
         this.setState({
-            open: !this.state.open
+            open: !this.state.open,
         });
     }
-
 }
 
 interface InternalState {

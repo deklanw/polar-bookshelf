@@ -3,12 +3,10 @@
  * compatible HTML with images pointing to filenames reference in an array of
  * Media objects.
  */
-import {MediaFile} from './clients/StoreMediaFileClient';
+import { MediaFile } from './clients/StoreMediaFileClient';
 
 export interface MediaContent {
-
     readonly content: string;
 
     readonly mediaFiles: MediaFile[];
-
 }

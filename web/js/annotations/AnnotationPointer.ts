@@ -2,10 +2,9 @@
  * Represents a reference to an annotation which includes all the information
  * we need to work with the annotation.
  */
-import {Preconditions} from '../Preconditions';
+import { Preconditions } from '../Preconditions';
 
 export class AnnotationPointer {
-
     /**
      * The ID for the annotation.
      */
@@ -20,9 +19,7 @@ export class AnnotationPointer {
         this.id = id;
         this.pageNum = pageNum;
 
-        Preconditions.assertNotNull(this.id, "id");
-        Preconditions.assertNotNull(this.pageNum, "pageNum");
-
+        Preconditions.assertNotNull(this.id, 'id');
+        Preconditions.assertNotNull(this.pageNum, 'pageNum');
     }
-
 }

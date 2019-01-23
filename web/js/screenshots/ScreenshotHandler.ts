@@ -1,39 +1,42 @@
-import {IPCHandler} from '../ipc/handler/IPCHandler';
-import {ScreenshotRequest} from './ScreenshotRequest';
-import {IPCMessage} from '../ipc/handler/IPCMessage';
-import {IPCEvent} from '../ipc/handler/IPCEvent';
-import {CapturedScreenshot} from './CapturedScreenshot';
-import {WebContents} from "electron";
+import { IPCHandler } from '../ipc/handler/IPCHandler';
+import { ScreenshotRequest } from './ScreenshotRequest';
+import { IPCMessage } from '../ipc/handler/IPCMessage';
+import { IPCEvent } from '../ipc/handler/IPCEvent';
+import { CapturedScreenshot } from './CapturedScreenshot';
+import { WebContents } from 'electron';
 
 export class ScreenshotHandler extends IPCHandler<ScreenshotRequest> {
-
     protected createValue(ipcMessage: IPCMessage<any>): ScreenshotRequest {
         return ipcMessage.value;
     }
 
-    protected async handleIPC(event: IPCEvent, screenshotRequest: ScreenshotRequest): Promise<CapturedScreenshot> {
+    protected async handleIPC(
+        event: IPCEvent,
+        screenshotRequest: ScreenshotRequest
+    ): Promise<CapturedScreenshot> {
+        const webContents = event.webContents;
 
-        let webContents = event.webContents;
-
-        if(webContents === undefined) {
-            throw new Error("Must be sent called from a renderer.");
+        if (webContents === undefined) {
+            throw new Error('Must be sent called from a renderer.');
         }
 
-        let image = await ScreenshotHandler.capture(webContents, screenshotRequest);
+        const image = await ScreenshotHandler.capture(
+            webContents,
+            screenshotRequest
+        );
 
-        let dataURL = image.toDataURL();
-        let size = image.getSize();
+        const dataURL = image.toDataURL();
+        const size = image.getSize();
 
-        let capturedScreenshot: CapturedScreenshot = {
+        const capturedScreenshot: CapturedScreenshot = {
             dataURL,
             dimensions: {
                 width: size.width,
-                height: size.height
-            }
+                height: size.height,
+            },
         };
 
         return capturedScreenshot;
-
     }
 
     /**
@@ -47,16 +50,18 @@ export class ScreenshotHandler extends IPCHandler<ScreenshotRequest> {
      *         with scaleFactor as an option.
      *
      */
-    static async capture(webContents: WebContents, screenshotRequest: ScreenshotRequest): Promise<Electron.NativeImage> {
-
-        if(! screenshotRequest) {
-            throw new Error("screenshotRequest required");
+    public static async capture(
+        webContents: WebContents,
+        screenshotRequest: ScreenshotRequest
+    ): Promise<Electron.NativeImage> {
+        if (!screenshotRequest) {
+            throw new Error('screenshotRequest required');
         }
 
         let rect: Electron.Rectangle = screenshotRequest.rect;
 
-        if(! rect) {
-            throw new Error("No rect");
+        if (!rect) {
+            throw new Error('No rect');
         }
 
         // this is a workaround for capturing the image.  The numbers are
@@ -66,17 +71,13 @@ export class ScreenshotHandler extends IPCHandler<ScreenshotRequest> {
             x: Math.round(screenshotRequest.rect.x),
             y: Math.round(screenshotRequest.rect.y),
             width: Math.round(screenshotRequest.rect.width),
-            height: Math.round(screenshotRequest.rect.height)
+            height: Math.round(screenshotRequest.rect.height),
         };
 
-        return new Promise<Electron.NativeImage>((resolve) => {
-
-            webContents.capturePage(rect, (image) => {
+        return new Promise<Electron.NativeImage>(resolve => {
+            webContents.capturePage(rect, image => {
                 resolve(image);
-            })
-
-        })
-
+            });
+        });
     }
-
 }

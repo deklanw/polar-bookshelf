@@ -1,5 +1,3 @@
-import {AnnotationRect} from './AnnotationRect';
+import { AnnotationRect } from './AnnotationRect';
 
-export class AreaHighlightRect extends AnnotationRect {
-
-}
+export class AreaHighlightRect extends AnnotationRect {}

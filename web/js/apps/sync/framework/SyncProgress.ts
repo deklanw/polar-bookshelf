@@ -3,12 +3,11 @@
  * including the ability to abort a sync.
  *
  */
-import {SyncState} from './SyncState';
-import {SyncTaskResult} from './SyncTask';
-import {Optional} from '../../../util/ts/Optional';
+import { SyncState } from './SyncState';
+import { SyncTaskResult } from './SyncTask';
+import { Optional } from '../../../util/ts/Optional';
 
 export interface SyncProgress {
-
     /**
      * The completion percentage over the interval [0,100]
      */
@@ -33,5 +32,4 @@ export interface SyncProgress {
     //  * document synchronized.
     //  */
     // public readonly message: string = "";
-
 }

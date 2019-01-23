@@ -1,6 +1,6 @@
-import {ContentCapture} from './ContentCapture';
-import {Logger} from '../../logger/Logger';
-import electron, {ipcRenderer} from 'electron';
+import { ContentCapture } from './ContentCapture';
+import { Logger } from '../../logger/Logger';
+import electron, { ipcRenderer } from 'electron';
 
 const log = Logger.create();
 
@@ -9,56 +9,49 @@ const log = Logger.create();
  * a capture, then returns the results to the caller via a message response.
  */
 export class ContentCaptureController {
-
     /**
      * Start the content capture system which involves listening to IPC messages
      * for triggering rendering.
      */
-    start(): void {
-
-        log.info("IPC listener added for content-capture at: " + new Date().toISOString());
+    public start(): void {
+        log.info(
+            'IPC listener added for content-capture at: ' +
+                new Date().toISOString()
+        );
 
         ipcRenderer.on('content-capture', (event: any, data: any) => {
-
-            if(data.type ===  "request") {
+            if (data.type === 'request') {
                 this.onContentCaptureRequest();
             }
-
         });
 
         // tell everyone that we've started properly.
-        ipcRenderer.send('content-capture', {type: "started"});
-
+        ipcRenderer.send('content-capture', { type: 'started' });
     }
 
-    onContentCaptureRequest() {
+    public onContentCaptureRequest() {
+        log.info('Received content capture request.');
 
-        log.info("Received content capture request.");
+        try {
+            const captured = ContentCapture.captureHTML();
 
-        try{
+            log.info('Content captured successfully.  Sending response...');
 
-            let captured = ContentCapture.captureHTML();
-
-            log.info("Content captured successfully.  Sending response...");
-
-            ipcRenderer.send("content-capture", {
-                type: "response",
-                result: captured
+            ipcRenderer.send('content-capture', {
+                type: 'response',
+                result: captured,
             });
 
-            log.info("Content captured successfully.  Sending response... done");
+            log.info(
+                'Content captured successfully.  Sending response... done'
+            );
+        } catch (e) {
+            log.error('Could not capture HTML: ', e);
 
-        } catch(e) {
-
-            log.error("Could not capture HTML: ", e);
-
-            ipcRenderer.send("content-capture", {
-                type: "response",
-                err: e.message
+            ipcRenderer.send('content-capture', {
+                type: 'response',
+                err: e.message,
             });
-
         }
-
     }
-
 }

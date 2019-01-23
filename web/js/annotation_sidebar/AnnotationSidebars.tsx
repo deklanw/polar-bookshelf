@@ -1,19 +1,19 @@
-import {Splitter} from '../ui/splitter/Splitter';
+import { Splitter } from '../ui/splitter/Splitter';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {AnnotationSidebar} from './AnnotationSidebar';
-import {DocMeta} from '../metadata/DocMeta';
-import {Logger} from '../logger/Logger';
+import { AnnotationSidebar } from './AnnotationSidebar';
+import { DocMeta } from '../metadata/DocMeta';
+import { Logger } from '../logger/Logger';
 
 const log = Logger.create();
 
 export class AnnotationSidebars {
-
     public static create(docMeta: DocMeta): Splitter {
-
         const splitter = new Splitter('.polar-viewer', '.polar-sidebar');
 
-        const polarSidebar = document.querySelector(".polar-sidebar")! as HTMLElement;
+        const polarSidebar = document.querySelector(
+            '.polar-sidebar'
+        )! as HTMLElement;
         polarSidebar.style.display = 'block';
 
         splitter.collapse();
@@ -24,18 +24,22 @@ export class AnnotationSidebars {
         );
 
         return splitter;
-
     }
 
     public static scrollToAnnotation(id: string, pageNum: number) {
-
         const selector = `.page div[data-annotation-id='${id}']`;
 
-        const pageElements: HTMLElement[] = Array.from(document.querySelectorAll(".page"));
+        const pageElements: HTMLElement[] = Array.from(
+            document.querySelectorAll('.page')
+        );
         const pageElement = pageElements[pageNum - 1];
 
         if (!pageElement) {
-            log.error(`Could not find page ${pageNum} of N pages: ${pageElements.length}`);
+            log.error(
+                `Could not find page ${pageNum} of N pages: ${
+                    pageElements.length
+                }`
+            );
             return;
         }
 
@@ -46,7 +50,7 @@ export class AnnotationSidebars {
         if (annotationElement) {
             this.scrollToElement(annotationElement as HTMLElement);
         } else {
-            log.warn("Could not find annotation element: " + selector);
+            log.warn('Could not find annotation element: ' + selector);
         }
 
         // TODO: disable this for now because with the pagemark the flash does
@@ -59,22 +63,17 @@ export class AnnotationSidebars {
         //     current.classList.add(flashClass);
         //     setTimeout(() => current.classList.remove(flashClass), 1000);
         // });
-
     }
 
     private static scrollToElement(element: HTMLElement) {
-
         const options = {
             behavior: 'instant',
             block: 'center',
-            inline: 'center'
+            inline: 'center',
         };
 
         // NOTE that 'instant' is apparently unsupported in the typescript type
         // but it's supported in Javascript.
         element.scrollIntoView(options as ScrollIntoViewOptions);
-
     }
-
-
 }

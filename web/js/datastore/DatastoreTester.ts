@@ -1,39 +1,39 @@
-import {assert} from 'chai';
-import {assertJSON} from '../test/Assertions';
-import {MockDocMetas} from '../metadata/DocMetas';
-import {DefaultPersistenceLayer} from './DefaultPersistenceLayer';
-import {DocMeta} from '../metadata/DocMeta';
-import {isPresent} from '../Preconditions';
+import { assert } from 'chai';
+import { assertJSON } from '../test/Assertions';
+import { MockDocMetas } from '../metadata/DocMetas';
+import { DefaultPersistenceLayer } from './DefaultPersistenceLayer';
+import { DocMeta } from '../metadata/DocMeta';
+import { isPresent } from '../Preconditions';
 
 import os from 'os';
-import {Files} from '../util/Files';
-import {FilePaths} from '../util/FilePaths';
-import {Dictionaries} from '../util/Dictionaries';
-import {Directories, GlobalDataDir} from './Directories';
-import {MockPHZWriter} from '../phz/MockPHZWriter';
-import {DocMetaFileRef} from './DocMetaRef';
-import {Backend} from './Backend';
-import {Datastore} from './Datastore';
-import {DocInfo} from '../metadata/DocInfo';
-import {DefaultDatastoreMutation} from './DatastoreMutation';
-import {func} from 'prop-types';
-import {Latch} from '../util/Latch';
-import {Datastores} from './Datastores';
-import {PersistenceLayers} from './PersistenceLayers';
-import {DiskDatastore} from './DiskDatastore';
-import {TestingTime} from '../test/TestingTime';
+import { Files } from '../util/Files';
+import { FilePaths } from '../util/FilePaths';
+import { Dictionaries } from '../util/Dictionaries';
+import { Directories, GlobalDataDir } from './Directories';
+import { MockPHZWriter } from '../phz/MockPHZWriter';
+import { DocMetaFileRef } from './DocMetaRef';
+import { Backend } from './Backend';
+import { Datastore } from './Datastore';
+import { DocInfo } from '../metadata/DocInfo';
+import { DefaultDatastoreMutation } from './DatastoreMutation';
+import { func } from 'prop-types';
+import { Latch } from '../util/Latch';
+import { Datastores } from './Datastores';
+import { PersistenceLayers } from './PersistenceLayers';
+import { DiskDatastore } from './DiskDatastore';
+import { TestingTime } from '../test/TestingTime';
 
 const rimraf = require('rimraf');
 
 const tmpdir = os.tmpdir();
 
 export class DatastoreTester {
-
-    public static test(datastoreFactory: () => Promise<Datastore>, hasLocalFiles: boolean = true) {
-
+    public static test(
+        datastoreFactory: () => Promise<Datastore>,
+        hasLocalFiles: boolean = true
+    ) {
         describe('DatastoreTester tests', function() {
-
-            const fingerprint = "0x001";
+            const fingerprint = '0x001';
 
             const dataDir = FilePaths.join(tmpdir, 'test-data-dir');
 
@@ -45,8 +45,7 @@ export class DatastoreTester {
             let directories: Directories;
 
             beforeEach(async function() {
-
-                console.log("===== before test ====");
+                console.log('===== before test ====');
 
                 // TODO: might want to run
                 await Files.removeDirectoryRecursivelyAsync(dataDir);
@@ -60,38 +59,56 @@ export class DatastoreTester {
                 await persistenceLayer.init();
                 await Datastores.purge(datastore);
 
-                docMeta = MockDocMetas.createWithinInitialPagemarks(fingerprint, 14);
+                docMeta = MockDocMetas.createWithinInitialPagemarks(
+                    fingerprint,
+                    14
+                );
 
                 docMeta.docInfo.filename = `${fingerprint}.phz`;
 
-                await persistenceLayer.delete({fingerprint, docInfo: docMeta.docInfo});
+                await persistenceLayer.delete({
+                    fingerprint,
+                    docInfo: docMeta.docInfo,
+                });
 
                 const contains = await persistenceLayer.contains(fingerprint);
 
-                assert.equal(contains, false, "Document already exists in persistence layer: " + fingerprint);
+                assert.equal(
+                    contains,
+                    false,
+                    'Document already exists in persistence layer: ' +
+                        fingerprint
+                );
 
-                await MockPHZWriter.write(FilePaths.create(directories.stashDir, `${fingerprint}.phz`));
+                await MockPHZWriter.write(
+                    FilePaths.create(directories.stashDir, `${fingerprint}.phz`)
+                );
 
-                const datastoreMutation = new DefaultDatastoreMutation<DocInfo>();
-                await persistenceLayer.write(fingerprint, docMeta, datastoreMutation);
+                const datastoreMutation = new DefaultDatastoreMutation<
+                    DocInfo
+                >();
+                await persistenceLayer.write(
+                    fingerprint,
+                    docMeta,
+                    datastoreMutation
+                );
 
                 // make sure we're always using the datastore mutations
                 await datastoreMutation.written.get();
                 await datastoreMutation.committed.get();
-
             });
 
             afterEach(async function() {
-                console.log("===== after test ====");
+                console.log('===== after test ====');
 
-                await Datastores.purge(persistenceLayer.datastore,
-                                       purgeEvent => console.log("Purged: ", purgeEvent));
+                await Datastores.purge(persistenceLayer.datastore, purgeEvent =>
+                    console.log('Purged: ', purgeEvent)
+                );
 
                 await persistenceLayer.stop();
             });
 
-            it("write and read data to disk", async function() {
-
+            it('write and read data to disk', async function() {
                 // let contains = await persistenceLayer.contains(fingerprint);
                 //
                 // assert.ok(! contains);
@@ -112,51 +129,59 @@ export class DatastoreTester {
                 docMeta!.docInfo.uuid = '__canonicalized__';
                 docMeta0!.docInfo.uuid = '__canonicalized__';
 
-                assert.equal(isPresent(docMeta0), true, "docMeta0 is not present");
+                assert.equal(
+                    isPresent(docMeta0),
+                    true,
+                    'docMeta0 is not present'
+                );
 
-                assertJSON(Dictionaries.sorted(docMeta), Dictionaries.sorted(docMeta0));
-
+                assertJSON(
+                    Dictionaries.sorted(docMeta),
+                    Dictionaries.sorted(docMeta0)
+                );
             });
 
-
-            it("read non-existant fingerprint", async function() {
-
-                const nonExistantDocMeta = await persistenceLayer.getDocMeta('0x666');
+            it('read non-existant fingerprint', async function() {
+                const nonExistantDocMeta = await persistenceLayer.getDocMeta(
+                    '0x666'
+                );
 
                 assert.ok(nonExistantDocMeta === undefined);
-
             });
 
-            it("Delete DocMeta and the associated stash file...", async function() {
-
+            it('Delete DocMeta and the associated stash file...', async function() {
                 const docMetaFileRef: DocMetaFileRef = {
                     fingerprint,
                     docFile: {
-                        name: `${fingerprint}.phz`
+                        name: `${fingerprint}.phz`,
                     },
-                    docInfo: docMeta.docInfo
+                    docInfo: docMeta.docInfo,
                 };
 
                 // make sure the files exist on disk...
 
-                const docPath = FilePaths.join(directories.stashDir, `${fingerprint}.phz`);
-                const statePath = FilePaths.join(directories.dataDir, fingerprint, 'state.json');
+                const docPath = FilePaths.join(
+                    directories.stashDir,
+                    `${fingerprint}.phz`
+                );
+                const statePath = FilePaths.join(
+                    directories.dataDir,
+                    fingerprint,
+                    'state.json'
+                );
 
                 if (hasLocalFiles) {
                     assert.ok(await Files.existsAsync(docPath));
                     assert.ok(await Files.existsAsync(statePath));
-
                 }
 
                 await persistenceLayer.delete(docMetaFileRef);
 
                 if (hasLocalFiles) {
-
                     // make sure the files were deleted
 
-                    assert.ok(! await Files.existsAsync(docPath));
-                    assert.ok(! await Files.existsAsync(statePath));
-
+                    assert.ok(!(await Files.existsAsync(docPath)));
+                    assert.ok(!(await Files.existsAsync(statePath)));
                 }
 
                 // perform the delete multiple times now to make sure we're
@@ -164,21 +189,22 @@ export class DatastoreTester {
                 await persistenceLayer.delete(docMetaFileRef);
                 await persistenceLayer.delete(docMetaFileRef);
                 await persistenceLayer.delete(docMetaFileRef);
-
             });
 
-            it("adding binary files", async function() {
-
+            it('adding binary files', async function() {
                 const data = 'fake image data';
-                const fileRef = {name: 'test.jpg'};
+                const fileRef = { name: 'test.jpg' };
 
                 await datastore.deleteFile(Backend.IMAGE, fileRef);
                 await datastore.deleteFile(Backend.IMAGE, fileRef);
 
-                assert.ok(! await datastore.containsFile(Backend.IMAGE, fileRef), "Datastore already contains file!");
+                assert.ok(
+                    !(await datastore.containsFile(Backend.IMAGE, fileRef)),
+                    'Datastore already contains file!'
+                );
 
                 const meta = {
-                    "foo": "bar"
+                    foo: 'bar',
                 };
 
                 await datastore.writeFile(Backend.IMAGE, fileRef, data, meta);
@@ -186,58 +212,65 @@ export class DatastoreTester {
 
                 assert.ok(await datastore.containsFile(Backend.IMAGE, fileRef));
 
-                const datastoreFile = await datastore.getFile(Backend.IMAGE, fileRef);
-                assert.ok(datastoreFile, "no result");
-                assert.ok(datastoreFile.isPresent(), "not present");
-                assert.ok(datastoreFile.get(), "no value");
+                const datastoreFile = await datastore.getFile(
+                    Backend.IMAGE,
+                    fileRef
+                );
+                assert.ok(datastoreFile, 'no result');
+                assert.ok(datastoreFile.isPresent(), 'not present');
+                assert.ok(datastoreFile.get(), 'no value');
 
                 // noinspection TsLint
-                assert.equal(datastoreFile.get().meta['foo'], 'bar');
+                assert.equal(datastoreFile.get().meta.foo, 'bar');
 
                 // assertJSON(datastoreFile.get().meta, meta, "meta values
                 // differ");
 
                 await datastore.deleteFile(Backend.IMAGE, fileRef);
                 await datastore.deleteFile(Backend.IMAGE, fileRef);
-
             });
 
-            it("getDocMetaFiles", async function() {
-
+            it('getDocMetaFiles', async function() {
                 const docMetaFiles = await datastore.getDocMetaFiles();
 
                 assert.equal(docMetaFiles.length > 0, true);
 
-                assert.equal(docMetaFiles.map((current) => current.fingerprint).includes(fingerprint), true);
-
+                assert.equal(
+                    docMetaFiles
+                        .map(current => current.fingerprint)
+                        .includes(fingerprint),
+                    true
+                );
             });
 
-            it("snapshot and make sure we receive a terminated batch at committed consistency.", async function() {
-
+            it('snapshot and make sure we receive a terminated batch at committed consistency.', async function() {
                 const writtenSnapshotReceived = new Latch<boolean>();
                 const committedSnapshotReceived = new Latch<boolean>();
 
-                const snapshotResult = await datastore.snapshot(async docMetaSnapshotEvent => {
+                const snapshotResult = await datastore.snapshot(
+                    async docMetaSnapshotEvent => {
+                        if (docMetaSnapshotEvent.batch) {
+                            if (docMetaSnapshotEvent.batch.terminated) {
+                                if (
+                                    docMetaSnapshotEvent.consistency ===
+                                    'committed'
+                                ) {
+                                    committedSnapshotReceived.resolve(true);
+                                    // if we have received the committed we also
+                                    // received the written.
+                                    writtenSnapshotReceived.resolve(true);
+                                }
 
-                    if (docMetaSnapshotEvent.batch) {
-
-                        if (docMetaSnapshotEvent.batch.terminated) {
-
-                            if ( docMetaSnapshotEvent.consistency === 'committed') {
-                                committedSnapshotReceived.resolve(true);
-                                // if we have received the committed we also
-                                // received the written.
-                                writtenSnapshotReceived.resolve(true);
+                                if (
+                                    docMetaSnapshotEvent.consistency ===
+                                    'written'
+                                ) {
+                                    writtenSnapshotReceived.resolve(true);
+                                }
                             }
-
-                            if ( docMetaSnapshotEvent.consistency === 'written') {
-                                writtenSnapshotReceived.resolve(true);
-                            }
-
                         }
                     }
-
-                });
+                );
 
                 await writtenSnapshotReceived.get();
                 await committedSnapshotReceived.get();
@@ -246,50 +279,49 @@ export class DatastoreTester {
                     // unsubscribe to the snapshot if necessary
                     snapshotResult.unsubscribe();
                 }
-
             });
 
-
-            it("createBackup", async function() {
-
-                if (! (datastore instanceof DiskDatastore)) {
-                    console.log("Skipping (not DiskDatastore)");
+            it('createBackup', async function() {
+                if (!(datastore instanceof DiskDatastore)) {
+                    console.log('Skipping (not DiskDatastore)');
                     return;
                 }
 
                 try {
-
                     TestingTime.freeze();
 
                     const now = new Date();
 
                     // Fri, 02 Mar 2012 11:38:49 GMT
-                    console.log("Creating backup at: " + now.toUTCString());
+                    console.log('Creating backup at: ' + now.toUTCString());
 
-                    const backupDir = FilePaths.join(dataDir, ".backup-2012-03-02");
+                    const backupDir = FilePaths.join(
+                        dataDir,
+                        '.backup-2012-03-02'
+                    );
 
                     await datastore.createBackup();
 
-                    console.log("Testing for backup dir: " + backupDir);
+                    console.log('Testing for backup dir: ' + backupDir);
 
                     assert.ok(await Files.existsAsync(backupDir));
 
-                    assert.ok(! await Files.existsAsync(FilePaths.join(backupDir, ".backup-2012-03-02")));
+                    assert.ok(
+                        !(await Files.existsAsync(
+                            FilePaths.join(backupDir, '.backup-2012-03-02')
+                        ))
+                    );
 
-                    const statePath = FilePaths.join(backupDir, '0x001', 'state.json');
+                    const statePath = FilePaths.join(
+                        backupDir,
+                        '0x001',
+                        'state.json'
+                    );
                     assert.ok(await Files.existsAsync(statePath));
-
                 } finally {
-
                     TestingTime.unfreeze();
-
                 }
-
-
             });
-
         });
-
     }
-
 }

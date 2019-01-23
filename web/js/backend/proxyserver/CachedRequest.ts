@@ -1,5 +1,4 @@
 export class CachedRequest {
-
     /**
      */
     public url: string;
@@ -7,11 +6,8 @@ export class CachedRequest {
     /**
      */
     constructor(opts: any) {
-
         this.url = opts.url;
 
         Object.assign(this, opts);
-
     }
-
 }

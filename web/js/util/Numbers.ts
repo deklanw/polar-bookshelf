@@ -1,7 +1,5 @@
 export class Numbers {
-
     public static compare(n0: number | undefined, n1: number | undefined) {
-
         if (n0 === undefined && n1 !== undefined) {
             return -1;
         }
@@ -15,11 +13,9 @@ export class Numbers {
         }
 
         return n0! - n1!;
-
     }
 
     public static range(start: number, end: number): ReadonlyArray<number> {
-
         const result = [];
 
         for (let idx = start; idx <= end; ++idx) {
@@ -27,7 +23,5 @@ export class Numbers {
         }
 
         return result;
-
     }
-
 }

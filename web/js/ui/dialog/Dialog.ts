@@ -1,14 +1,13 @@
-import {Link} from '../link/Link';
+import { Link } from '../link/Link';
 
 declare var global: any;
-global.$ = global.jQuery = require("jquery");
-require("jquery-ui-bundle");
+global.$ = global.jQuery = require('jquery');
+require('jquery-ui-bundle');
 
 /**
  * Dialog box for entering data in the UI.
  */
 export class Dialog {
-
     private readonly target: any;
 
     public width: number = 250;
@@ -24,28 +23,26 @@ export class Dialog {
         // FIXME: don't use the full URL here...
         // TODO: I'm sure there must be a fancier way to do and we should
         // consider using webpack for each component.
-        let link = new Link("stylesheet",
-                            "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css",
-                            "jquery-ui");
+        const link = new Link(
+            'stylesheet',
+            'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css',
+            'jquery-ui'
+        );
         link.present();
-
     }
 
-    show(): void {
-
+    public show(): void {
         $(() => {
             $(this.target)
                 .dialog({
                     width: this.width,
-                    height: this.height
+                    height: this.height,
                 })
                 .show();
         });
-
     }
 
-    hide(): void {
+    public hide(): void {
         $(this.target).hide();
     }
-
 }

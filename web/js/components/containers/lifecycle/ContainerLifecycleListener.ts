@@ -1,7 +1,6 @@
-import {ContainerLifecycleState} from './ContainerLifecycleState';
+import { ContainerLifecycleState } from './ContainerLifecycleState';
 
 export interface ContainerLifecycleListener {
-
     /**
      *
      * @param callback {Function} A callback function that accepts
@@ -9,7 +8,6 @@ export interface ContainerLifecycleListener {
      *
      */
     register(callback: (event: any) => void): void;
-
 
     unregister(): void;
 
@@ -20,11 +18,9 @@ export interface ContainerLifecycleListener {
      */
     getStateFromEvent(event: any): ContainerLifecycleState | undefined;
 
-
     /**
      * Get the current state.
      *
      */
     getState(): ContainerLifecycleState | undefined;
-
 }

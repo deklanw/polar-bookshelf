@@ -1,9 +1,8 @@
-import {Spectron} from '../../js/test/Spectron';
-import {SpectronSpec} from '../../js/test/SpectronSpec';
-import {PolarDataDir} from '../../js/test/PolarDataDir';
+import { Spectron } from '../../js/test/Spectron';
+import { SpectronSpec } from '../../js/test/SpectronSpec';
+import { PolarDataDir } from '../../js/test/PolarDataDir';
 
 describe('main-app-with-import', async function() {
-
     Spectron.setup(__dirname);
     this.timeout(30000);
 
@@ -12,10 +11,6 @@ describe('main-app-with-import', async function() {
     });
 
     it('create the repository view', async function() {
-
         await SpectronSpec.create(this.app).waitFor(true);
-
     });
-
 });
-

@@ -1,1 +1,1 @@
-console.log("This is the preload script");
+console.log('This is the preload script');

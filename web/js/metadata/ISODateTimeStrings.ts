@@ -1,4 +1,4 @@
-import {Strings} from '../util/Strings';
+import { Strings } from '../util/Strings';
 
 export type ISODateTimeString = string;
 
@@ -13,13 +13,11 @@ export type ISODateString = string;
 export type UnixTimeMS = number;
 
 export class ISODateTimeStrings {
-
     public static create(): ISODateTimeString {
         return new Date().toISOString();
     }
 
     public static toISODateString(date: Date): ISODateString {
-
         const ordYear = date.getUTCFullYear();
         const ordMonth = date.getUTCMonth() + 1;
         const ordDay = date.getUTCDate();
@@ -29,7 +27,6 @@ export class ISODateTimeStrings {
         const day = Strings.lpad(ordDay, '0', 2);
 
         return `${year}-${month}-${day}`;
-
     }
 
     public static parse(value: string): Date {
@@ -39,6 +36,4 @@ export class ISODateTimeStrings {
     public static toUnixTimeMS(value: string): UnixTimeMS {
         return Date.parse(value);
     }
-
 }
-

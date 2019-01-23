@@ -5,7 +5,6 @@
  * @Deprecated use ProgressTracker
  */
 export class ProgressCalculator {
-
     // noinspection TsLint
     private _value: number = 0;
 
@@ -35,7 +34,6 @@ export class ProgressCalculator {
     }
 
     public percentage(): number {
-
         if (this._total === 0) {
             return 100;
         }
@@ -43,13 +41,15 @@ export class ProgressCalculator {
         return 100 * (this._value / this._total);
     }
 
-    public static calculate(count: number, total: number, defaultValue: number = 0) {
-
+    public static calculate(
+        count: number,
+        total: number,
+        defaultValue: number = 0
+    ) {
         if (total === 0) {
             return defaultValue;
         }
 
         return 100 * (count / total);
     }
-
 }

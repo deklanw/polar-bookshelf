@@ -1,12 +1,11 @@
-import {ILogger} from './ILogger';
+import { ILogger } from './ILogger';
 
 /**
  * Does nothing other than collect stats on which methods were called for
  * testing purposes.
  */
 export class StatsLogger implements ILogger {
-
-    public readonly name: string = "stats";
+    public readonly name: string = 'stats';
 
     public readonly stats = new FilteredStats();
 
@@ -37,7 +36,6 @@ export class StatsLogger implements ILogger {
     public async sync(): Promise<void> {
         // noop
     }
-
 }
 
 export class FilteredStats {

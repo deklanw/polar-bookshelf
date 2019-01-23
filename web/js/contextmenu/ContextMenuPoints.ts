@@ -1,8 +1,6 @@
-import {Point} from '../Point';
+import { Point } from '../Point';
 
 export class ContextMenuPoints {
-
-
     /**
      */
     public readonly page: Point;
@@ -28,5 +26,4 @@ export class ContextMenuPoints {
         this.offset = opts.offset;
         this.pageOffset = opts.pageOffset;
     }
-
 }

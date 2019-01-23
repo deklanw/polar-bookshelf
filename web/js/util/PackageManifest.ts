@@ -1,14 +1,11 @@
-
-const pkg: any = require("../../../package.json");
+const pkg: any = require('../../../package.json');
 
 export class PackageManifest {
-
-    version(): string {
+    public version(): string {
         return pkg.version;
     }
 
-    name(): string {
+    public name(): string {
         return pkg.name;
     }
-
 }

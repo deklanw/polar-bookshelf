@@ -1,8 +1,3 @@
-import {SpectronRenderer} from '../../js/test/SpectronRenderer';
+import { SpectronRenderer } from '../../js/test/SpectronRenderer';
 
-SpectronRenderer.run(async (state) => {
-
-
-});
-
-
+SpectronRenderer.run(async state => {});

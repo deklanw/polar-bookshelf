@@ -4,9 +4,7 @@
  * service.
  */
 export enum Backend {
-
     VIDEO = 'video',
     IMAGE = 'image',
-    STASH = 'stash'
-
+    STASH = 'stash',
 }

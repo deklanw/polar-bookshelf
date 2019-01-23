@@ -1,11 +1,10 @@
-import {ParentWindowRegistry} from '../ParentWindowRegistry';
-import {IPCEvent} from '../../../ipc/handler/IPCEvent';
-import {DialogWindowReference} from '../DialogWindowReference';
-import {IPCMessage} from '../../../ipc/handler/IPCMessage';
-import {AbstractDialogWindowReferenceHandler} from './AbstractDialogWindowReferenceHandler';
+import { ParentWindowRegistry } from '../ParentWindowRegistry';
+import { IPCEvent } from '../../../ipc/handler/IPCEvent';
+import { DialogWindowReference } from '../DialogWindowReference';
+import { IPCMessage } from '../../../ipc/handler/IPCMessage';
+import { AbstractDialogWindowReferenceHandler } from './AbstractDialogWindowReferenceHandler';
 
 export class GetParentWindowHandler extends AbstractDialogWindowReferenceHandler {
-
     private readonly parentWindowRegistry: ParentWindowRegistry;
 
     constructor(parentWindowRegistry: ParentWindowRegistry) {
@@ -13,15 +12,21 @@ export class GetParentWindowHandler extends AbstractDialogWindowReferenceHandler
         this.parentWindowRegistry = parentWindowRegistry;
     }
 
-    protected async handleIPC(event: IPCEvent, dialogWindowReference: DialogWindowReference): Promise<void> {
+    protected async handleIPC(
+        event: IPCEvent,
+        dialogWindowReference: DialogWindowReference
+    ): Promise<void> {
+        const parentWindowReference = this.parentWindowRegistry.get(
+            dialogWindowReference
+        );
 
-        let parentWindowReference = this.parentWindowRegistry.get(dialogWindowReference);
+        const parentWindowReferenceMessage = new IPCMessage<
+            DialogWindowReference
+        >('parent-window-reference', parentWindowReference);
 
-        let parentWindowReferenceMessage = new IPCMessage<DialogWindowReference>('parent-window-reference', parentWindowReference);
-
-        event.responsePipe.write(event.message.computeResponseChannel(), parentWindowReferenceMessage)
-
+        event.responsePipe.write(
+            event.message.computeResponseChannel(),
+            parentWindowReferenceMessage
+        );
     }
-
 }
-

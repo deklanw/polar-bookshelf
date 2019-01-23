@@ -1,11 +1,15 @@
-import {TriggerEvent} from '../contextmenu/TriggerEvent';
-import {Logger} from '../logger/Logger';
-import {Model} from '../model/Model';
-import {Strings} from '../util/Strings';
-import {Toaster} from '../ui/toaster/Toaster';
-import {DialogWindowClient} from '../ui/dialog_window/DialogWindowClient';
-import {DialogWindowOptions, Resource, ResourceType} from '../ui/dialog_window/DialogWindow';
-import {DocInfos} from '../metadata/DocInfos';
+import { TriggerEvent } from '../contextmenu/TriggerEvent';
+import { Logger } from '../logger/Logger';
+import { Model } from '../model/Model';
+import { Strings } from '../util/Strings';
+import { Toaster } from '../ui/toaster/Toaster';
+import { DialogWindowClient } from '../ui/dialog_window/DialogWindowClient';
+import {
+    DialogWindowOptions,
+    Resource,
+    ResourceType,
+} from '../ui/dialog_window/DialogWindow';
+import { DocInfos } from '../metadata/DocInfos';
 
 const log = Logger.create();
 
@@ -13,7 +17,6 @@ const log = Logger.create();
  * @Deprecated migrating to DocRepoAnkiSyncController
  */
 export class AnkiSyncController {
-
     private readonly model: Model;
 
     constructor(model: Model) {
@@ -21,47 +24,51 @@ export class AnkiSyncController {
     }
 
     public start() {
-
-        window.addEventListener("message", event => this.onMessageReceived(event), false);
-
+        window.addEventListener(
+            'message',
+            event => this.onMessageReceived(event),
+            false
+        );
     }
 
     private onMessageReceived(event: any) {
-
-        log.info("Received message: ", event);
+        log.info('Received message: ', event);
 
         const triggerEvent = event.data;
 
         switch (event.data.type) {
-
-            case "start-sync":
-                this.onStartSync(triggerEvent)
-                    .catch(err => log.error("Failed to start sync: ", err));
+            case 'start-sync':
+                this.onStartSync(triggerEvent).catch(err =>
+                    log.error('Failed to start sync: ', err)
+                );
 
                 break;
-
         }
-
     }
 
     private async onStartSync(triggerEvent: TriggerEvent) {
-
-        log.info("Starting sync...");
+        log.info('Starting sync...');
 
         // TODO: verify that the document has a title.
 
         const title = DocInfos.bestTitle(this.model.docMeta.docInfo);
 
         if (Strings.empty(title)) {
-            Toaster.error("Documents must have titles before we can synchronize.");
+            Toaster.error(
+                'Documents must have titles before we can synchronize.'
+            );
             return;
         }
 
-        const resource = new Resource(ResourceType.APP, "./apps/sync/index.html?fingerprint=" + this.model.docMeta.docInfo.fingerprint);
+        const resource = new Resource(
+            ResourceType.APP,
+            './apps/sync/index.html?fingerprint=' +
+                this.model.docMeta.docInfo.fingerprint
+        );
 
-        const dialogWindowClient = await DialogWindowClient.create(new DialogWindowOptions(resource));
+        const dialogWindowClient = await DialogWindowClient.create(
+            new DialogWindowOptions(resource)
+        );
         await dialogWindowClient.show();
-
     }
-
 }

@@ -1,19 +1,20 @@
 import * as React from 'react';
-import {AnnotationTypes} from '../../metadata/AnnotationTypes';
-import {DocAnnotation} from '../DocAnnotation';
-import {Optional} from '../../util/ts/Optional';
-import {AnnotationSidebars} from '../AnnotationSidebars';
+import { AnnotationTypes } from '../../metadata/AnnotationTypes';
+import { DocAnnotation } from '../DocAnnotation';
+import { Optional } from '../../util/ts/Optional';
+import { AnnotationSidebars } from '../AnnotationSidebars';
 
 /**
  * A generic wrapper that determines which sub-component to render.
  */
-export class AreaHighlightAnnotationComponent extends React.Component<IProps, IState> {
-
+export class AreaHighlightAnnotationComponent extends React.Component<
+    IProps,
+    IState
+> {
     constructor(props: IProps, context: any) {
         super(props, context);
 
         this.state = {};
-
     }
 
     public render() {
@@ -23,25 +24,17 @@ export class AreaHighlightAnnotationComponent extends React.Component<IProps, IS
 
         if (annotation.screenshot) {
             return (
-                <div key={key} className='area-highlight'>
-                    <img src={annotation.screenshot.src}/>
+                <div key={key} className="area-highlight">
+                    <img src={annotation.screenshot.src} />
                 </div>
             );
         } else {
-            return (
-                <div key={key} className='area-highlight'>
-
-                </div>
-            );
+            return <div key={key} className="area-highlight" />;
         }
-
     }
-
 }
 interface IProps {
     annotation: DocAnnotation;
 }
 
-interface IState {
-
-}
+interface IState {}

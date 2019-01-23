@@ -1,9 +1,8 @@
 import * as React from 'react';
 
 export class Styles {
-
     public static BottomBar: React.CSSProperties = {
-        display: 'flex'
+        display: 'flex',
     };
 
     public static BottomBarItem: React.CSSProperties = {
@@ -14,9 +13,8 @@ export class Styles {
     public static BottomBarItemRight: React.CSSProperties = {
         marginTop: 'auto',
         marginBottom: 'auto',
-        width: '100%'
+        width: '100%',
     };
-
 }
 
 export type HtmlString = string;
@@ -31,6 +29,3 @@ export interface FrontAndBackFields {
     front: HtmlString;
     back: HtmlString;
 }
-
-
-

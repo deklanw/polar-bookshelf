@@ -1,12 +1,12 @@
-import {SpectronRenderer} from '../../js/test/SpectronRenderer';
+import { SpectronRenderer } from '../../js/test/SpectronRenderer';
 import Popper from 'popper.js';
 import $ from '../../js/ui/JQuery';
-import {Point} from '../../js/Point';
-import {MouseDirection} from '../../js/ui/popup/Popup';
-import {MouseEventReferenceObject} from '../../js/ui/popup/MouseEventReferenceObject';
+import { Point } from '../../js/Point';
+import { MouseDirection } from '../../js/ui/popup/Popup';
+import { MouseEventReferenceObject } from '../../js/ui/popup/MouseEventReferenceObject';
 
 SpectronRenderer.run(async () => {
-    console.log("Running within SpectronRenderer now.");
+    console.log('Running within SpectronRenderer now.');
 
     const ref = $('#button-a');
 
@@ -17,7 +17,7 @@ SpectronRenderer.run(async () => {
     //
     //     getBoundingClientRect(): ClientRect;
 
-    const target = document.querySelector("#para")!.firstChild!;
+    const target = document.querySelector('#para')!.firstChild!;
 
     const popup = $('#popup');
     popup.hide();
@@ -33,23 +33,20 @@ SpectronRenderer.run(async () => {
     let originPoint: Point | undefined;
 
     document.addEventListener('mousedown', (event: MouseEvent) => {
-
         originPoint = {
             x: event.x,
-            y: event.y
+            y: event.y,
         };
-
     });
 
     document.addEventListener('mouseup', (event: MouseEvent) => {
-
         // compute the direction...
 
-        if (! window.getSelection().isCollapsed) {
-
+        if (!window.getSelection().isCollapsed) {
             // compute if the mouse is moving down or up to figure out the best
             // place to put the mouse
-            const mouseDirection: MouseDirection = event.y - originPoint!.y < 0 ? 'up' : 'down';
+            const mouseDirection: MouseDirection =
+                event.y - originPoint!.y < 0 ? 'up' : 'down';
 
             const placement = mouseDirection === 'down' ? 'bottom' : 'top';
 
@@ -61,11 +58,14 @@ SpectronRenderer.run(async () => {
             // const referenceObject = new RangeReferenceObject();
 
             const range = window.getSelection().getRangeAt(0);
-            const referenceObject = new MouseEventReferenceObject(event, range, mouseDirection);
-            const popper = new Popper(referenceObject, popup , {
-
+            const referenceObject = new MouseEventReferenceObject(
+                event,
+                range,
+                mouseDirection
+            );
+            const popper = new Popper(referenceObject, popup, {
                 placement,
-                onCreate: (data) => {
+                onCreate: data => {
                     popup.show();
                     // TODO: automatically hide the popper if they click outside of the UI.
                 },
@@ -80,14 +80,8 @@ SpectronRenderer.run(async () => {
                     // arrow: {
                     //     enabled: true
                     // }
-                }
-
+                },
             });
-
-
         }
-
     });
-
-
 });

@@ -1,6 +1,6 @@
-import {app, remote} from 'electron';
-import {ElectronContextType} from '../context/ElectronContextType';
-import {ElectronContextTypes} from '../context/ElectronContextTypes';
+import { app, remote } from 'electron';
+import { ElectronContextType } from '../context/ElectronContextType';
+import { ElectronContextTypes } from '../context/ElectronContextTypes';
 
 declare var global: any;
 
@@ -12,29 +12,23 @@ global.appPath = app.getAppPath();
  * main contexts.
  */
 export class AppPath {
-
     public static get() {
-
-        const electronContext =  ElectronContextTypes.create();
+        const electronContext = ElectronContextTypes.create();
 
         if (electronContext === ElectronContextType.RENDERER) {
-            return remote.getGlobal("appPath");
+            return remote.getGlobal('appPath');
         } else {
             return global.appPath;
         }
-
     }
 
     public static set(appPath?: string) {
-
-        const electronContext =  ElectronContextTypes.create();
+        const electronContext = ElectronContextTypes.create();
 
         if (electronContext === ElectronContextType.RENDERER) {
-            throw new Error("Call set from main context.");
+            throw new Error('Call set from main context.');
         }
 
         global.appPath = appPath;
-
     }
-
 }

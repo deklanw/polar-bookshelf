@@ -1,13 +1,12 @@
 /**
  * A Reactor that only sends one type of event.
  */
-import {IMutableReactor, IReactor, Reactor} from './Reactor';
-import {EventListener, RegisteredEventListener} from './EventListener';
+import { IMutableReactor, IReactor, Reactor } from './Reactor';
+import { EventListener, RegisteredEventListener } from './EventListener';
 
 const EVENT_NAME = 'event';
 
 export class SimpleReactor<V> implements ISimpleReactor<V> {
-
     private readonly delegate: IMutableReactor<V>;
 
     constructor(delegate: IMutableReactor<V> = new Reactor<V>()) {
@@ -23,7 +22,9 @@ export class SimpleReactor<V> implements ISimpleReactor<V> {
         this.delegate.clearEvent(EVENT_NAME);
     }
 
-    public addEventListener(eventListener: EventListener<V>): RegisteredEventListener<V> {
+    public addEventListener(
+        eventListener: EventListener<V>
+    ): RegisteredEventListener<V> {
         return this.delegate.addEventListener(EVENT_NAME, eventListener);
     }
 
@@ -45,18 +46,18 @@ export class SimpleReactor<V> implements ISimpleReactor<V> {
     public getEventListeners() {
         return this.delegate.getEventListeners(EVENT_NAME);
     }
-
 }
 
 export interface ISimpleReactor<V> {
-
     once(): Promise<V>;
 
     /**
      * Add the listener and return the listener that was added.  This allows you
      * to later remove the listener if necessary.
      */
-    addEventListener(eventListener: EventListener<V>): RegisteredEventListener<V>;
+    addEventListener(
+        eventListener: EventListener<V>
+    ): RegisteredEventListener<V>;
 
     removeEventListener(eventListener: EventListener<V>): boolean;
 
@@ -71,9 +72,6 @@ export interface ISimpleReactor<V> {
      * Return the total number of listeners added.
      */
     size(): number;
-
 }
 
-export interface IEventDispatcher<V> extends ISimpleReactor<V> {
-
-}
+export interface IEventDispatcher<V> extends ISimpleReactor<V> {}

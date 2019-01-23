@@ -5,9 +5,7 @@ import process from 'process';
 const SPECTRON_SHOW = 'SPECTRON_SHOW';
 
 export class SpectronBrowserWindowOptions {
-
     public static create(): BrowserWindowConstructorOptions {
-
         // Determine whether we should show the window by default. Normally
         // showing the window is really annoying when developing locally but
         // for debug purposes it's nice to actually show them.
@@ -19,7 +17,6 @@ export class SpectronBrowserWindowOptions {
         const show = true;
 
         return {
-
             backgroundColor: '#FFF',
 
             // NOTE: the default width and height shouldn't be changed here as it can
@@ -33,11 +30,8 @@ export class SpectronBrowserWindowOptions {
             webPreferences: {
                 webSecurity: false,
                 nodeIntegration: true,
-                partition: "persist:spectron"
-            }
-
+                partition: 'persist:spectron',
+            },
         };
-
     }
-
 }

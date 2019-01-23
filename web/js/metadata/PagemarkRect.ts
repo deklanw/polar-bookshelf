@@ -1,8 +1,6 @@
 /**
  *
  */
-import {AnnotationRect} from "./AnnotationRect";
+import { AnnotationRect } from './AnnotationRect';
 
-export class PagemarkRect extends AnnotationRect {
-
-}
+export class PagemarkRect extends AnnotationRect {}

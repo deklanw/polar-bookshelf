@@ -1,29 +1,23 @@
-import {assert} from 'chai';
-import {ProgressCalculator} from './ProgressCalculator';
-import {ResolvablePromise} from './ResolvablePromise';
-
+import { assert } from 'chai';
+import { ProgressCalculator } from './ProgressCalculator';
+import { ResolvablePromise } from './ResolvablePromise';
 
 describe('ResolvablePromise', function() {
-
-    it("Without awaiting the promise", async function() {
-
+    it('Without awaiting the promise', async function() {
         const resolvablePromise = new ResolvablePromise<string>();
 
         resolvablePromise.resolve('hello');
 
         assert.equal(await resolvablePromise, 'hello');
-
     });
 
-    it("double await", async function() {
-
+    it('double await', async function() {
         const resolvablePromise = new ResolvablePromise<string>();
 
         resolvablePromise.resolve('hello');
 
         assert.equal(await resolvablePromise, 'hello');
         assert.equal(await resolvablePromise, 'hello');
-
     });
     //
     // it("reject", async function() {
@@ -55,7 +49,6 @@ describe('ResolvablePromise', function() {
     // });
 
     it('reject2', async function() {
-
         // noinspection TsLint
         let resolve: (value?: string) => void = () => {};
 
@@ -73,7 +66,7 @@ describe('ResolvablePromise', function() {
         promise.catch(err => ++failures);
         promise.catch(err => ++failures);
 
-        reject(new Error("it broke"));
+        reject(new Error('it broke'));
 
         try {
             await promise;
@@ -94,7 +87,6 @@ describe('ResolvablePromise', function() {
         }
 
         assert.equal(failures, 5);
-
     });
 
     //
@@ -129,6 +121,4 @@ describe('ResolvablePromise', function() {
     //     // }
     //
     // });
-
 });
-

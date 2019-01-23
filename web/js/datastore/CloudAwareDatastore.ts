@@ -1,28 +1,51 @@
-import {AbstractDatastore, Datastore, DeleteResult, DocMetaSnapshotEvent, DocMetaSnapshotEventListener, DocMetaSnapshotEvents, ErrorListener, FileMeta, FileRef, FileSynchronizationEvent, FileSynchronizationEventListener, InitResult, SnapshotResult, SyncDocMap, SyncDocMaps, SynchronizationEvent, SynchronizationEventListener, SynchronizingDatastore} from './Datastore';
-import {Directories} from './Directories';
-import {DocMetaFileRef, DocMetaRef} from './DocMetaRef';
-import {Backend} from './Backend';
-import {DatastoreFile} from './DatastoreFile';
-import {Optional} from '../util/ts/Optional';
-import {DocInfo} from '../metadata/DocInfo';
-import {DatastoreMutation, DefaultDatastoreMutation} from './DatastoreMutation';
-import {UUID} from '../metadata/UUID';
-import {Logger} from "../logger/Logger";
-import {DocMetaComparisonIndex} from './DocMetaComparisonIndex';
-import {PersistenceLayers, SyncOrigin} from './PersistenceLayers';
-import {DocMetaSnapshotEventListeners, EventDeduplicator} from './DocMetaSnapshotEventListeners';
-import {Latch} from '../util/Latch';
-import {ASYNC_NULL_FUNCTION, NULL_FUNCTION} from '../util/Functions';
-import {IEventDispatcher, SimpleReactor} from '../reactor/SimpleReactor';
-import {AsyncFunction} from '../util/AsyncWorkQueue';
+import {
+    AbstractDatastore,
+    Datastore,
+    DeleteResult,
+    DocMetaSnapshotEvent,
+    DocMetaSnapshotEventListener,
+    DocMetaSnapshotEvents,
+    ErrorListener,
+    FileMeta,
+    FileRef,
+    FileSynchronizationEvent,
+    FileSynchronizationEventListener,
+    InitResult,
+    SnapshotResult,
+    SyncDocMap,
+    SyncDocMaps,
+    SynchronizationEvent,
+    SynchronizationEventListener,
+    SynchronizingDatastore,
+} from './Datastore';
+import { Directories } from './Directories';
+import { DocMetaFileRef, DocMetaRef } from './DocMetaRef';
+import { Backend } from './Backend';
+import { DatastoreFile } from './DatastoreFile';
+import { Optional } from '../util/ts/Optional';
+import { DocInfo } from '../metadata/DocInfo';
+import {
+    DatastoreMutation,
+    DefaultDatastoreMutation,
+} from './DatastoreMutation';
+import { UUID } from '../metadata/UUID';
+import { Logger } from '../logger/Logger';
+import { DocMetaComparisonIndex } from './DocMetaComparisonIndex';
+import { PersistenceLayers, SyncOrigin } from './PersistenceLayers';
+import {
+    DocMetaSnapshotEventListeners,
+    EventDeduplicator,
+} from './DocMetaSnapshotEventListeners';
+import { Latch } from '../util/Latch';
+import { ASYNC_NULL_FUNCTION, NULL_FUNCTION } from '../util/Functions';
+import { IEventDispatcher, SimpleReactor } from '../reactor/SimpleReactor';
+import { AsyncFunction } from '../util/AsyncWorkQueue';
 import * as firebase from '../firebase/lib/firebase';
-import {Dictionaries} from '../util/Dictionaries';
+import { Dictionaries } from '../util/Dictionaries';
 
 const log = Logger.create();
 
-export interface CloudAwareDeleteResult extends DeleteResult {
-
-}
+export interface CloudAwareDeleteResult extends DeleteResult {}
 
 /**
  * A CloudAwareDatastore allows us to have one datastore with a local copy and
@@ -31,8 +54,8 @@ export interface CloudAwareDeleteResult extends DeleteResult {
  * The reverse is true too. If we startup and there is an excess file in the
  * remote, it's copied local.
  */
-export class CloudAwareDatastore extends AbstractDatastore implements Datastore, SynchronizingDatastore {
-
+export class CloudAwareDatastore extends AbstractDatastore
+    implements Datastore, SynchronizingDatastore {
     // allows us to keep track of the snapshot id so that when we report errors
     // we can know which snapshot failed.
     private static SNAPSHOT_ID = 0;
@@ -43,11 +66,17 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
 
     public readonly cloud: Datastore;
 
-    private readonly fileSynchronizationEventDispatcher: IEventDispatcher<FileSynchronizationEvent> = new SimpleReactor();
+    private readonly fileSynchronizationEventDispatcher: IEventDispatcher<
+        FileSynchronizationEvent
+    > = new SimpleReactor();
 
-    private readonly synchronizationEventDispatcher: IEventDispatcher<SynchronizationEvent> = new SimpleReactor();
+    private readonly synchronizationEventDispatcher: IEventDispatcher<
+        SynchronizationEvent
+    > = new SimpleReactor();
 
-    private readonly docMetaSnapshotEventDispatcher: IEventDispatcher<DocMetaSnapshotEvent> = new SimpleReactor();
+    private readonly docMetaSnapshotEventDispatcher: IEventDispatcher<
+        DocMetaSnapshotEvent
+    > = new SimpleReactor();
 
     private readonly docMetaComparisonIndex = new DocMetaComparisonIndex();
 
@@ -61,20 +90,26 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         this.cloud = cloud;
     }
 
-    public async init(errorListener: ErrorListener = NULL_FUNCTION): Promise<InitResult> {
+    public async init(
+        errorListener: ErrorListener = NULL_FUNCTION
+    ): Promise<InitResult> {
+        await Promise.all([
+            this.cloud.init(errorListener),
+            this.local.init(errorListener),
+        ]);
 
-        await Promise.all([this.cloud.init(errorListener), this.local.init(errorListener)]);
+        const snapshotListener = async (event: DocMetaSnapshotEvent) =>
+            this.docMetaSnapshotEventDispatcher.dispatchEvent(event);
 
-        const snapshotListener = async (event: DocMetaSnapshotEvent) => this.docMetaSnapshotEventDispatcher.dispatchEvent(event);
-
-        this.primarySnapshot = await this.snapshot(snapshotListener, errorListener);
+        this.primarySnapshot = await this.snapshot(
+            snapshotListener,
+            errorListener
+        );
 
         return {};
-
     }
 
     public async stop() {
-
         // TODO: all snapshots that have been handed out should be stopped...
 
         // we have to have the shutdown run BEFORE we actually shut down or we
@@ -86,7 +121,6 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         }
 
         await Promise.all([this.cloud.stop(), this.local.stop()]);
-
     }
 
     public async contains(fingerprint: string): Promise<boolean> {
@@ -97,25 +131,28 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         return this.local.getDocMeta(fingerprint);
     }
 
-    public async writeFile(backend: Backend,
-                           ref: FileRef,
-                           data: Buffer | string,
-                           meta: FileMeta = {}): Promise<DatastoreFile> {
-
-
+    public async writeFile(
+        backend: Backend,
+        ref: FileRef,
+        data: Buffer | string,
+        meta: FileMeta = {}
+    ): Promise<DatastoreFile> {
         const result = this.local.writeFile(backend, ref, data, meta);
 
         // don't await the cloud write.  Once it's written locally we're fine
         // if it's not in the cloud we get an error logged and we should also
         // have task progress in the future.
-        this.cloud.writeFile(backend, ref, data, meta)
-            .catch(err => log.error("Unable to write file to cloud: ", err));
+        this.cloud
+            .writeFile(backend, ref, data, meta)
+            .catch(err => log.error('Unable to write file to cloud: ', err));
 
         return result;
-
     }
 
-    public async getFile(backend: Backend, ref: FileRef): Promise<Optional<DatastoreFile>> {
+    public async getFile(
+        backend: Backend,
+        ref: FileRef
+    ): Promise<Optional<DatastoreFile>> {
         return this.local.getFile(backend, ref);
     }
 
@@ -124,60 +161,73 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
     }
 
     public async deleteFile(backend: Backend, ref: FileRef): Promise<void> {
-
         await this.cloud.deleteFile(backend, ref);
 
         return this.local.deleteFile(backend, ref);
-
     }
 
-    public async delete(docMetaFileRef: DocMetaFileRef,
-                        datastoreMutation: DatastoreMutation<boolean> = new DefaultDatastoreMutation()):
-        Promise<Readonly<CloudAwareDeleteResult>> {
-
-        datastoreMutation.written.get()
+    public async delete(
+        docMetaFileRef: DocMetaFileRef,
+        datastoreMutation: DatastoreMutation<
+            boolean
+        > = new DefaultDatastoreMutation()
+    ): Promise<Readonly<CloudAwareDeleteResult>> {
+        datastoreMutation.written
+            .get()
             .then(() => {
-
                 this.docMetaComparisonIndex.remove(docMetaFileRef.fingerprint);
-
             })
             // this should never fail in practice.
-            .catch(err => log.error("Could not handle delete: ", err));
+            .catch(err => log.error('Could not handle delete: ', err));
 
-        await this.datastoreMutations.executeBatchedWrite(datastoreMutation,
-                                                          async (remoteCoordinator) => {
-                                                              await this.cloud.delete(docMetaFileRef, remoteCoordinator);
-                                                          },
-                                                          async (localCoordinator) => {
-                                                              await this.local.delete(docMetaFileRef, localCoordinator);
-                                                          });
+        await this.datastoreMutations.executeBatchedWrite(
+            datastoreMutation,
+            async remoteCoordinator => {
+                await this.cloud.delete(docMetaFileRef, remoteCoordinator);
+            },
+            async localCoordinator => {
+                await this.local.delete(docMetaFileRef, localCoordinator);
+            }
+        );
 
         return {};
-
     }
 
-    public async write(fingerprint: string,
-                       data: string,
-                       docInfo: DocInfo,
-                       datastoreMutation: DatastoreMutation<boolean> = new DefaultDatastoreMutation()): Promise<void> {
+    public async write(
+        fingerprint: string,
+        data: string,
+        docInfo: DocInfo,
+        datastoreMutation: DatastoreMutation<
+            boolean
+        > = new DefaultDatastoreMutation()
+    ): Promise<void> {
+        datastoreMutation.written
+            .get()
+            .then(() => {
+                this.docMetaComparisonIndex.updateUsingDocInfo(docInfo);
+            })
+            // this should never fail in practice.
+            .catch(err => log.error('Could not handle delete: ', err));
 
-        datastoreMutation
-            .written.get().then(() => {
-
-            this.docMetaComparisonIndex.updateUsingDocInfo(docInfo);
-
-        })
-        // this should never fail in practice.
-        .catch(err => log.error("Could not handle delete: ", err));
-
-        return this.datastoreMutations.executeBatchedWrite(datastoreMutation,
-                                                           async (remoteCoordinator) => {
-                                                               await this.cloud.write(fingerprint, data, docInfo, remoteCoordinator);
-                                                           },
-                                                           async (localCoordinator) => {
-                                                               await this.local.write(fingerprint, data, docInfo, localCoordinator);
-                                                           });
-
+        return this.datastoreMutations.executeBatchedWrite(
+            datastoreMutation,
+            async remoteCoordinator => {
+                await this.cloud.write(
+                    fingerprint,
+                    data,
+                    docInfo,
+                    remoteCoordinator
+                );
+            },
+            async localCoordinator => {
+                await this.local.write(
+                    fingerprint,
+                    data,
+                    docInfo,
+                    localCoordinator
+                );
+            }
+        );
     }
 
     public async getDocMetaFiles(): Promise<DocMetaRef[]> {
@@ -185,18 +235,20 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
     }
 
     public async synchronizeDocs(...docMetaRefs: DocMetaRef[]) {
+        log.info('CloudAwareDatastore: synchronizeDocs: ', docMetaRefs);
 
-        log.info("CloudAwareDatastore: synchronizeDocs: ", docMetaRefs);
-
-        const toSyncOrigin = async (datastore: Datastore): Promise<SyncOrigin> => {
-
-            const syncDocMap = await PersistenceLayers.toSyncDocMapFromDocs(datastore, docMetaRefs);
+        const toSyncOrigin = async (
+            datastore: Datastore
+        ): Promise<SyncOrigin> => {
+            const syncDocMap = await PersistenceLayers.toSyncDocMapFromDocs(
+                datastore,
+                docMetaRefs
+            );
 
             return {
                 datastore,
-                syncDocMap
+                syncDocMap,
             };
-
         };
 
         const cloudSyncOrigin = await toSyncOrigin(this.cloud);
@@ -209,23 +261,28 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         // TODO: we could resolve this by removing the mutations and just
         // sending the progress data.
 
-        await PersistenceLayers.synchronizeOrigins(localSyncOrigin, cloudSyncOrigin, ASYNC_NULL_FUNCTION);
-
+        await PersistenceLayers.synchronizeOrigins(
+            localSyncOrigin,
+            cloudSyncOrigin,
+            ASYNC_NULL_FUNCTION
+        );
     }
 
-    public async snapshot(docMetaSnapshotEventListener: DocMetaSnapshotEventListener,
-                          errorListener: ErrorListener = NULL_FUNCTION): Promise<SnapshotResult> {
-
+    public async snapshot(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener,
+        errorListener: ErrorListener = NULL_FUNCTION
+    ): Promise<SnapshotResult> {
         const isPrimarySnapshot: boolean = this.primarySnapshot === undefined;
 
         const snapshotID = CloudAwareDatastore.SNAPSHOT_ID++;
 
-        const deduplicatedListener = DocMetaSnapshotEventListeners.createDeduplicatedListener(async docMetaSnapshotEvent => {
-            await docMetaSnapshotEventListener(docMetaSnapshotEvent);
-        });
+        const deduplicatedListener = DocMetaSnapshotEventListeners.createDeduplicatedListener(
+            async docMetaSnapshotEvent => {
+                await docMetaSnapshotEventListener(docMetaSnapshotEvent);
+            }
+        );
 
         class InitialSnapshotLatch {
-
             public readonly syncDocMap: SyncDocMap = {};
             public readonly latch = new Latch<boolean>();
             public readonly id: CloudDatastoreID;
@@ -238,62 +295,57 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
                 this.id = id;
             }
 
-            private async handleSnapshot(docMetaSnapshotEvent: DocMetaSnapshotEvent) {
-
+            private async handleSnapshot(
+                docMetaSnapshotEvent: DocMetaSnapshotEvent
+            ) {
                 // const snapDesc = DocMetaSnapshotEvents.format(docMetaSnapshotEvent);
 
                 try {
-
                     if (this.hasInitialTerminatedBatch) {
                         return;
                     }
 
-                    if (! docMetaSnapshotEvent.batch || docMetaSnapshotEvent.batch.id !== 0) {
+                    if (
+                        !docMetaSnapshotEvent.batch ||
+                        docMetaSnapshotEvent.batch.id !== 0
+                    ) {
                         return;
                     }
 
                     ++this.pending;
 
-                    const syncDocs = await DocMetaSnapshotEvents.toSyncDocs(docMetaSnapshotEvent);
+                    const syncDocs = await DocMetaSnapshotEvents.toSyncDocs(
+                        docMetaSnapshotEvent
+                    );
                     SyncDocMaps.putAll(this.syncDocMap, syncDocs);
 
-                    if (docMetaSnapshotEvent.consistency === 'committed' &&
-                        docMetaSnapshotEvent.batch!.terminated) {
-
+                    if (
+                        docMetaSnapshotEvent.consistency === 'committed' &&
+                        docMetaSnapshotEvent.batch!.terminated
+                    ) {
                         const nrDocs = Dictionaries.size(this.syncDocMap);
 
                         this.hasInitialTerminatedBatch = true;
-
                     }
-
                 } finally {
-
                     --this.pending;
-
 
                     if (this.hasInitialTerminatedBatch && this.pending === 0) {
                         this.latch.resolve(true);
                     }
-
                 }
-
             }
 
             public createSnapshot(datastore: Datastore) {
-
                 return datastore.snapshot(async docMetaSnapshotEvent => {
-
-                    if (! initialSyncCompleted) {
+                    if (!initialSyncCompleted) {
                         await this.handleSnapshot(docMetaSnapshotEvent);
                     }
 
                     // always forward to the synchronizing listener
                     await synchronizingListener(docMetaSnapshotEvent);
-
                 }, errorListener);
-
             }
-
         }
 
         let initialSyncCompleted: boolean = false;
@@ -308,58 +360,67 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         const localInitialSnapshotLatch = new InitialSnapshotLatch('local');
         const cloudInitialSnapshotLatch = new InitialSnapshotLatch('cloud');
 
-        const synchronizingEventDeduplicator: EventDeduplicator
-            = DocMetaSnapshotEventListeners.createDeduplicatedListener(async docMetaSnapshotEvent => {
-
-            const handleEvent = async () => {
-
-                try {
-
-                    if (initialSyncCompleted && isPrimarySnapshot) {
-                        await this.handleSnapshotSynchronization(docMetaSnapshotEvent, deduplicatedListener.listener);
+        const synchronizingEventDeduplicator: EventDeduplicator = DocMetaSnapshotEventListeners.createDeduplicatedListener(
+            async docMetaSnapshotEvent => {
+                const handleEvent = async () => {
+                    try {
+                        if (initialSyncCompleted && isPrimarySnapshot) {
+                            await this.handleSnapshotSynchronization(
+                                docMetaSnapshotEvent,
+                                deduplicatedListener.listener
+                            );
+                        }
+                    } finally {
+                        // need to pass on these events after the replication.
+                        await docMetaSnapshotEventListener(
+                            docMetaSnapshotEvent
+                        );
                     }
+                };
 
-                } finally {
-                    // need to pass on these events after the replication.
-                    await docMetaSnapshotEventListener(docMetaSnapshotEvent);
-                }
-
-            };
-
-            handleEvent()
-                .catch(err => {
-                    log.error(`Unable to handle synchronizing snapshot ${snapshotID}`, err);
+                handleEvent().catch(err => {
+                    log.error(
+                        `Unable to handle synchronizing snapshot ${snapshotID}`,
+                        err
+                    );
                     errorListener(err);
                 });
-
-        }, this.docMetaComparisonIndex);
+            },
+            this.docMetaComparisonIndex
+        );
 
         const synchronizingListener = synchronizingEventDeduplicator.listener;
 
-        log.info("Local snapshot...");
-        const localSnapshotResultPromise = localInitialSnapshotLatch.createSnapshot(this.local);
+        log.info('Local snapshot...');
+        const localSnapshotResultPromise = localInitialSnapshotLatch.createSnapshot(
+            this.local
+        );
         await localInitialSnapshotLatch.latch.get();
-        log.info("Local snapshot...done");
+        log.info('Local snapshot...done');
 
-        log.info("Cloud snapshot...");
-        const cloudSnapshotResultPromise = cloudInitialSnapshotLatch.createSnapshot(this.cloud);
+        log.info('Cloud snapshot...');
+        const cloudSnapshotResultPromise = cloudInitialSnapshotLatch.createSnapshot(
+            this.cloud
+        );
         await cloudInitialSnapshotLatch.latch.get();
-        log.info("Cloud snapshot...done");
+        log.info('Cloud snapshot...done');
 
         const localSyncOrigin: SyncOrigin = {
             datastore: this.local,
-            syncDocMap: localInitialSnapshotLatch.syncDocMap
+            syncDocMap: localInitialSnapshotLatch.syncDocMap,
         };
 
         const cloudSyncOrigin: SyncOrigin = {
             datastore: this.cloud,
-            syncDocMap: cloudInitialSnapshotLatch.syncDocMap
+            syncDocMap: cloudInitialSnapshotLatch.syncDocMap,
         };
 
         if (isPrimarySnapshot) {
-
-            await PersistenceLayers.synchronizeOrigins(localSyncOrigin, cloudSyncOrigin, deduplicatedListener.listener);
-
+            await PersistenceLayers.synchronizeOrigins(
+                localSyncOrigin,
+                cloudSyncOrigin,
+                deduplicatedListener.listener
+            );
         }
 
         initialSyncCompleted = true;
@@ -367,43 +428,46 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         await localSnapshotResultPromise;
         const cloudSnapshotResult = await cloudSnapshotResultPromise;
 
-        log.notice("INITIAL SNAPSHOT COMPLETE");
+        log.notice('INITIAL SNAPSHOT COMPLETE');
 
         return {
-            unsubscribe: cloudSnapshotResult.unsubscribe
+            unsubscribe: cloudSnapshotResult.unsubscribe,
         };
-
     }
 
-    private async handleSnapshotSynchronization(docMetaSnapshotEvent: DocMetaSnapshotEvent, listener: DocMetaSnapshotEventListener) {
-
+    private async handleSnapshotSynchronization(
+        docMetaSnapshotEvent: DocMetaSnapshotEvent,
+        listener: DocMetaSnapshotEventListener
+    ) {
         const toLocalSyncOrigin = async (): Promise<SyncOrigin> => {
-
             // TODO: we should have progress on this...
 
-            const docaMetaFiles: DocMetaRef[] =
-                docMetaSnapshotEvent.docMetaMutations.map(current => {
-                    return {fingerprint: current.fingerprint};
-                });
+            const docaMetaFiles: DocMetaRef[] = docMetaSnapshotEvent.docMetaMutations.map(
+                current => {
+                    return { fingerprint: current.fingerprint };
+                }
+            );
 
-            const syncDocMap = await PersistenceLayers.toSyncDocMapFromDocs(this.local, docaMetaFiles);
+            const syncDocMap = await PersistenceLayers.toSyncDocMapFromDocs(
+                this.local,
+                docaMetaFiles
+            );
 
             return {
                 datastore: this.local,
-                syncDocMap
+                syncDocMap,
             };
-
         };
 
         const toCloudSyncOrigin = async (): Promise<SyncOrigin> => {
-
-            const syncDocs = await DocMetaSnapshotEvents.toSyncDocs(docMetaSnapshotEvent);
+            const syncDocs = await DocMetaSnapshotEvents.toSyncDocs(
+                docMetaSnapshotEvent
+            );
 
             return {
                 datastore: this.cloud,
-                syncDocMap: SyncDocMaps.fromArray(syncDocs)
+                syncDocMap: SyncDocMaps.fromArray(syncDocs),
             };
-
         };
 
         if (docMetaSnapshotEvent.consistency !== 'committed') {
@@ -411,16 +475,21 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
         }
 
         for (const docMetaMutation of docMetaSnapshotEvent.docMetaMutations) {
-
-            if (docMetaMutation.mutationType === 'created' || docMetaMutation.mutationType === 'updated') {
-
+            if (
+                docMetaMutation.mutationType === 'created' ||
+                docMetaMutation.mutationType === 'updated'
+            ) {
                 const cloudSyncOrigin = await toCloudSyncOrigin();
                 const localSyncOrigin = await toLocalSyncOrigin();
 
-                log.info("Transferring from cloud -> local...");
-                await PersistenceLayers.transfer(cloudSyncOrigin, localSyncOrigin, listener, 'cloud-to-local');
-                log.info("Transferring from cloud -> local...done");
-
+                log.info('Transferring from cloud -> local...');
+                await PersistenceLayers.transfer(
+                    cloudSyncOrigin,
+                    localSyncOrigin,
+                    listener,
+                    'cloud-to-local'
+                );
+                log.info('Transferring from cloud -> local...done');
             }
 
             if (docMetaMutation.mutationType === 'deleted') {
@@ -428,37 +497,41 @@ export class CloudAwareDatastore extends AbstractDatastore implements Datastore,
                 // we're also not receiving events for this in the UI so no
                 // progress updates.
                 const docMetaFileRef = await docMetaMutation.docMetaFileRefProvider();
-                log.warn("File deleted: " , docMetaFileRef);
+                log.warn('File deleted: ', docMetaFileRef);
                 await this.local.delete(docMetaFileRef);
             }
-
         }
 
         this.synchronizationEventDispatcher.dispatchEvent({
             ...docMetaSnapshotEvent,
-            dest: 'local'
+            dest: 'local',
         });
-
     }
 
-    public addFileSynchronizationEventListener(eventListener: FileSynchronizationEventListener): void {
+    public addFileSynchronizationEventListener(
+        eventListener: FileSynchronizationEventListener
+    ): void {
         this.fileSynchronizationEventDispatcher.addEventListener(eventListener);
     }
 
-    public addSynchronizationEventListener(eventListener: SynchronizationEventListener): void {
+    public addSynchronizationEventListener(
+        eventListener: SynchronizationEventListener
+    ): void {
         this.synchronizationEventDispatcher.addEventListener(eventListener);
     }
 
-    public addDocMetaSnapshotEventListener(docMetaSnapshotEventListener: DocMetaSnapshotEventListener): void {
-        this.docMetaSnapshotEventDispatcher.addEventListener(docMetaSnapshotEventListener);
+    public addDocMetaSnapshotEventListener(
+        docMetaSnapshotEventListener: DocMetaSnapshotEventListener
+    ): void {
+        this.docMetaSnapshotEventDispatcher.addEventListener(
+            docMetaSnapshotEventListener
+        );
     }
 
     public async deactivate() {
         await firebase.auth().signOut();
     }
-
 }
-
 
 /**
  * Represents a doc and its UUID.  The UUID is optional though as older docs
@@ -470,4 +543,3 @@ export interface DocUUID {
 }
 
 export type CloudDatastoreID = 'local' | 'cloud';
-

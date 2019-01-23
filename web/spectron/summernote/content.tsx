@@ -1,13 +1,12 @@
 /* global $ */
 
 import 'bootstrap';
-import {SpectronRenderer} from '../../js/test/SpectronRenderer';
+import { SpectronRenderer } from '../../js/test/SpectronRenderer';
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import {RichTextEditor4} from '../../js/apps/card_creator/elements/schemaform/RichTextEditor4';
+import { RichTextEditor4 } from '../../js/apps/card_creator/elements/schemaform/RichTextEditor4';
 
 SpectronRenderer.run(async () => {
-
     // this disables tab input so that we can go back and forth between editor
     // controls easily.
     // delete (<any> $).summernote.options.keyMap.pc.TAB;
@@ -21,12 +20,7 @@ SpectronRenderer.run(async () => {
 
     //
     ReactDOM.render(
-        <RichTextEditor4 id='foo'/>,
-        document.getElementById("app")
+        <RichTextEditor4 id="foo" />,
+        document.getElementById('app')
     );
-
-
 });
-
-
-

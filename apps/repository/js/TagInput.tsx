@@ -1,31 +1,29 @@
 import * as React from 'react';
-import {Popover, PopoverBody, Button} from 'reactstrap';
+import { Popover, PopoverBody, Button } from 'reactstrap';
 import CreatableSelect from 'react-select/lib/Creatable';
-import {Blackout} from './Blackout';
-import {Tag} from '../../../web/js/tags/Tag';
-import {TagsDB} from './TagsDB';
-import {Optional} from '../../../web/js/util/ts/Optional';
-import {TagSelectOption} from './TagSelectOption';
-import {TagSelectOptions} from './TagSelectOptions';
-import {Tags} from '../../../web/js/tags/Tags';
-import {Logger} from '../../../web/js/logger/Logger';
-import {IStyleMap} from '../../../web/js/react/IStyleMap';
-import {RelatedTags} from '../../../web/js/tags/related/RelatedTags';
+import { Blackout } from './Blackout';
+import { Tag } from '../../../web/js/tags/Tag';
+import { TagsDB } from './TagsDB';
+import { Optional } from '../../../web/js/util/ts/Optional';
+import { TagSelectOption } from './TagSelectOption';
+import { TagSelectOptions } from './TagSelectOptions';
+import { Tags } from '../../../web/js/tags/Tags';
+import { Logger } from '../../../web/js/logger/Logger';
+import { IStyleMap } from '../../../web/js/react/IStyleMap';
+import { RelatedTags } from '../../../web/js/tags/related/RelatedTags';
 
 let SEQUENCE = 0;
 
 const log = Logger.create();
 
-
 const Styles: IStyleMap = {
-
     popover: {
         width: '500px !important',
-        maxWidth: '9999px !important'
+        maxWidth: '9999px !important',
     },
 
     label: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
 
     relatedTags: {
@@ -35,7 +33,7 @@ const Styles: IStyleMap = {
 
     relatedTagsLabel: {
         marginTop: 'auto',
-        marginBottom: 'auto'
+        marginBottom: 'auto',
     },
 
     relatedTag: {
@@ -45,15 +43,12 @@ const Styles: IStyleMap = {
         fontSize: '12px',
         padding: '3px',
         marginTop: 'auto',
-        marginBottom: 'auto'
-    }
-
+        marginBottom: 'auto',
+    },
 };
 
-
 export class TagInput extends React.Component<IProps, IState> {
-
-    private readonly id = "popover-" + SEQUENCE++;
+    private readonly id = 'popover-' + SEQUENCE++;
 
     constructor(props: IProps, context: any) {
         super(props, context);
@@ -62,94 +57,99 @@ export class TagInput extends React.Component<IProps, IState> {
         this.handleChange = this.handleChange.bind(this);
         this.state = {
             open: false,
-            tags: []
+            tags: [],
         };
-
     }
 
     public toggle() {
-
         const open = !this.state.open;
 
         Blackout.toggle(open);
 
         const tags = TagSelectOptions.fromTags(this.props.existingTags || []);
 
-        this.setState({...this.state, open, tags});
-
+        this.setState({ ...this.state, open, tags });
     }
 
     public render() {
+        const availableTagOptions: TagSelectOption[] = TagSelectOptions.fromTags(
+            this.props.availableTags
+        );
 
-        const availableTagOptions: TagSelectOption[]
-            = TagSelectOptions.fromTags(this.props.availableTags);
+        const existingTags: Tag[] = Optional.of(
+            this.props.existingTags
+        ).getOrElse([]);
 
-        const existingTags: Tag[] = Optional.of(this.props.existingTags).getOrElse([]);
+        const defaultValue: TagSelectOption[] = TagSelectOptions.fromTags(
+            existingTags
+        ).sort((a, b) => a.label.localeCompare(b.label));
 
-        const defaultValue: TagSelectOption[] =
-            TagSelectOptions.fromTags(existingTags)
-                .sort((a, b) => a.label.localeCompare(b.label));
-
-        const relatedTags: string[]
-            = this.props.relatedTags.compute(this.state.tags.map(current => current.label))
-                                    .map(current => current.tag);
+        const relatedTags: string[] = this.props.relatedTags
+            .compute(this.state.tags.map(current => current.label))
+            .map(current => current.tag);
 
         const RelatedTagsItems = () => {
-            return <span>
-                {relatedTags.map(item =>
-                     <Button className="mr-1"
-                             key={item}
-                             style={Styles.relatedTag}
-                             color="light"
-                             size="sm"
-                             onClick={() => this.addTag(item)}>{item}</Button>)}
-            </span>;
-
+            return (
+                <span>
+                    {relatedTags.map(item => (
+                        <Button
+                            className="mr-1"
+                            key={item}
+                            style={Styles.relatedTag}
+                            color="light"
+                            size="sm"
+                            onClick={() => this.addTag(item)}
+                        >
+                            {item}
+                        </Button>
+                    ))}
+                </span>
+            );
         };
 
-
         const RelatedTagsWidget = () => {
-
             if (relatedTags.length === 0) {
-                return <div></div>;
+                return <div />;
             }
 
-            return <div style={Styles.relatedTags}>
-                <div className="mr-1" style={Styles.relatedTagsLabel}>
-                    <strong>Related tags: </strong>
+            return (
+                <div style={Styles.relatedTags}>
+                    <div className="mr-1" style={Styles.relatedTagsLabel}>
+                        <strong>Related tags: </strong>
+                    </div>
+                    <RelatedTagsItems />
                 </div>
-                <RelatedTagsItems/>
-            </div>;
-
+            );
         };
 
         return (
-
             <div>
-
-                <i id={this.id} onClick={this.toggle}
-                   className="fa fa-tag doc-button doc-button-inactive"/>
-
+                <i
+                    id={this.id}
+                    onClick={this.toggle}
+                    className="fa fa-tag doc-button doc-button-inactive"
+                />
 
                 {/*tag-input-popover {*/}
                 {/*width: 500px !important;*/}
                 {/*max-width: 9999px !important;*/}
-            {/*}*/}
+                {/*}*/}
 
                 {/*.tag-input-popover label {*/}
                 {/*font-weight: bold;*/}
-            {/*}*/}
+                {/*}*/}
 
-                <Popover placement="auto"
-                         isOpen={this.state.open}
-                         target={this.id}
-                         toggle={this.toggle}
-                         className="tag-input-popover">
+                <Popover
+                    placement="auto"
+                    isOpen={this.state.open}
+                    target={this.id}
+                    toggle={this.toggle}
+                    className="tag-input-popover"
+                >
                     {/*<PopoverHeader>Popover Title</PopoverHeader>*/}
 
                     {/*style={{borderWidth: '1px', backgroundColor: true ? "#b94a48" : "#aaa"}}*/}
                     <PopoverBody style={Styles.popover}>
-
                         <strong>Enter tags:</strong>
 
                         <CreatableSelect
@@ -159,51 +159,43 @@ export class TagInput extends React.Component<IProps, IState> {
                             onKeyDown={event => this.onKeyDown(event)}
                             className="basic-multi-select"
                             classNamePrefix="select"
-                            onChange={(selectedOptions) => this.handleChange(selectedOptions as TagSelectOption[])}
+                            onChange={selectedOptions =>
+                                this.handleChange(
+                                    selectedOptions as TagSelectOption[]
+                                )
+                            }
                             value={this.state.tags}
                             defaultValue={defaultValue}
                             placeholder="Create or select tags ..."
-                            options={availableTagOptions} >
-
+                            options={availableTagOptions}
+                        >
                             <div>this is the error</div>
-
                         </CreatableSelect>
 
                         <div>
-
-                            <RelatedTagsWidget/>
-
+                            <RelatedTagsWidget />
                         </div>
-
                     </PopoverBody>
                 </Popover>
-
             </div>
-
         );
-
     }
 
-
     private addTag(tag: string) {
-
-        const newTag: TagSelectOption = {value: tag, label: tag};
+        const newTag: TagSelectOption = { value: tag, label: tag };
         const tags = [...this.state.tags, newTag];
-        this.setState({...this.state, tags});
+        this.setState({ ...this.state, tags });
         this.handleChange(tags);
-
     }
 
     private onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
-
-        if (event.key === "Escape") {
+        if (event.key === 'Escape') {
             this.toggle();
         }
 
-        if (event.getModifierState("Control") && event.key === "Enter") {
+        if (event.getModifierState('Control') && event.key === 'Enter') {
             this.toggle();
         }
-
     }
 
     private save() {
@@ -211,32 +203,29 @@ export class TagInput extends React.Component<IProps, IState> {
     }
 
     private handleChange(selectedOptions: TagSelectOption[]) {
-
         const tags = TagSelectOptions.toTags(selectedOptions);
 
         const validTags = Tags.findValidTags(...tags);
         const invalidTags = Tags.findInvalidTags(...tags);
 
-        this.setState({...this.state, tags: TagSelectOptions.fromTags(validTags)});
+        this.setState({
+            ...this.state,
+            tags: TagSelectOptions.fromTags(validTags),
+        });
 
         if (this.props.onChange) {
-
             // important to always call onChange even if we have no valid tags
             // as this is acceptable and we want to save these to disk.
             this.props.onChange(validTags);
 
             if (invalidTags.length > 0) {
-                log.warn("Some tags were invalid", invalidTags);
+                log.warn('Some tags were invalid', invalidTags);
             }
-
         }
-
     }
-
 }
 
 export interface IProps {
-
     /**
      * The tags that can be selected.
      */
@@ -253,20 +242,13 @@ export interface IProps {
     readonly relatedTags: RelatedTags;
 
     readonly onChange?: (values: Tag[]) => void;
-
 }
 
 interface IState {
-
     readonly open: boolean;
 
     /**
      * The currently selected tags.
      */
     readonly tags: TagSelectOption[];
-
 }
-
-
-
-

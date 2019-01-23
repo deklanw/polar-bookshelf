@@ -1,26 +1,26 @@
-import {WebDriverTestResultReader} from '../../js/test/results/reader/WebDriverTestResultReader';
-import {assertJSON} from '../../js/test/Assertions';
-import {Spectron} from '../../js/test/Spectron';
+import { WebDriverTestResultReader } from '../../js/test/results/reader/WebDriverTestResultReader';
+import { assertJSON } from '../../js/test/Assertions';
+import { Spectron } from '../../js/test/Spectron';
 
 const assert = require('assert');
 
 const TIMEOUT = 10000;
 
-describe('content-capture', function () {
-
+describe('content-capture', function() {
     this.timeout(TIMEOUT);
 
     Spectron.setup(__dirname);
 
-    it('capture basic document', async function () {
-
-        console.log("mocha: Waiting for first window");
+    it('capture basic document', async function() {
+        console.log('mocha: Waiting for first window');
 
         assert.equal(await this.app.client.getWindowCount(), 1);
 
-        let webDriverTestResultReader = new WebDriverTestResultReader(this.app);
+        const webDriverTestResultReader = new WebDriverTestResultReader(
+            this.app
+        );
 
-        let result: any = await webDriverTestResultReader.read();
+        const result: any = await webDriverTestResultReader.read();
         //
         // let expected = {
         //     "capturedDocuments": {
@@ -67,8 +67,6 @@ describe('content-capture', function () {
         // assertJSON(result, expected);
 
         // right now we're just verifying that it works, not the content.
-        assert.equal(result.version, "4.0.0");
-
+        assert.equal(result.version, '4.0.0');
     });
-
 });

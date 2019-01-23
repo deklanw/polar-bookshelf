@@ -1,6 +1,4 @@
 export class PostMessageRequest {
-
-
     /**
      * The BrowserWindow running the app to receive the message.
      */
@@ -18,5 +16,4 @@ export class PostMessageRequest {
         this.window = opts.window;
         this.message = opts.message;
     }
-
 }
